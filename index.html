@@ -148,6 +148,15 @@ Object.keys(grouped).forEach(level => {
   });
 });
 </script>
+  
+  <footer>
+    <p>© <span id="year"></span> Online Practice by Teacher. All rights reserved.</p>
+  </footer>
 
+  <script>
+    // Hiển thị năm hiện tại
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  
 </body>
 </html>
