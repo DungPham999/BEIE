@@ -168,6 +168,7 @@
         <strong>Hướng dẫn:</strong> Nên làm bài trên trình duyệt Chrome. Nếu bấm vào mà không xuất hiện đề, tức là đề chưa được upload.
       </div>
 
+      <!-- Nơi JS sẽ vẽ các box level + test -->
       <div id="levelsGrid" class="levels-grid"></div>
     </div>
 
@@ -177,112 +178,47 @@
   </div>
 
   <script>
-    // ================== CẤU HÌNH DỮ LIỆU ==================
+    // ==== URL CSV từ Google Sheet của thầy ====
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
 
-    // Thông tin mô tả cho từng level
-    const LEVEL_INFO = {
-      "Beginner – IE": {
-        badge: "A1–A2",
-        desc: "Luyện nghe – đọc cơ bản, tập trung vào từ vựng nền tảng và cấu trúc câu đơn giản."
-      },
-      "Pre-Intermediate": {
-        badge: "A2–B1",
-        desc: "Luyện 4 kỹ năng với đoạn nghe/đọc dài hơn, mở rộng vốn từ và cấu trúc."
-      },
-      "TOEIC Pre": {
-        badge: "B1",
-        desc: "Bài test theo format TOEIC/IELTS cơ bản: Listening Part 1–4, Reading Part 5–7."
-      },
-      "IELTS Practice": {
-        badge: "B1–B2",
-        desc: "Các đề mô phỏng IELTS Academic/General, luyện kỹ năng làm bài theo thời gian."
-      }
-    };
+    // Parse CSV thành array object
+    function parseCSV(text) {
+      const rows = text.trim().split("\n");
+      const header = rows.shift().split(",");
 
-    // MẢNG TESTS – chỉnh sửa, thêm bớt ở đây
-    const TESTS = [
-      // Beginner – IE
-      {
-        level: "Beginner – IE",
-        title: "Unit 1 – Listening & Reading",
-        file: "BEIE_HW_U1.html",
-        tag: "HW U1"
-      },
-      {
-        level: "Beginner – IE",
-        title: "Unit 2 – Listening Practice",
-        file: "#",           // chưa có file → tạm để '#'
-        tag: "HW U2"
-      },
-      {
-        level: "Beginner – IE",
-        title: "Review Test 1",
-        file: "#",
-        tag: "Review"
-      },
-
-      // Pre-Intermediate
-      {
-        level: "Pre-Intermediate",
-        title: "Test 1 – Grammar & Reading",
-        file: "#",
-        tag: "Demo"
-      },
-      {
-        level: "Pre-Intermediate",
-        title: "Listening Practice 1",
-        file: "#",
-        tag: "Listening"
-      },
-
-      // TOEIC Pre
-      {
-        level: "TOEIC Pre",
-        title: "TOEIC L1 – Full Test 1",
-        file: "#",
-        tag: "TOEIC"
-      },
-      {
-        level: "TOEIC Pre",
-        title: "Reading – Part 5–6",
-        file: "#",
-        tag: "Reading"
-      },
-
-      // IELTS Practice
-      {
-        level: "IELTS Practice",
-        title: "IELTS Listening & Reading – Test 1",
-        file: "#",
-        tag: "LR1"
-      },
-      {
-        level: "IELTS Practice",
-        title: "Listening – Section 1 & 2",
-        file: "#",
-        tag: "Listening"
-      }
-    ];
-
-    // =============== HÀM NHÓM THEO LEVEL & RENDER ===============
-
-    function groupByLevel(tests) {
-      const map = {};
-      tests.forEach(t => {
-        const lv = t.level || "Other";
-        if (!map[lv]) map[lv] = [];
-        map[lv].push(t);
+      return rows.map(row => {
+        const cols = row.split(",");
+        const obj = {};
+        header.forEach((h, i) => {
+          obj[h.trim()] = (cols[i] || "").trim();
+        });
+        return obj;
       });
-      return map;
     }
 
-    function renderMenu() {
-      const grouped = groupByLevel(TESTS);
+    // Nhóm theo Level
+    function groupByLevel(data) {
+      const levels = {};
+      data.forEach(item => {
+        const lvl = item.Level || "Other";
+        if (!levels[lvl]) levels[lvl] = [];
+        levels[lvl].push(item);
+      });
+      return levels;
+    }
+
+    // Render menu theo giao diện hiện tại
+    function renderMenu(data) {
       const container = document.getElementById("levelsGrid");
       container.innerHTML = "";
 
+      const grouped = groupByLevel(data);
+
       Object.keys(grouped).forEach(levelName => {
-        const info = LEVEL_INFO[levelName] || {};
+        const items = grouped[levelName];
+        const levelTag = items[0].LevelTag || "";
+        const desc = items[0].Desc || "";
+
         const card = document.createElement("div");
         card.className = "level-card";
 
@@ -294,18 +230,22 @@
         titleEl.className = "level-title";
         titleEl.textContent = levelName;
 
-        const badgeEl = document.createElement("span");
-        badgeEl.className = "level-tag";
-        badgeEl.textContent = info.badge || "";
+        if (levelTag) {
+          const badgeEl = document.createElement("span");
+          badgeEl.className = "level-tag";
+          badgeEl.textContent = levelTag;
+          headRow.appendChild(titleEl);
+          headRow.appendChild(badgeEl);
+        } else {
+          headRow.appendChild(titleEl);
+        }
 
-        headRow.appendChild(titleEl);
-        if (info.badge) headRow.appendChild(badgeEl);
         card.appendChild(headRow);
 
-        if (info.desc) {
+        if (desc) {
           const descEl = document.createElement("p");
           descEl.className = "level-desc";
-          descEl.textContent = info.desc;
+          descEl.textContent = desc;
           card.appendChild(descEl);
         }
 
@@ -313,19 +253,19 @@
         const ul = document.createElement("ul");
         ul.className = "test-list";
 
-        grouped[levelName].forEach(test => {
+        items.forEach(item => {
           const a = document.createElement("a");
           a.className = "test-row";
-          a.href = test.file || "#";
-          a.target = "_blank"; // mở tab mới cho đề
+          a.href = item.File || "#";
+          a.target = "_blank"; // mở test ở tab mới
 
           const titleSpan = document.createElement("span");
           titleSpan.className = "test-title";
-          titleSpan.textContent = test.title;
+          titleSpan.textContent = item.Title;
 
           const tagSpan = document.createElement("span");
           tagSpan.className = "test-badge";
-          tagSpan.textContent = test.tag || "";
+          tagSpan.textContent = item.Tag || "";
 
           a.appendChild(titleSpan);
           a.appendChild(tagSpan);
@@ -337,90 +277,24 @@
       });
     }
 
-    // Hiển thị menu
-    renderMenu();
+    // Load CSV + render
+    async function initMenu() {
+      try {
+        const resp = await fetch(CSV_URL);
+        const text = await resp.text();
+        const data = parseCSV(text);
+        renderMenu(data);
+      } catch (e) {
+        console.error(e);
+        document.getElementById("levelsGrid").innerHTML =
+          '<p style="color:red;">Không tải được dữ liệu bài test. Vui lòng kiểm tra link CSV.</p>';
+      }
+    }
+
+    initMenu();
 
     // Footer năm hiện tại
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
-<script>
-// URL CSV từ Google Sheet
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
-
-// Parse CSV thành array object
-function parseCSV(text) {
-  const rows = text.trim().split("\n");
-  const header = rows.shift().split(",");
-
-  return rows.map(row => {
-    const cols = row.split(",");
-    const obj = {};
-    header.forEach((h, i) => obj[h.trim()] = (cols[i] || "").trim());
-    return obj;
-  });
-}
-
-// Nhóm theo level
-function groupByLevel(data) {
-  const levels = {};
-  data.forEach(item => {
-    const lvl = item.Level || "Other";
-    if (!levels[lvl]) levels[lvl] = [];
-    levels[lvl].push(item);
-  });
-  return levels;
-}
-
-// Render menu box
-function renderMenu(data) {
-  const menu = document.getElementById("menu");
-  menu.innerHTML = "";
-
-  const grouped = groupByLevel(data);
-
-  Object.keys(grouped).forEach(level => {
-    const items = grouped[level];
-    const levelTag = items[0].LevelTag;
-    const desc = items[0].Desc;
-
-    const box = document.createElement("div");
-    box.className = "level-box";
-    
-    box.innerHTML = `
-      <div class='level-title'>
-        <span>${level}</span>
-        <span class="level-badge">${levelTag}</span>
-      </div>
-      <p class="level-desc">${desc}</p>
-    `;
-
-    items.forEach(item => {
-      const row = document.createElement("div");
-      row.className = "test-row";
-      
-      row.innerHTML = `
-        <a class="test-title" href="${item.File}" target="_blank">${item.Title}</a>
-        <span class="test-tag">${item.Tag}</span>
-      `;
-
-      box.appendChild(row);
-    });
-
-    menu.appendChild(box);
-  });
-}
-
-// Load CSV + render
-async function initMenu() {
-  const resp = await fetch(CSV_URL);
-  const text = await resp.text();
-  const data = parseCSV(text);
-  renderMenu(data);
-}
-
-initMenu();
-</script>
-
-  
 </body>
 </html>
