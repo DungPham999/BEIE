@@ -343,5 +343,84 @@
     // Footer năm hiện tại
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
+<script>
+// URL CSV từ Google Sheet
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
+
+// Parse CSV thành array object
+function parseCSV(text) {
+  const rows = text.trim().split("\n");
+  const header = rows.shift().split(",");
+
+  return rows.map(row => {
+    const cols = row.split(",");
+    const obj = {};
+    header.forEach((h, i) => obj[h.trim()] = (cols[i] || "").trim());
+    return obj;
+  });
+}
+
+// Nhóm theo level
+function groupByLevel(data) {
+  const levels = {};
+  data.forEach(item => {
+    const lvl = item.Level || "Other";
+    if (!levels[lvl]) levels[lvl] = [];
+    levels[lvl].push(item);
+  });
+  return levels;
+}
+
+// Render menu box
+function renderMenu(data) {
+  const menu = document.getElementById("menu");
+  menu.innerHTML = "";
+
+  const grouped = groupByLevel(data);
+
+  Object.keys(grouped).forEach(level => {
+    const items = grouped[level];
+    const levelTag = items[0].LevelTag;
+    const desc = items[0].Desc;
+
+    const box = document.createElement("div");
+    box.className = "level-box";
+    
+    box.innerHTML = `
+      <div class='level-title'>
+        <span>${level}</span>
+        <span class="level-badge">${levelTag}</span>
+      </div>
+      <p class="level-desc">${desc}</p>
+    `;
+
+    items.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "test-row";
+      
+      row.innerHTML = `
+        <a class="test-title" href="${item.File}" target="_blank">${item.Title}</a>
+        <span class="test-tag">${item.Tag}</span>
+      `;
+
+      box.appendChild(row);
+    });
+
+    menu.appendChild(box);
+  });
+}
+
+// Load CSV + render
+async function initMenu() {
+  const resp = await fetch(CSV_URL);
+  const text = await resp.text();
+  const data = parseCSV(text);
+  renderMenu(data);
+}
+
+initMenu();
+</script>
+
+  
 </body>
 </html>
