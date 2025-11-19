@@ -1,298 +1,153 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>Danh sách bài Test – English Practice</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<title>English Online Practice – Test Menu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    /* ===== RESET CƠ BẢN ===== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #ffe9c6, #ffe0b2);
-      min-height: 100vh;
-      color: #333;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(#ffe9c9, #f7d8b8);
+    margin: 0;
+    padding: 0;
+  }
 
-    /* ===== KHUNG CHÍNH ===== */
-    .container {
-      width: 100%;
-      max-width: 900px;
-      background: #fffaf3;
-      border-radius: 14px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      padding: 18px 16px 22px;
-    }
+  .container {
+    max-width: 1100px;
+    margin: 20px auto;
+    background: #fff8ef;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
 
-    header {
-      text-align: center;
-      margin-bottom: 14px;
-    }
-    header h1 {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: #d35400;
-    }
-    header p {
-      font-size: 13px;
-      color: #666;
-    }
+  h1 {
+    text-align: center;
+    margin-bottom: 8px;
+    color: #b14400;
+  }
 
-    /* ===== THÔNG TIN CHUNG ===== */
-    .info-bar {
-      margin: 14px 0 18px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(255, 179, 71, 0.12);
-      border: 1px solid rgba(230, 126, 34, 0.35);
-      font-size: 13px;
-    }
-    .info-bar strong {
-      color: #c0392b;
-    }
+  .note {
+    background: #fff3cc;
+    border-left: 4px solid #ff9800;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
 
-    /* ===== LƯỚI CÁC LEVEL ===== */
-    .levels {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
+  .level-heading {
+    font-size: 20px;
+    font-weight: bold;
+    color: #b14400;
+    margin-top: 25px;
+    margin-bottom: 10px;
+  }
 
-    .level-card {
-      background: #ffffff;
-      border-radius: 12px;
-      border: 1px solid #ffe0b2;
-      padding: 12px 12px 14px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
+  .test-item {
+    background: #ffffff;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #e0d0c0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .level-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
+  .test-item a {
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+    font-weight: 600;
+  }
 
-    .level-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #e67e22;
-    }
-    .level-badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: #fff3e0;
-      border: 1px solid #f0b27a;
-      color: #c0392b;
-    }
-
-    .level-desc {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-
-    /* ===== DANH SÁCH TEST ===== */
-    .test-list {
-      list-style: none;
-      margin-top: 4px;
-    }
-
-    .test-item {
-      margin-bottom: 6px;
-    }
-
-    .test-link {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      text-decoration: none;
-      font-size: 13px;
-      padding: 7px 9px;
-      border-radius: 8px;
-      background: #fff9f0;
-      border: 1px solid #ffe0b2;
-      color: #444;
-      transition: all 0.16s ease;
-    }
-    .test-link span.title {
-      font-weight: 500;
-    }
-    .test-link span.tag {
-      font-size: 11px;
-      color: #a35a00;
-    }
-
-    .test-link:hover {
-      background: #ffe0b2;
-      border-color: #f39c12;
-      transform: translateY(-1px);
-    }
-
-    /* Nhãn nhỏ bên trong link */
-    .pill {
-      font-size: 10px;
-      padding: 1px 6px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      color: #c0392b;
-      margin-left: 6px;
-    }
-
-    /* ===== CHÂN TRANG ===== */
-    footer {
-      margin-top: 14px;
-      font-size: 11px;
-      color: #777;
-      text-align: center;
-    }
-
-    /* Mobile tối ưu hơn */
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 20px;
-      }
-      .container {
-        padding: 14px 12px 18px;
-      }
-    }
-  </style>
+  .tag {
+    background: #ffcc99;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #7a3900;
+  }
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <header>
-      <h1>English Online Practice – Test Menu</h1>
-      <p>Chọn level &amp; bài test tương ứng để luyện tập. Hệ thống tự chấm điểm và ghi log vào Google Sheet.</p>
-    </header>
+<div class="container">
 
-    <div class="info-bar">
-      <strong>Hướng dẫn:</strong> Nên làm bài trên trình duyệt Chrome. Khi thầy cập nhật đề mới, chỉ cần thêm file HTML và chỉnh link trong trang này.
-    </div>
+  <h1>English Online Practice – Test Menu</h1>
 
-    <div class="levels">
-      <!-- ===== LEVEL 1: Beginner IE (BEIE) ===== -->
-      <section class="level-card">
-        <div class="level-header">
-          <div class="level-title">Beginner – IE</div>
-          <div class="level-badge">A1–A2</div>
-        </div>
-        <p class="level-desc">Luyện nghe – đọc cơ bản, tập trung vào từ vựng nền tảng, cấu trúc câu đơn giản.</p>
-        <ul class="test-list">
-          <li class="test-item">
-            <a class="test-link" href="BEIE_HW_U1.html">
-              <span class="title">Unit 1 – Listening &amp; Reading</span>
-              <span class="tag">HW U1</span>
-            </a>
-          </li>
-
-          <!-- Ví dụ các test sau: chỉ cần tạo file mới & đổi link -->
-          <li class="test-item">
-            <a class="test-link" href="BEIE_HW_U2.html">
-              <span class="title">Unit 2 – Listening Practice</span>
-              <span class="tag">HW U2</span>
-            </a>
-          </li>
-          <li class="test-item">
-            <a class="test-link" href="BEIE_Test_Review1.html">
-              <span class="title">Review Test 1</span>
-              <span class="tag">Review</span>
-            </a>
-          </li>
-        </ul>
-      </section>
-
-      <!-- ===== LEVEL 2: Pre-Intermediate ===== -->
-      <section class="level-card">
-        <div class="level-header">
-          <div class="level-title">Pre-Intermediate</div>
-          <div class="level-badge">A2–B1</div>
-        </div>
-        <p class="level-desc">Luyện 4 kỹ năng với đoạn nghe/đọc dài hơn, tập trung mở rộng vốn từ và cấu trúc.</p>
-        <ul class="test-list">
-          <li class="test-item">
-            <a class="test-link" href="PreIE_Test1.html">
-              <span class="title">Test 1 – Grammar &amp; Reading</span>
-              <span class="tag">Demo</span>
-            </a>
-          </li>
-          <li class="test-item">
-            <a class="test-link" href="PreIE_Listening1.html">
-              <span class="title">Listening Practice 1</span>
-              <span class="tag">Listening</span>
-            </a>
-          </li>
-        </ul>
-      </section>
-
-      <!-- ===== LEVEL 3: Intermediate / TOEIC nền tảng ===== -->
-      <section class="level-card">
-        <div class="level-header">
-          <div class="level-title">Intermediate / TOEIC Base</div>
-          <div class="level-badge">B1</div>
-        </div>
-        <p class="level-desc">Bài test theo format TOEIC &amp; IELTS cơ bản: Part 1–4 Listening, Reading Part 5–7.</p>
-        <ul class="test-list">
-          <li class="test-item">
-            <a class="test-link" href="TOEIC_L1_Test1.html">
-              <span class="title">TOEIC L1 – Full Test 1</span>
-              <span class="tag">TOEIC</span>
-            </a>
-          </li>
-          <li class="test-item">
-            <a class="test-link" href="TOEIC_L1_Reading1.html">
-              <span class="title">Reading – Part 5–6</span>
-              <span class="tag">Reading</span>
-            </a>
-          </li>
-        </ul>
-      </section>
-
-      <!-- ===== LEVEL 4: IELTS Practice ===== -->
-      <section class="level-card">
-        <div class="level-header">
-          <div class="level-title">IELTS Practice</div>
-          <div class="level-badge">B1–B2</div>
-        </div>
-        <p class="level-desc">Các đề mô phỏng IELTS Academic / General, luyện tập kỹ năng làm bài theo thời gian.</p>
-        <ul class="test-list">
-          <li class="test-item">
-            <a class="test-link" href="IELTS_LR_Test1.html">
-              <span class="title">IELTS Listening &amp; Reading – Test 1</span>
-              <span class="tag">LR1</span>
-            </a>
-          </li>
-          <li class="test-item">
-            <a class="test-link" href="IELTS_Listening_Section1.html">
-              <span class="title">Listening – Section 1 &amp; 2</span>
-              <span class="tag">Listening</span>
-            </a>
-          </li>
-        </ul>
-      </section>
-    </div>
+  <div class="note">
+    <strong>Hướng dẫn:</strong> Nên làm bài trên Chrome. Khi cập nhật đề mới, chỉ cần upload file HTML và thêm vào mảng TESTS trong file này.
   </div>
 
-  <footer>
-    <p>© <span id="year"></span> Online Practice by Teacher. All rights reserved.</p>
-  </footer>
+  <!-- KHỐI NÀY SỬ DỤNG JAVASCRIPT TẠO MENU TỰ ĐỘNG -->
 
-  <script>
-    // Hiển thị năm hiện tại
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <div id="menu"></div>
+
+</div>
+
+<script>
+/* ================================
+     DANH SÁCH CÁC TEST (SỬA TẠI ĐÂY)
+   ================================ */
+
+const TESTS = [
+  // Beginner – IE
+  { level: "Beginner – IE", title: "Unit 1 – Listening & Reading", file: "BEIE_HW_U1.html", tag: "HW U1" },
+  { level: "Beginner – IE", title: "Unit 2 – Listening Practice", file: "BEIE_HW_U2.html", tag: "HW U2" },
+
+  // Pre-Intermediate
+  { level: "Pre-Intermediate", title: "Test 1 – Grammar & Reading", file: "PIE_Test1.html", tag: "Demo" },
+  { level: "Pre-Intermediate", title: "Listening Practice 1", file: "PIE_Listening1.html", tag: "Listening" },
+
+  // TOEIC Pre
+  { level: "TOEIC Pre", title: "TOEIC L1 – Full Test 1", file: "TOEIC_L1.html", tag: "TOEIC" },
+  { level: "TOEIC Pre", title: "Reading – Part 5–6", file: "TOEIC_R56.html", tag: "Reading" },
+
+  // IELTS Practice
+  { level: "IELTS Practice", title: "IELTS Listening & Reading – Test 1", file: "IELTS_LR1.html", tag: "LR1" },
+  { level: "IELTS Practice", title: "Listening – Section 1 & 2", file: "IELTS_L12.html", tag: "Listening" }
+];
+
+/* ===================================
+     TỰ ĐỘNG SINH MENU THEO LEVEL
+   =================================== */
+
+function groupByLevel(tests) {
+  const groups = {};
+  tests.forEach(t => {
+    if (!groups[t.level]) groups[t.level] = [];
+    groups[t.level].push(t);
+  });
+  return groups;
+}
+
+const grouped = groupByLevel(TESTS);
+const menu = document.getElementById("menu");
+
+Object.keys(grouped).forEach(level => {
+  // Title Level
+  const h = document.createElement("div");
+  h.className = "level-heading";
+  h.textContent = level;
+  menu.appendChild(h);
+
+  // Tests under this level
+  grouped[level].forEach(test => {
+    const item = document.createElement("div");
+    item.className = "test-item";
+
+    item.innerHTML = `
+      <a href="${test.file}">${test.title}</a>
+      <span class="tag">${test.tag}</span>
+    `;
+
+    menu.appendChild(item);
+  });
+});
+</script>
+
 </body>
 </html>
