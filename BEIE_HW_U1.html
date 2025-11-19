@@ -112,6 +112,23 @@
       margin: 6px 0;
       display: block;
     }
+    .btn-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;     /* khoảng cách giữa 2 nút */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px 0;
+  color: #444;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
 
     /* Layout hai cột cho Reading */
     .reading-layout {
@@ -133,7 +150,7 @@
 
   <div class="info">
     <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
-    <p style="text-alignment:center; color:#444; margin-top:15px;" >Làm xong hãy bấm <strong>Nộp bài</strong> để xem điểm. Có thể tải lại trang để làm lại.</p>
+    <p>Làm xong hãy bấm <strong>Nộp bài</strong> để xem điểm. Có thể tải lại trang để làm lại.</p>
  <p>
       <label>Họ tên học viên:
         <input type="text" id="studentName" placeholder="Nguyễn Văn A">
@@ -148,8 +165,10 @@
 
   <div id="quiz"></div>
 
-  <button class="btn" id="submitBtn">Nộp bài &amp; xem kết quả</button>
+ <div class="btn-row">
+  <button class="btn" id="submitBtn">Nộp bài & xem kết quả</button>
   <button class="btn" id="retryBtn">Làm lại từ đầu</button>
+</div>
 
   <div class="result" id="resultBox" style="display:none;"></div>
 
@@ -624,6 +643,17 @@
       startTimer(DURATION_MINUTES * 60);
     })();
   </script>
+  
+  <footer class="footer">
+  <p>© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+
 
