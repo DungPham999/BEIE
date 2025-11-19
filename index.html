@@ -1,162 +1,348 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>English Online Practice – Test Menu</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>English Online Practice – Test Menu</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(#ffeacd, #fff7e9);
+      color: #4a3214;
+    }
+    h1 {
+      text-align: center;
+      margin: 14px 0 4px;
+      font-size: 28px;
+      color: #c9510c;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #7b5b33;
+      margin-bottom: 10px;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto 28px;
+      padding: 0 12px 24px;
+    }
+    .card-main {
+      background: #fff7ec;
+      border-radius: 18px;
+      padding: 18px 20px 22px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      border: 1px solid #f3d1a8;
+    }
+    .notice {
+      background: #ffeec0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      margin-bottom: 18px;
+      border-left: 4px solid #f39c12;
+      color: #704315;
+    }
+    .notice strong {
+      color: #c9510c;
+    }
 
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(#ffe9c9, #f7d8b8);
-    margin: 0;
-    padding: 0;
-  }
+    /* GRID LEVELS */
+    .levels-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .level-card {
+      flex: 1 1 250px;
+      max-width: calc(50% - 18px);
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #f4d0a8;
+      padding: 14px 14px 12px;
+      box-shadow: 0 4px 11px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    .level-heading-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .level-title {
+      font-weight: 700;
+      font-size: 17px;
+      color: #c14c0a;
+    }
+    .level-tag {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ffe2b3;
+      color: #a25316;
+      border: 1px solid #f3b46a;
+    }
+    .level-desc {
+      font-size: 13px;
+      color: #7a5d34;
+      margin: 4px 0 10px;
+    }
 
-  .container {
-    max-width: 1100px;
-    margin: 20px auto;
-    background: #fff8ef;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
+    /* LIST TESTS TRONG MỖI LEVEL */
+    .test-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .test-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      font-size: 14px;
+      padding: 9px 10px;
+      margin-bottom: 6px;
+      border-radius: 12px;
+      border: 1px solid #ffe1b8;
+      background: #fffdf8;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+    }
+    .test-row:hover {
+      background: #ffeedd;
+      box-shadow: 0 3px 7px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+    .test-title {
+      margin-right: 10px;
+    }
+    .test-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #fff5e5;
+      border: 1px solid #f5c48a;
+      color: #a15a13;
+      white-space: nowrap;
+    }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 8px;
-    color: #b14400;
-  }
+    /* FOOTER CHUNG */
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: #7b5b33;
+      margin: 14px 0 10px;
+    }
 
-  .note {
-    background: #fff3cc;
-    border-left: 4px solid #ff9800;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
-  }
-
-  .level-heading {
-    font-size: 20px;
-    font-weight: bold;
-    color: #b14400;
-    margin-top: 25px;
-    margin-bottom: 10px;
-  }
-
-  .test-item {
-    background: #ffffff;
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #e0d0c0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .test-item a {
-    text-decoration: none;
-    color: #333;
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  .tag {
-    background: #ffcc99;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 13px;
-    color: #7a3900;
-  }
-</style>
+    @media (max-width: 800px) {
+      h1 {
+        font-size: 22px;
+      }
+      .card-main {
+        padding: 14px 12px 18px;
+      }
+      .levels-grid {
+        flex-direction: column;
+      }
+      .level-card {
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
-
 <body>
-<div class="container">
+  <div class="page">
+    <h1>English Online Practice – Test Menu</h1>
+    <p class="subtitle">
+      Chọn level &amp; bài test tương ứng để luyện tập. Hệ thống tự chấm điểm và ghi log vào Google Sheet.
+    </p>
 
-  <h1>English Online Practice – Test Menu</h1>
+    <div class="card-main">
+      <div class="notice">
+        <strong>Hướng dẫn:</strong> Nên làm bài trên trình duyệt Chrome. Khi thầy cập nhật đề mới, chỉ cần thêm
+        file HTML và chỉnh link trong trang này.
+      </div>
 
-  <div class="note">
-    <strong>Hướng dẫn:</strong> Nên làm bài trên Chrome.
+      <div id="levelsGrid" class="levels-grid"></div>
+    </div>
+
+    <footer>
+      &copy; <span id="year"></span> Online Practice by Teacher. All rights reserved.
+    </footer>
   </div>
 
-  <!-- KHỐI NÀY SỬ DỤNG JAVASCRIPT TẠO MENU TỰ ĐỘNG -->
-
-  <div id="menu"></div>
-
-</div>
-
-<script>
-/* ================================
-     DANH SÁCH CÁC TEST (SỬA TẠI ĐÂY)
-   ================================ */
-
-const TESTS = [
-  // Beginner – IE
-  { level: "Beginner – IE", title: "Unit 1 – Listening & Reading", file: "BEIE_HW_U1.html", tag: "HW U1" },
-  { level: "Beginner – IE", title: "Unit 2 – Listening Practice", file: "BEIE_HW_U2.html", tag: "HW U2" },
-
-  // Pre-Intermediate
-  { level: "Pre-Intermediate", title: "Test 1 – Grammar & Reading", file: "PIE_Test1.html", tag: "Demo" },
-  { level: "Pre-Intermediate", title: "Listening Practice 1", file: "PIE_Listening1.html", tag: "Listening" },
-
-  // TOEIC Pre
-  { level: "TOEIC Pre", title: "TOEIC L1 – Full Test 1", file: "TOEIC_L1.html", tag: "TOEIC" },
-  { level: "TOEIC Pre", title: "Reading – Part 5–6", file: "TOEIC_R56.html", tag: "Reading" },
-
-  // IELTS Practice
-  { level: "IELTS Practice", title: "IELTS Listening & Reading – Test 1", file: "IELTS_LR1.html", tag: "LR1" },
-  { level: "IELTS Practice", title: "Listening – Section 1 & 2", file: "IELTS_L12.html", tag: "Listening" }
-];
-
-/* ===================================
-     TỰ ĐỘNG SINH MENU THEO LEVEL
-   =================================== */
-
-function groupByLevel(tests) {
-  const groups = {};
-  tests.forEach(t => {
-    if (!groups[t.level]) groups[t.level] = [];
-    groups[t.level].push(t);
-  });
-  return groups;
-}
-
-const grouped = groupByLevel(TESTS);
-const menu = document.getElementById("menu");
-
-Object.keys(grouped).forEach(level => {
-  // Title Level
-  const h = document.createElement("div");
-  h.className = "level-heading";
-  h.textContent = level;
-  menu.appendChild(h);
-
-  // Tests under this level
-  grouped[level].forEach(test => {
-    const item = document.createElement("div");
-    item.className = "test-item";
-
-    item.innerHTML = `
-      <a href="${test.file}">${test.title}</a>
-      <span class="tag">${test.tag}</span>
-    `;
-
-    menu.appendChild(item);
-  });
-});
-</script>
-  
-  <footer>
-    <p style="text-align:center; color:#444; margin-top:15px;">© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
-  </footer>
-
   <script>
-    // Hiển thị năm hiện tại
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // ================== CẤU HÌNH DỮ LIỆU ==================
+
+    // Thông tin mô tả cho từng level
+    const LEVEL_INFO = {
+      "Beginner – IE": {
+        badge: "A1–A2",
+        desc: "Luyện nghe – đọc cơ bản, tập trung vào từ vựng nền tảng và cấu trúc câu đơn giản."
+      },
+      "Pre-Intermediate": {
+        badge: "A2–B1",
+        desc: "Luyện 4 kỹ năng với đoạn nghe/đọc dài hơn, mở rộng vốn từ và cấu trúc."
+      },
+      "TOEIC Pre": {
+        badge: "B1",
+        desc: "Bài test theo format TOEIC/IELTS cơ bản: Listening Part 1–4, Reading Part 5–7."
+      },
+      "IELTS Practice": {
+        badge: "B1–B2",
+        desc: "Các đề mô phỏng IELTS Academic/General, luyện kỹ năng làm bài theo thời gian."
+      }
+    };
+
+    // MẢNG TESTS – chỉnh sửa, thêm bớt ở đây
+    const TESTS = [
+      // Beginner – IE
+      {
+        level: "Beginner – IE",
+        title: "Unit 1 – Listening & Reading",
+        file: "BEIE_HW_U1.html",
+        tag: "HW U1"
+      },
+      {
+        level: "Beginner – IE",
+        title: "Unit 2 – Listening Practice",
+        file: "#",           // chưa có file → tạm để '#'
+        tag: "HW U2"
+      },
+      {
+        level: "Beginner – IE",
+        title: "Review Test 1",
+        file: "#",
+        tag: "Review"
+      },
+
+      // Pre-Intermediate
+      {
+        level: "Pre-Intermediate",
+        title: "Test 1 – Grammar & Reading",
+        file: "#",
+        tag: "Demo"
+      },
+      {
+        level: "Pre-Intermediate",
+        title: "Listening Practice 1",
+        file: "#",
+        tag: "Listening"
+      },
+
+      // TOEIC Pre
+      {
+        level: "TOEIC Pre",
+        title: "TOEIC L1 – Full Test 1",
+        file: "#",
+        tag: "TOEIC"
+      },
+      {
+        level: "TOEIC Pre",
+        title: "Reading – Part 5–6",
+        file: "#",
+        tag: "Reading"
+      },
+
+      // IELTS Practice
+      {
+        level: "IELTS Practice",
+        title: "IELTS Listening & Reading – Test 1",
+        file: "#",
+        tag: "LR1"
+      },
+      {
+        level: "IELTS Practice",
+        title: "Listening – Section 1 & 2",
+        file: "#",
+        tag: "Listening"
+      }
+    ];
+
+    // =============== HÀM NHÓM THEO LEVEL & RENDER ===============
+
+    function groupByLevel(tests) {
+      const map = {};
+      tests.forEach(t => {
+        const lv = t.level || "Other";
+        if (!map[lv]) map[lv] = [];
+        map[lv].push(t);
+      });
+      return map;
+    }
+
+    function renderMenu() {
+      const grouped = groupByLevel(TESTS);
+      const container = document.getElementById("levelsGrid");
+      container.innerHTML = "";
+
+      Object.keys(grouped).forEach(levelName => {
+        const info = LEVEL_INFO[levelName] || {};
+        const card = document.createElement("div");
+        card.className = "level-card";
+
+        // Header level
+        const headRow = document.createElement("div");
+        headRow.className = "level-heading-row";
+
+        const titleEl = document.createElement("div");
+        titleEl.className = "level-title";
+        titleEl.textContent = levelName;
+
+        const badgeEl = document.createElement("span");
+        badgeEl.className = "level-tag";
+        badgeEl.textContent = info.badge || "";
+
+        headRow.appendChild(titleEl);
+        if (info.badge) headRow.appendChild(badgeEl);
+        card.appendChild(headRow);
+
+        if (info.desc) {
+          const descEl = document.createElement("p");
+          descEl.className = "level-desc";
+          descEl.textContent = info.desc;
+          card.appendChild(descEl);
+        }
+
+        // Danh sách test
+        const ul = document.createElement("ul");
+        ul.className = "test-list";
+
+        grouped[levelName].forEach(test => {
+          const a = document.createElement("a");
+          a.className = "test-row";
+          a.href = test.file || "#";
+          a.target = "_blank"; // mở tab mới cho đề
+
+          const titleSpan = document.createElement("span");
+          titleSpan.className = "test-title";
+          titleSpan.textContent = test.title;
+
+          const tagSpan = document.createElement("span");
+          tagSpan.className = "test-badge";
+          tagSpan.textContent = test.tag || "";
+
+          a.appendChild(titleSpan);
+          a.appendChild(tagSpan);
+          ul.appendChild(a);
+        });
+
+        card.appendChild(ul);
+        container.appendChild(card);
+      });
+    }
+
+    // Hiển thị menu
+    renderMenu();
+
+    // Footer năm hiện tại
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
-  
 </body>
 </html>
