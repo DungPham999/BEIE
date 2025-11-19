@@ -181,6 +181,8 @@
   const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
 // ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
 
+// ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
+
 // Parse CSV rất đơn giản: tách dòng, tách cột theo dấu phẩy
 function parseMetaCSV(text) {
   const lines = text.trim().split("\n");
@@ -199,23 +201,26 @@ function parseMetaCSV(text) {
   });
 }
 
-// Tải CSV và cập nhật title theo TEST_ID
+// Tải CSV và cập nhật title theo cột "File"
 async function loadTestTitle() {
   try {
     const resp = await fetch(META_CSV_URL);
     const text = await resp.text();
     const data = parseMetaCSV(text);
 
-    // Tìm dòng có TestID trùng với TEST_ID của đề
-    const meta = data.find(r => r.TestID === TEST_ID);
+    // Lấy tên file hiện tại, ví dụ "BEIE_HW_U2.html"
+    const currentFile = location.pathname.split("/").pop();
+
+    // Tìm dòng trong CSV có cột File trùng với tên file
+    const meta = data.find(r =>
+      (r.File || "").toLowerCase() === (currentFile || "").toLowerCase()
+    );
 
     if (meta && meta.Title) {
-      // Đổi <title> của tab & <h1> trên trang
-      document.title = meta.Title;
+      document.title = meta.Title;           // tiêu đề tab trình duyệt
       const h1 = document.getElementById("pageTitle");
-      if (h1) h1.textContent = meta.Title;
+      if (h1) h1.textContent = meta.Title;   // tiêu đề lớn trên trang
     } else {
-      // Không tìm thấy: giữ nguyên title mặc định
       const h1 = document.getElementById("pageTitle");
       if (h1 && h1.textContent === "Đang tải tiêu đề...") {
         h1.textContent = "Practice Test";
@@ -719,5 +724,6 @@ loadTestTitle();
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+
 
 
