@@ -146,7 +146,7 @@
   </style>
 </head>
 <body>
-  <h1>IELTS Listening &amp; Reading – Practice Test</h1>
+ <h1 id="pageTitle">Đang tải tiêu đề...</h1>
 
   <div class="info">
     <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
@@ -176,6 +176,61 @@
   // ====== CẤU HÌNH CHO GIÁO VIÊN ======
   const DURATION_MINUTES = 40;
   const TEST_ID = 'BEIE_HW_U1';   // thầy đổi tên tuỳ từng đề
+  // URL CSV chứa thông tin meta (TestID, Title, ...)
+  
+  const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
+// ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
+
+// Parse CSV rất đơn giản: tách dòng, tách cột theo dấu phẩy
+function parseMetaCSV(text) {
+  const lines = text.trim().split("\n");
+  if (lines.length < 2) return [];
+
+  const header = lines[0].split(",").map(h => h.trim());
+  const rows = lines.slice(1);
+
+  return rows.map(row => {
+    const cols = row.split(",");
+    const obj = {};
+    header.forEach((h, i) => {
+      obj[h] = (cols[i] || "").trim();
+    });
+    return obj;
+  });
+}
+
+// Tải CSV và cập nhật title theo TEST_ID
+async function loadTestTitle() {
+  try {
+    const resp = await fetch(META_CSV_URL);
+    const text = await resp.text();
+    const data = parseMetaCSV(text);
+
+    // Tìm dòng có TestID trùng với TEST_ID của đề
+    const meta = data.find(r => r.TestID === TEST_ID);
+
+    if (meta && meta.Title) {
+      // Đổi <title> của tab & <h1> trên trang
+      document.title = meta.Title;
+      const h1 = document.getElementById("pageTitle");
+      if (h1) h1.textContent = meta.Title;
+    } else {
+      // Không tìm thấy: giữ nguyên title mặc định
+      const h1 = document.getElementById("pageTitle");
+      if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+        h1.textContent = "Practice Test";
+      }
+    }
+  } catch (err) {
+    console.error("Không đọc được meta CSV:", err);
+    const h1 = document.getElementById("pageTitle");
+    if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+      h1.textContent = "Practice Test";
+    }
+  }
+}
+
+  
   const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec'; 
 
 
@@ -211,6 +266,7 @@
 41	reading	2	Ex 2.1	short		2. Answer the questions.//  //a. What nationality is mentioned in the report? (1 word)					Canadian
 42	reading	2	Ex 2.1	short		b. What is the population of Canada? (3 words)					about 34 million
 43	reading	2	Ex 2.1	short		c. What languages do people study in Canadian schools? (3 words)					English and French
+
 44	reading	2	Ex 2.1	short		d. What is the capital of Canada? (1 word)					Ottawa
 `; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
@@ -648,6 +704,9 @@
       renderQuiz(qs);
       startTimer(DURATION_MINUTES * 60);
     })();
+  
+  // Sau khi trang tải, lấy Title từ Google Sheet
+loadTestTitle();
   </script>
   
   <footer class="footer">
