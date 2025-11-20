@@ -182,9 +182,10 @@
   const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
 // ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
 
-// ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
 
-// Parse CSV rất đơn giản: tách dòng, tách cột theo dấu phẩy
+  
+  
+  // Parse CSV rất đơn giản: tách dòng, tách cột theo dấu phẩy
 function parseMetaCSV(text) {
   const lines = text.trim().split("\n");
   if (lines.length < 2) return [];
