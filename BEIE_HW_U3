@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IELTS Listening & Reading – Practice Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 15px;
+      line-height: 1.5;
+      background-color: #fff7e6;  /* vàng cam rất nhẹ */
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    h2 {
+      margin-top: 10px;
+      margin-bottom: 8px;
+      font-size: 18px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    .info {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background-color: #fafafa;
+    }
+    .group-block {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      background-color: #fafafa;
+    }
+    .passage {
+      margin: 8px 0 12px 0;
+      padding: 8px 10px;
+      border-left: 3px solid #007acc;
+      background-color: #ffffff;
+      font-size: 14px;
+    }
+    .question {
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #ddd;
+      background-color: #ffffff;
+    }
+    .question.correct {
+      background-color: #e6ffe6;
+    }
+    .question.incorrect {
+      background-color: #ffe6e6;
+    }
+    .question-number {
+      font-weight: bold;
+    }
+    .btn {
+      padding: 6px 12px;
+      margin-right: 8px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background-color: #e0e0e0;
+    }
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+    }
+    .result {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 12px;
+      background-color: #fff;
+    }
+    .short-answer-input {
+      width: 70%;
+      max-width: 350px;
+      padding: 4px;
+      font-size: 14px;
+    }
+    audio {
+      width: 100%;
+      margin: 8px 0 10px 0;
+    }
+    iframe.audio-frame {
+      width: 100%;
+      height: 80px;
+      border: 0;
+      margin: 8px 0 10px 0;
+    }
+    img.q-img {
+      max-width: 100%;
+      height: auto;
+      margin: 6px 0;
+      display: block;
+    }
+    .img-frame {
+      width: 100%;
+      max-width: 100%;
+      height: 260px;
+      border: 0;
+      margin: 6px 0;
+      display: block;
+    }
+    .btn-row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 20px;     /* khoảng cách giữa 2 nút */
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 0;
+      color: #444;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    /* Layout hai cột cho Reading */
+    .reading-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .reading-left {
+      flex: 1.4;
+    }
+    .reading-right {
+      flex: 1;
+    }
+
+    /* Hiển thị đáp án đúng */
+    .correct-answer {
+      font-size: 14px;
+      font-weight: bold;
+      color: #28a745;
+      margin-top: 5px;
+      padding: 5px;
+      background-color: #e1f8e1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="pageTitle">Đang tải tiêu đề...</h1>
+
+  <div class="info">
+    <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
+    <p>Làm xong hãy bấm <strong>Nộp bài</strong> để xem điểm. Có thể tải lại trang để làm lại.</p>
+    <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A">
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: 8A, TOEIC-Reading 1">
+      </label>
+    </p>
+  </div>
+
+  <div id="quiz"></div>
+
+  <div class="btn-row">
+    <button class="btn" id="submitBtn">Nộp bài & xem kết quả</button>
+    <button class="btn" id="retryBtn">Làm lại từ đầu</button>
+  </div>
+
+  <div class="result" id="resultBox" style="display:none;"></div>
+
+  <script>
+    // ====== CẤU HÌNH CHO GIÁO VIÊN ======
+    const DURATION_MINUTES = 40;
+    const TEST_ID = 'BEIE_HW_U1';   // thầy đổi tên tuỳ từng đề
+    // URL CSV chứa thông tin meta (TestID, Title, ...)
+    const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
+
+    // ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
+
+    // Parse CSV rất đơn giản: tách dòng, tách cột theo dấu phẩy
+    function parseMetaCSV(text) {
+      const lines = text.trim().split("\n");
+      if (lines.length < 2) return [];
+
+      const header = lines[0].split(",").map(h => h.trim());
+      const rows = lines.slice(1);
+
+      return rows.map(row => {
+        const cols = row.split(",");
+        const obj = {};
+        header.forEach((h, i) => {
+          obj[h] = (cols[i] || "").trim();
+        });
+        return obj;
+      });
+    }
+
+    // Tải CSV và cập nhật title theo cột "File"
+    async function loadTestTitle() {
+      try {
+        const resp = await fetch(META_CSV_URL);
+        const text = await resp.text();
+        const data = parseMetaCSV(text);
+
+        // Lấy tên file hiện tại, ví dụ "BEIE_HW_U2.html"
+        const currentFile = location.pathname.split("/").pop();
+
+        // Tìm dòng trong CSV có cột File trùng với tên file
+        const meta = data.find(r =>
+          (r.File || "").toLowerCase() === (currentFile || "").toLowerCase()
+        );
+
+        if (meta && meta.Title) {
+          document.title = meta.Title;           // tiêu đề tab trình duyệt
+          const h1 = document.getElementById("pageTitle");
+          if (h1) h1.textContent = meta.Title;   // tiêu đề lớn trên trang
+        } else {
+          const h1 = document.getElementById("pageTitle");
+          if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+            h1.textContent = "Practice Test";
+          }
+        }
+      } catch (err) {
+        console.error("Không đọc được meta CSV:", err);
+        const h1 = document.getElementById("pageTitle");
+        if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+          h1.textContent = "Practice Test";
+        }
+      }
+    }
+
+    const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+
+    // DỮ LIỆU ĐỀ – GIÁO VIÊN DÁN TỪ EXCEL/GOOGLE SHEETS VÀO ĐÂY
+    const RAW_DATA = `
+  45	reading	3	Ex 1	mcq	Exercise 1. Chọn từ có âm tiết được gạch chân có phát âm khác với những từ còn lại. // [IMG: https://drive.google.com/file/d/1TcgZhSjTD6B-41CuOEuFpiNhMNVyIOso/view?usp=sharing]	1	Pretty	City	Machine	Hit	C
+46	reading	3	Ex 1	mcq		2	Cheese	Screen	Keep	Become	D
+47	reading	3	Ex 1	mcq		3	Win	Thief	Guitar	Miss	B
+48	reading	3	Ex 1	mcq		4	Decide	Pizza	Kiss	Pick	B
+49	reading	3	Ex 1	mcq		5	Message	Meat	Agree	Free	A
+50	listening	3	Ex 2	short	https://drive.google.com/file/d/19Ej8wGbecwVReGLna1TdRLSOgBkFcwrk/view?usp=sharing // Exercise 2. Nghe và điền giá và đơn vị tiền tệ vào chỗ trống.// [IMG: https://drive.google.com/file/d/1cIYwRt41nEdk5ubvulcITKOF5iCAM22F/view?usp=drive_link] https://drive.google.com/file/d/1cIYwRt41nEdk5ubvulcITKOF5iCAM22F/view?usp=drive_link]	1. ...... dollars					55
+51	listening	3	Ex 2	short		2. $ ….......					1,899
+52	listening	3	Ex 2	short		3. ...... dollars					36.95
+53	listening	3	Ex 2	short		4. $ ….......					26.95
+54	listening	3	Ex 2	short		5. ...... dollars					14.25
+55	listening	3	Ex 2	short		6. $ ….......					125
+56	listening	3	Ex 3	short	Exercise 3.. Nghe và chọn số điện thoại đúng.	1. What is Brittany's phone number?					8700019
+57	listening	3	Ex 3	short		2. James' phone number is ______.					6141480
+58	listening	3	Ex 3	short		3. What is Audrey's phone number?					5586016
+59	reading	3	Ex 4.1	short	Exercise 4. Thay thế các từ được gạch chân với đại từ tương ứng của nó.// [IMG: https://drive.google.com/file/d/112X5I6785alVqGOTE9w6dUiBPUkyGTMC/view?usp=drive_link]	1					She
+60	reading	3	Ex 4.1	short		2					She 
+61	reading	3	Ex 4.1	short		3					We
+62	reading	3	Ex 4.1	short		4					He
+63	reading	3	Ex 4.1	short		5					He
+64	reading	3	Ex 4.1	short		6					They
+65	reading	3	Ex 4.1	short		7					It 
+66	reading	3	Ex 4.1	short		8					It 
+67	reading	3	Ex 4.1	short		9					Him 
+68	reading	3	Ex 4.1	short		10					Her 
+    `;
+
+    // Phân tích dữ liệu từ RAW_DATA (tab-separated)
+    function parseSheet(rawText) {
+      if (!rawText.trim()) return [];
+      const lines = rawText.trim().split('\n').filter(l => l.trim() !== '');
+      const questions = [];
+
+      lines.forEach((line, index) => {
+        const cols = line.split('\t');
+
+        const q = {
+          id: cols[0] || String(index + 1),
+          skill: (cols[1] || '').toLowerCase(),
+          part: cols[2] || '',
+          group: cols[3] || ('G' + (index + 1)),
+          type: (cols[4] || 'mcq').toLowerCase(),
+          passage: cols[5] || '',
+          question: cols[6] || '',
+          options: [
+            cols[7] || '',
+            cols[8] || '',
+            cols[9] || '',
+            cols[10] || ''
+          ],
+          answer: (cols[11] || '').trim()
+        };
+        questions.push(q);
+      });
+
+      return questions;
+    }
+
+    function renderQuiz(questions) {
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.innerHTML = '';
+
+      const groups = {};
+      const groupOrder = [];
+
+      // gom theo group
+      questions.forEach((q, idx) => {
+        const key = (q.group && q.group.trim()) ? q.group.trim() : ('G' + q.id);
+        if (!groups[key]) {
+          groups[key] = {
+            skill: q.skill,
+            passage: q.passage,
+            questions: []
+          };
+          groupOrder.push(key);
+        }
+        groups[key].questions.push(q);
+      });
+
+      let questionCounter = 0;
+
+      groupOrder.forEach(key => {
+        const g = groups[key];
+        const pTrim = (g.passage || '').trim();
+
+        // ===== READING: layout 2 cột =====
+        if (g.skill === 'reading') {
+          const layout = document.createElement('div');
+          layout.className = 'reading-layout';
+
+          // Cột trái: passage
+          const left = document.createElement('div');
+          left.className = 'reading-left group-block';
+
+          const title = document.createElement('h2');
+          title.textContent = 'Reading ' + key;
+          left.appendChild(title);
+
+          if (pTrim) {
+            const passageDiv = document.createElement('div');
+            passageDiv.className = 'passage';
+
+            let html = escapeHtml(pTrim);
+            html = html.replace(/\/\/\s*/g, '<br><br>');
+            html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+
+            passageDiv.innerHTML = html;
+
+            left.appendChild(passageDiv);
+          }
+
+          // Cột phải: câu hỏi
+          const right = document.createElement('div');
+          right.className = 'reading-right';
+
+          g.questions.forEach(q => {
+            questionCounter++;
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.dataset.answer = (q.answer || '').trim();
+            qDiv.dataset.type = q.type || 'short';
+
+            const titleP = document.createElement('p');
+            let qHtml = escapeHtml(q.question || '');
+            qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+            qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => { 
+              return renderImgToken(url);
+            });
+
+            titleP.innerHTML =
+              '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+            qDiv.appendChild(titleP);
+
+            if (q.type === 'mcq') {
+              ['A','B','C','D'].forEach((labelOpt, i) => {
+                if (!q.options[i]) return;
+                const optLabel = document.createElement('label');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'q' + questionCounter;
+                radio.value = labelOpt;
+                optLabel.appendChild(radio);
+                optLabel.appendChild(
+                  document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+                );
+                qDiv.appendChild(optLabel);
+                qDiv.appendChild(document.createElement('br'));
+              });
+            } else {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.name = 'q' + questionCounter;
+              input.className = 'short-answer-input';
+              qDiv.appendChild(input);
+            }
+
+            right.appendChild(qDiv);
+          });
+
+          layout.appendChild(left);
+          layout.appendChild(right);
+          quizDiv.appendChild(layout);
+
+        // ===== LISTENING & KHÁC: layout dọc =====
+        } else {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'group-block';
+
+          const title = document.createElement('h2');
+          title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
+          groupDiv.appendChild(title);
+
+          g.questions.forEach(q => {
+            questionCounter++;
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.dataset.answer = (q.answer || '').trim();
+            qDiv.dataset.type = q.type || 'short';
+
+            const titleP = document.createElement('p');
+            let qHtml = escapeHtml(q.question || '');
+            qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+            qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+
+            titleP.innerHTML =
+              '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+            qDiv.appendChild(titleP);
+
+            if (q.type === 'mcq') {
+              ['A','B','C','D'].forEach((labelOpt, i) => {
+                if (!q.options[i]) return;
+                const optLabel = document.createElement('label');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'q' + questionCounter;
+                radio.value = labelOpt;
+                optLabel.appendChild(radio);
+                optLabel.appendChild(
+                  document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+                );
+                qDiv.appendChild(optLabel);
+                qDiv.appendChild(document.createElement('br'));
+              });
+            } else {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.name = 'q' + questionCounter;
+              input.className = 'short-answer-input';
+              qDiv.appendChild(input);
+            }
+
+            groupDiv.appendChild(qDiv);
+          });
+
+          quizDiv.appendChild(groupDiv);
+        }
+      });
+    }
+
+    function gradeQuiz() {
+      const quizDiv = document.getElementById('quiz');
+      const questionDivs = quizDiv.querySelectorAll('.question');
+      let correct = 0;
+      const total = questionDivs.length;
+
+      questionDivs.forEach(div => {
+        const type = div.dataset.type || 'short';
+        const answer = (div.dataset.answer || '').trim().toLowerCase();
+        let userAnswer = '';
+
+        if (type === 'mcq') {
+          const checked = div.querySelector('input[type="radio"]:checked');
+          if (checked) {
+            userAnswer = checked.value.trim().toLowerCase();
+          }
+        } else {
+          const input = div.querySelector('input[type="text"]');
+          if (input) {
+            userAnswer = input.value.trim().toLowerCase();
+          }
+        }
+
+        if (answer && userAnswer && userAnswer === answer) {
+          div.classList.add('correct');
+          div.classList.remove('incorrect');
+          correct++;
+        } else {
+          div.classList.add('incorrect');
+          div.classList.remove('correct');
+        }
+
+        // Hiển thị đáp án đúng
+        const correctAnswerDiv = document.createElement('div');
+        correctAnswerDiv.className = 'correct-answer';
+        correctAnswerDiv.textContent = `Đáp án đúng: ${answer}`;
+        div.appendChild(correctAnswerDiv);
+
+        // Vô hiệu hóa các ô trả lời
+        const inputs = div.querySelectorAll('input');
+        inputs.forEach(input => {
+          input.disabled = true;  // Vô hiệu hóa ô input
+        });
+      });
+
+      const percent = Math.round(correct * 100 / Math.max(total, 1));
+
+      const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+      const cls  = (document.getElementById('studentClass').value || '').trim();
+      const now  = new Date();
+      const timestamp = now.toLocaleString();  // giờ & ngày hiện tại
+
+      // Dòng báo cáo dạng TSV (tab-separated) để dán vào Google Sheet
+      const logLine =
+        name + '\t' +
+        cls + '\t' +
+        TEST_ID + '\t' +
+        timestamp + '\t' +
+        correct + '\t' +
+        total + '\t' +
+        percent;
+
+      // Gửi kết quả lên Google Sheet
+      if (typeof LOG_ENDPOINT !== 'undefined' && LOG_ENDPOINT) {
+        const payload = {
+          testId:   TEST_ID,
+          name:     name,
+          className: cls,
+          correct:  correct,
+          total:    total,
+          percent:  percent,
+          rawLog:   logLine
+        };
+
+        fetch(LOG_ENDPOINT, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        }).catch(err => {
+          console.error('Error sending result to Sheet:', err);
+        });
+      }
+
+      // Hiển thị kết quả cho học viên
+      const box = document.getElementById('resultBox');
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div style="font-size:18px; margin-bottom:8px;">
+          <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+        </div>
+        <div style="
+          font-size:28px;
+          font-weight:bold;
+          color:#007acc;
+          padding:10px 0;
+        ">
+          ${percent}%
+        </div>
+      `;
+
+      // Ẩn nút Nộp bài, ngăn không cho học viên sửa bài
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('submitBtn').textContent = 'Đã nộp bài';
+
+      // Hiện nút "Làm lại từ đầu"
+      document.getElementById('retryBtn').disabled = false;
+      document.getElementById('retryBtn').textContent = 'Làm lại từ đầu';
+    }
+
+    document.getElementById('retryBtn').addEventListener('click', () => {
+      location.reload();  // làm mới trang
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', gradeQuiz);
+
+    // Khởi động
+    (function initExam() {
+      const qs = parseSheet(RAW_DATA);
+      if (!qs.length) {
+        document.getElementById('quiz').innerHTML =
+          '<p style="color:red;">Giáo viên chưa dán dữ liệu đề vào biến RAW_DATA.</p>';
+        return;
+      }
+      renderQuiz(qs);
+      startTimer(DURATION_MINUTES * 60);
+    })();
+
+    // Sau khi trang tải, lấy Title từ Google Sheet
+    loadTestTitle();
+  </script>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
