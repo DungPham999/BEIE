@@ -598,142 +598,128 @@ async function loadTestTitle() {
     }
 
     function gradeQuiz() {
-      const quizDiv = document.getElementById('quiz');
-      const questionDivs = quizDiv.querySelectorAll('.question');
-      let correct = 0;
-      const total = questionDivs.length;
-      // Chấm từng câu
-      questionDivs.forEach(div => {
-        const type = div.dataset.type || 'short';
+  const quizDiv = document.getElementById('quiz');
+  const questionDivs = quizDiv.querySelectorAll('.question');
+  let correct = 0;
+  const total = questionDivs.length;
 
-         // Lưu lại đáp án gốc để hiển thị, dùng bản viết thường để so sánh
+  // Chấm từng câu
+  questionDivs.forEach(div => {
+    const type = div.dataset.type || 'short';
+
+    // Lưu lại đáp án gốc để hiển thị, dùng bản viết thường để so sánh
     const rawAnswer = (div.dataset.answer || '').trim();
     const answer = rawAnswer.toLowerCase();
 
-        let userAnswer = '';
+    let userAnswer = '';
 
-      
-        if (type === 'mcq') {
-          const checked = div.querySelector('input[type="radio"]:checked');
-          if (checked) {
-            userAnswer = checked.value.trim().toLowerCase();
-          }
-        } else {
-          const input = div.querySelector('input[type="text"]');
-          if (input) {
-            userAnswer = input.value.trim().toLowerCase();
-          }
-        }
-      // Đánh dấu đúng / sai
-        if (answer && userAnswer && userAnswer === answer) {
-          div.classList.add('correct');
-          div.classList.remove('incorrect');
-          correct++;
-        } else {
-          div.classList.add('incorrect');
-          div.classList.remove('correct');
-        }
-        
-         // Hiển thị đáp án đúng
+    if (type === 'mcq') {
+      const checked = div.querySelector('input[type="radio"]:checked');
+      if (checked) {
+        userAnswer = checked.value.trim().toLowerCase();
+      }
+    } else {
+      const input = div.querySelector('input[type="text"]');
+      if (input) {
+        userAnswer = input.value.trim().toLowerCase();
+      }
+    }
+
+    // Đánh dấu đúng / sai
+    if (answer && userAnswer && userAnswer === answer) {
+      div.classList.add('correct');
+      div.classList.remove('incorrect');
+      correct++;
+    } else {
+      div.classList.add('incorrect');
+      div.classList.remove('correct');
+    }
+
+    // Hiển thị đáp án đúng
     const correctAnswerDiv = document.createElement('div');
     correctAnswerDiv.className = 'correct-answer';
-    correctAnswerDiv.textContent = `Đáp án đúng: ${answer}`;
+    correctAnswerDiv.textContent = 'Đáp án đúng: ' + rawAnswer;
     div.appendChild(correctAnswerDiv);
 
-    // Vô hiệu hóa các ô trả lời
+    // Khoá tất cả ô trả lời (radio + text)
     const inputs = div.querySelectorAll('input');
     inputs.forEach(input => {
-      input.disabled = true;  // Vô hiệu hóa ô input
-      
-      });
-      });
- // Tính điểm sau khi đã chấm xong toàn bộ câu hỏi
-           const percent = Math.round(correct * 100 / Math.max(total, 1));
-
-      const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
-      const cls  = (document.getElementById('studentClass').value || '').trim();
-      const now  = new Date();
-      const timestamp = now.toLocaleString();  // giờ & ngày hiện tại
-
-      // Dòng báo cáo dạng TSV (tab-separated) để dán vào Google Sheet
-      const logLine =
-        name + '\t' +
-        cls + '\t' +
-        TEST_ID + '\t' +
-        timestamp + '\t' +
-        correct + '\t' +
-        total + '\t' +
-        percent;
-
- // Gửi kết quả lên Google Sheet
-      if (typeof LOG_ENDPOINT !== 'undefined' && LOG_ENDPOINT) {
-        const payload = {
-          testId:   TEST_ID,
-          name:     name,
-          className: cls,
-          correct:  correct,
-          total:    total,
-          percent:  percent,
-          rawLog:   logLine
-        };
-
-        fetch(LOG_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        }).catch(err => {
-          console.error('Error sending result to Sheet:', err);
-        });
-      }
-
-    // Hiển thị kết quả cho học viên
-      const box = document.getElementById('resultBox');
-      box.style.display = 'block';
-      box.innerHTML = `
-        <div style="font-size:18px; margin-bottom:8px;">
-          <strong>Kết quả:</strong> đúng ${correct}/${total} câu
-        </div>
-        <div style="
-          font-size:28px;
-          font-weight:bold;
-          color:#007acc;
-          padding:10px 0;
-        ">
-          ${percent}%
-        </div>
-      
-      `;
-         // Ẩn nút Nộp bài, ngăn không cho học viên sửa bài
-  document.getElementById('submitBtn').disabled = true;
-  document.getElementById('submitBtn').textContent = 'Đã nộp bài';
-
-  // Hiện nút "Làm lại từ đầu"
-  document.getElementById('retryBtn').disabled = false;
-  document.getElementById('retryBtn').textContent = 'Làm lại từ đầu';
-
-    }
-                           
-    function copyLogLine() {
-      const ta = document.getElementById('logLine');
-      if (!ta) return;
-      ta.focus();
-      ta.select();
-      try {
-        document.execCommand('copy');
-        alert('Đã copy. Hãy dán vào Zalo hoặc Google Sheet gửi cho giáo viên.');
-      } catch (e) {
-        alert('Trình duyệt không cho copy tự động. Hãy tự bôi đen và copy dòng trong ô.');
-      }
-    }
-    }
-
-    document.getElementById('submitBtn').addEventListener('click', gradeQuiz);
-    document.getElementById('retryBtn').addEventListener('click', () => {
-      location.reload();
+      input.disabled = true;
     });
+  });
+
+  // Tính điểm sau khi đã chấm xong toàn bộ câu hỏi
+  const percent = Math.round(correct * 100 / Math.max(total, 1));
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+  const now  = new Date();
+  const timestamp = now.toLocaleString();  // giờ & ngày hiện tại
+
+  const logLine =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correct + '\t' +
+    total + '\t' +
+    percent;
+
+  // Gửi kết quả lên Google Sheet
+  if (typeof LOG_ENDPOINT !== 'undefined' && LOG_ENDPOINT) {
+    const payload = {
+      testId:   TEST_ID,
+      name:     name,
+      className: cls,
+      correct:  correct,
+      total:    total,
+      percent:  percent,
+      rawLog:   logLine
+    };
+
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).catch(err => {
+      console.error('Error sending result to Sheet:', err);
+    });
+  }
+
+  // Hiển thị kết quả cho học viên
+  const box = document.getElementById('resultBox');
+  box.style.display = 'block';
+  box.innerHTML = `
+    <div style="font-size:18px; margin-bottom:8px;">
+      <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+    </div>
+    <div style="
+      font-size:28px;
+      font-weight:bold;
+      color:#007acc;
+      padding:10px 0;
+    ">
+      ${percent}%
+    </div>
+  `;
+
+  // Khoá nút Nộp bài – bắt buộc bấm “Làm lại từ đầu” nếu muốn làm lại
+  const submitBtn = document.getElementById('submitBtn');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đã nộp bài';
+  }
+
+  const retryBtn = document.getElementById('retryBtn');
+  if (retryBtn) {
+    retryBtn.disabled = false;
+    retryBtn.textContent = 'Làm lại từ đầu';
+  }
+}
+
 
     // Khởi động
     (function initExam() {
