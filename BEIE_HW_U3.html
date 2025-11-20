@@ -121,6 +121,16 @@
   margin-top: 20px;
   margin-bottom: 20px;
 }
+    .correct-answer {
+  font-size: 14px;
+  font-weight: bold;
+  color: #28a745;
+  margin-top: 5px;
+  padding: 5px;
+  background-color: #e1f8e1;
+  border-radius: 4px;
+}
+
 .footer {
   text-align: center;
   margin-top: 40px;
@@ -618,6 +628,18 @@ async function loadTestTitle() {
           div.classList.add('incorrect');
           div.classList.remove('correct');
         }
+        
+         // Hiển thị đáp án đúng
+    const correctAnswerDiv = document.createElement('div');
+    correctAnswerDiv.className = 'correct-answer';
+    correctAnswerDiv.textContent = `Đáp án đúng: ${answer}`;
+    div.appendChild(correctAnswerDiv);
+
+    // Vô hiệu hóa các ô trả lời
+    const inputs = div.querySelectorAll('input');
+    inputs.forEach(input => {
+      input.disabled = true;  // Vô hiệu hóa ô input
+      
       });
 
            const percent = Math.round(correct * 100 / Math.max(total, 1));
@@ -661,6 +683,7 @@ async function loadTestTitle() {
         });
       }
 
+    // Hiển thị kết quả cho học viên
       const box = document.getElementById('resultBox');
       box.style.display = 'block';
       box.innerHTML = `
@@ -677,6 +700,13 @@ async function loadTestTitle() {
         </div>
       
       `;
+         // Ẩn nút Nộp bài, ngăn không cho học viên sửa bài
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = 'Đã nộp bài';
+
+  // Hiện nút "Làm lại từ đầu"
+  document.getElementById('retryBtn').disabled = false;
+  document.getElementById('retryBtn').textContent = 'Làm lại từ đầu';
 
     }
     function copyLogLine() {
