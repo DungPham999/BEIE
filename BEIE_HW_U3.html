@@ -602,12 +602,17 @@ async function loadTestTitle() {
       const questionDivs = quizDiv.querySelectorAll('.question');
       let correct = 0;
       const total = questionDivs.length;
-
+      // Chấm từng câu
       questionDivs.forEach(div => {
         const type = div.dataset.type || 'short';
-        const answer = (div.dataset.answer || '').trim().toLowerCase();
+
+         // Lưu lại đáp án gốc để hiển thị, dùng bản viết thường để so sánh
+    const rawAnswer = (div.dataset.answer || '').trim();
+    const answer = rawAnswer.toLowerCase();
+
         let userAnswer = '';
 
+      
         if (type === 'mcq') {
           const checked = div.querySelector('input[type="radio"]:checked');
           if (checked) {
@@ -619,7 +624,7 @@ async function loadTestTitle() {
             userAnswer = input.value.trim().toLowerCase();
           }
         }
-
+      // Đánh dấu đúng / sai
         if (answer && userAnswer && userAnswer === answer) {
           div.classList.add('correct');
           div.classList.remove('incorrect');
@@ -641,8 +646,8 @@ async function loadTestTitle() {
       input.disabled = true;  // Vô hiệu hóa ô input
       
       });
-      }
-
+      });
+ // Tính điểm sau khi đã chấm xong toàn bộ câu hỏi
            const percent = Math.round(correct * 100 / Math.max(total, 1));
 
       const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
