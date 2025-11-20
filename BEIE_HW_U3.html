@@ -588,31 +588,37 @@ async function loadTestTitle() {
     }
 
     function gradeQuiz() {
-      const quizDiv = document.getElementById('quiz');
-      const questionDivs = quizDiv.querySelectorAll('.question');
-      let correct = 0;
-      const total = questionDivs.length;
+  const quizDiv = document.getElementById('quiz');
+  const questionDivs = quizDiv.querySelectorAll('.question');
+  let correct = 0;
+  const total = questionDivs.length;
 
-      questionDivs.forEach(div => {
-        const type = div.dataset.type || 'short';
-        const answer = (div.dataset.answer || '').trim().toLowerCase();
-      
-        let userAnswer = '';
+  questionDivs.forEach(div => {
+    const type = div.dataset.type || 'short';
 
-        if (type === 'mcq') {
-          const checked = div.querySelector('input[type="radio"]:checked');
-          if (checked) {
-            userAnswer = checked.value.trim().toLowerCase();
-          }
-        } else {
-          const input = div.querySelector('input[type="text"]');
-          if (input) {
-            userAnswer = input.value.trim().toLowerCase();
-            userAnswer = userAnswer.replace(/\s+/g, ' '); // chuẩn hóa khoảng trắng
-          }
-        }
+    // Lấy danh sách đáp án đúng, cho phép nhiều đáp án, ngăn cách bởi dấu |
+    const rawAnswer = (div.dataset.answer || '').toLowerCase();
+    const answerList = rawAnswer
+      .split('|')
+      .map(s => s.trim().replace(/\s+/g, ' ')) // chuẩn hóa khoảng trắng
+      .filter(s => s);                         // bỏ chuỗi rỗng
 
-         let isCorrect = false;
+    let userAnswer = '';
+
+    if (type === 'mcq') {
+      const checked = div.querySelector('input[type="radio"]:checked');
+      if (checked) {
+        userAnswer = checked.value.trim().toLowerCase();
+      }
+    } else {
+      const input = div.querySelector('input[type="text"]');
+      if (input) {
+        userAnswer = input.value.trim().toLowerCase();
+        userAnswer = userAnswer.replace(/\s+/g, ' '); // chuẩn hóa khoảng trắng
+      }
+    }
+
+    let isCorrect = false;
     if (answerList.length && userAnswer) {
       // Với MCQ: answerList sẽ chỉ có 1 phần tử (A/B/C/D)
       // Với SHORT: có thể nhiều đáp án
@@ -628,70 +634,65 @@ async function loadTestTitle() {
     } else {
       div.classList.add('incorrect');
       div.classList.remove('correct');
-        }
-      });
-
-           
-      
-      const percent = Math.round(correct * 100 / Math.max(total, 1));
-
-      const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
-      const cls  = (document.getElementById('studentClass').value || '').trim();
-      const now  = new Date();
-      const timestamp = now.toLocaleString();  // giờ & ngày hiện tại
-
-      // Dòng báo cáo dạng TSV (tab-separated) để dán vào Google Sheet
-      const logLine =
-        name + '\t' +
-        cls + '\t' +
-        TEST_ID + '\t' +
-        timestamp + '\t' +
-        correct + '\t' +
-        total + '\t' +
-        percent;
-
- // Gửi kết quả lên Google Sheet
-      if (typeof LOG_ENDPOINT !== 'undefined' && LOG_ENDPOINT) {
-        const payload = {
-          testId:   TEST_ID,
-          name:     name,
-          className: cls,
-          correct:  correct,
-          total:    total,
-          percent:  percent,
-          rawLog:   logLine
-        };
-
-        fetch(LOG_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        }).catch(err => {
-          console.error('Error sending result to Sheet:', err);
-        });
-      }
-
-      const box = document.getElementById('resultBox');
-      box.style.display = 'block';
-      box.innerHTML = `
-        <div style="font-size:18px; margin-bottom:8px;">
-          <strong>Kết quả:</strong> đúng ${correct}/${total} câu
-        </div>
-        <div style="
-          font-size:28px;
-          font-weight:bold;
-          color:#007acc;
-          padding:10px 0;
-        ">
-          ${percent}%
-        </div>
-      
-      `;
-
     }
+  });
+
+  const percent = Math.round(correct * 100 / Math.max(total, 1));
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+  const now  = new Date();
+  const timestamp = now.toLocaleString();  // giờ & ngày hiện tại
+
+  const logLine =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correct + '\t' +
+    total + '\t' +
+    percent;
+
+  if (typeof LOG_ENDPOINT !== 'undefined' && LOG_ENDPOINT) {
+    const payload = {
+      testId:   TEST_ID,
+      name:     name,
+      className: cls,
+      correct:  correct,
+      total:    total,
+      percent:  percent,
+      rawLog:   logLine
+    };
+
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).catch(err => {
+      console.error('Error sending result to Sheet:', err);
+    });
+  }
+
+  const box = document.getElementById('resultBox');
+  box.style.display = 'block';
+  box.innerHTML = `
+    <div style="font-size:18px; margin-bottom:8px;">
+      <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+    </div>
+    <div style="
+      font-size:28px;
+      font-weight:bold;
+      color:#007acc;
+      padding:10px 0;
+    ">
+      ${percent}%
+    </div>
+  `;
+}
+
     function copyLogLine() {
       const ta = document.getElementById('logLine');
       if (!ta) return;
