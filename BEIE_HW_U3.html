@@ -641,6 +641,7 @@ async function loadTestTitle() {
       input.disabled = true;  // Vô hiệu hóa ô input
       
       });
+      }
 
            const percent = Math.round(correct * 100 / Math.max(total, 1));
 
@@ -709,6 +710,7 @@ async function loadTestTitle() {
   document.getElementById('retryBtn').textContent = 'Làm lại từ đầu';
 
     }
+                           
     function copyLogLine() {
       const ta = document.getElementById('logLine');
       if (!ta) return;
@@ -720,6 +722,7 @@ async function loadTestTitle() {
       } catch (e) {
         alert('Trình duyệt không cho copy tự động. Hãy tự bôi đen và copy dòng trong ô.');
       }
+    }
     }
 
     document.getElementById('submitBtn').addEventListener('click', gradeQuiz);
