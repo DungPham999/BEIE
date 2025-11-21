@@ -187,16 +187,16 @@
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
 
-1	listening	1	Ex 1.1	short	https://drive.google.com/file/d/1k9cVEVBUCSkWv6aQJ5duoy3T5KtkeMeM/view?usp=drive_link //Exercise 1. Nghe và đánh vần các tên đã được đọc trong audio.	1. ……………………… 					JOHNKNOX
-2	listening	1	Ex 1.2	short	https://drive.google.com/file/d/1U6WZnOEOEHOT5XaI7g-hAtCGfg6xHrBc/view?usp=drive_link	2. ………………………  ………………………  …......................					ROBERT LOUIS STEVENSON
-3	listening	1	Ex 1.3	short	https://drive.google.com/file/d/16D6aLtkbl1uO0Oq2-s6kPRplZKXDcWHm/view?usp=drive_link	3. ………………………  ………………………					JAMES MAXWELL
-4	listening	1	Ex 1.4	short	https://drive.google.com/file/d/1o5l1hcABGWRQ3ovcMWchlNjWNHfOdWJ-/view?usp=drive_link	4. ………………………  ………………………					ANDREW CARNEGIE
-5	listening	1	Ex 1.5	short	https://drive.google.com/file/d/14sAwZWOqRmkxnUXZD6bEFqB9DkZOqpZN/view?usp=drive_link	5. ………………………   ………………………					DAVID LIBINGSTONE
-6	listening	1	Ex 1.6	short	https://drive.google.com/file/d/1cNgJ7gUipBhl6QyFvZThEE5wqw5Jrngl/view?usp=drive_link	6. ………………………   ………………………   ………………………					FLORA MAC DONALD
-7	listening	1	Ex 1.7	short	https://drive.google.com/file/d/1OOhPoGKDSiHDtfuLHuFvrVT3k9_YoeOm/view?usp=drive_link	7. ………………………   ………………………					MARY STUART
-8	listening	1	Ex 1.8	short	https://drive.google.com/file/d/180E7Wah7x7OsC-vFr-LqiOWlHZ1eZ6C4/view?usp=drive_link	8. ………………………   ………………………					DOROTHY MACLEAN
-9	listening	1	Ex 1.9	short	https://drive.google.com/file/d/1RlIAnOWPyur25L55yKqDE4Nqk1pBrkXN/view?usp=drive_link	9. ………………………   ………………………					ROBERT BRUCE
-10	listening	1	Ex 1.10	short	https://drive.google.com/file/d/1_DFjp95hK-9WNBPx8p0J0j_z2mmRDdgl/view?usp=drive_link	10. ………………………   ………………………    ………………………					SIR JAMES BARRIE
+1	listening	1	Ex 1.1	short	https://drive.google.com/file/d/1k9cVEVBUCSkWv6aQJ5duoy3T5KtkeMeM/view?usp=drive_link //Exercise 1. Nghe và đánh vần các tên đã được đọc trong audio.	1. -------- 					JOHNKNOX
+2	listening	1	Ex 1.2	short	https://drive.google.com/file/d/1U6WZnOEOEHOT5XaI7g-hAtCGfg6xHrBc/view?usp=drive_link	2. ------  -----  ---------					ROBERT LOUIS STEVENSON
+3	listening	1	Ex 1.3	short	https://drive.google.com/file/d/16D6aLtkbl1uO0Oq2-s6kPRplZKXDcWHm/view?usp=drive_link	3. ----- -------  					JAMES MAXWELL
+4	listening	1	Ex 1.4	short	https://drive.google.com/file/d/1o5l1hcABGWRQ3ovcMWchlNjWNHfOdWJ-/view?usp=drive_link	4. ------  --------					ANDREW CARNEGIE
+5	listening	1	Ex 1.5	short	https://drive.google.com/file/d/14sAwZWOqRmkxnUXZD6bEFqB9DkZOqpZN/view?usp=drive_link	5. -----   -----------					DAVID LIBINGSTONE
+6	listening	1	Ex 1.6	short	https://drive.google.com/file/d/1cNgJ7gUipBhl6QyFvZThEE5wqw5Jrngl/view?usp=drive_link	6. ----- --- ------   				FLORA MAC DONALD
+7	listening	1	Ex 1.7	short	https://drive.google.com/file/d/1OOhPoGKDSiHDtfuLHuFvrVT3k9_YoeOm/view?usp=drive_link	7. ----  ------					MARY STUART
+8	listening	1	Ex 1.8	short	https://drive.google.com/file/d/180E7Wah7x7OsC-vFr-LqiOWlHZ1eZ6C4/view?usp=drive_link	8. -------  -------					DOROTHY MACLEAN
+9	listening	1	Ex 1.9	short	https://drive.google.com/file/d/1RlIAnOWPyur25L55yKqDE4Nqk1pBrkXN/view?usp=drive_link	9. ------   -----					ROBERT BRUCE
+10	listening	1	Ex 1.10	short	https://drive.google.com/file/d/1_DFjp95hK-9WNBPx8p0J0j_z2mmRDdgl/view?usp=drive_link	10. ---   -----    ------					SIR JAMES BARRIE
 11	reading	1	Ex 2.1	short	Exercise 2. Sắp xếp lại các từ đã cho dưới đây thành câu hoàn chỉnh. Đầu câu viết hoa, cuối câu có dấu chấm/ chấm hỏi. 	1. one / is / Janice. / She / of / students, / my					She is one of my students, Janice.
 12	reading	1	Ex 2.1	short		2. my / are / Judy and Pattrick / neighbors. / new					Judy and Pattrick are my new neighbors.
 13	reading	1	Ex 2.1	short		3. Lana / a / teacher? / Is / good					Is Lana a good teacher?
@@ -654,6 +654,7 @@
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+
 
 
 
