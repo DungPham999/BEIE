@@ -607,8 +607,15 @@ async function loadTestTitle() {
         }
       });
     }
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")  // ‘ và ’  -> '
+    .replace(/\s+/g, ' ')            // gộp nhiều khoảng trắng
+    .trim();
+}
 
-    function gradeQuiz() {
+ function gradeQuiz() {
   const quizDiv = document.getElementById('quiz');
   const questionDivs = quizDiv.querySelectorAll('.question');
   let correct = 0;
@@ -617,32 +624,32 @@ async function loadTestTitle() {
   questionDivs.forEach(div => {
     const type = div.dataset.type || 'short';
 
-    // Lấy danh sách đáp án đúng, cho phép nhiều đáp án, ngăn cách bởi dấu |
-    const rawAnswer = (div.dataset.answer || '').toLowerCase();
-    const answerList = rawAnswer
+    // Lấy đáp án gốc (giữ nguyên để hiển thị nếu cần)
+    const answerRawDisplay = (div.dataset.answer || '').trim();
+
+    // Tạo danh sách đáp án đúng, cho phép nhiều đáp án ngăn cách bởi |
+    const answerList = answerRawDisplay
       .split('|')
-      .map(s => s.trim().replace(/\s+/g, ' ')) // chuẩn hóa khoảng trắng
-      .filter(s => s);                         // bỏ chuỗi rỗng
+      .map(normalizeText)   // dùng hàm chuẩn hóa ở trên
+      .filter(s => s);
 
     let userAnswer = '';
 
     if (type === 'mcq') {
       const checked = div.querySelector('input[type="radio"]:checked');
       if (checked) {
-        userAnswer = checked.value.trim().toLowerCase();
+        userAnswer = normalizeText(checked.value);
       }
     } else {
       const input = div.querySelector('input[type="text"]');
       if (input) {
-        userAnswer = input.value.trim().toLowerCase();
-        userAnswer = userAnswer.replace(/\s+/g, ' '); // chuẩn hóa khoảng trắng
+        userAnswer = normalizeText(input.value);
       }
     }
 
     let isCorrect = false;
     if (answerList.length && userAnswer) {
-      // Với MCQ: answerList sẽ chỉ có 1 phần tử (A/B/C/D)
-      // Với SHORT: có thể nhiều đáp án
+      // Đúng nếu userAnswer trùng BẤT KỲ phần tử nào
       if (answerList.includes(userAnswer)) {
         isCorrect = true;
       }
@@ -663,7 +670,7 @@ async function loadTestTitle() {
   const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
   const cls  = (document.getElementById('studentClass').value || '').trim();
   const now  = new Date();
-  const timestamp = now.toLocaleString();  // giờ & ngày hiện tại
+  const timestamp = now.toLocaleString();
 
   const logLine =
     name + '\t' +
@@ -688,9 +695,7 @@ async function loadTestTitle() {
     fetch(LOG_ENDPOINT, {
       method: 'POST',
       mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     }).catch(err => {
       console.error('Error sending result to Sheet:', err);
@@ -713,6 +718,7 @@ async function loadTestTitle() {
     </div>
   `;
 }
+
 
     function copyLogLine() {
       const ta = document.getElementById('logLine');
