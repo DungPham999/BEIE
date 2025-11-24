@@ -248,30 +248,49 @@ async function loadTestTitle() {
     // 2) Cmd + C
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
-114	reading	short	1	short	Exercise 1. Viết cách đọc thứ ngày tháng trong tiếng Anh cho các trường hợp sau. // Ví dụ: "Wed, 2/10: It is Wednesday, the second of October."// hoặc "It is October second."	What is the date today? (Sat, 21/2)					
-115	reading	short	1			What is today's date? (Tues, 3/6)					
-116	reading	short	1			What is the date today? (Wed, 7/8)					
-117	reading	short	1			What is today's date? (Sun, 1/1)					
-118	reading	short	1			What is the date today? (Sat, 30/1)					
-119	reading	short	2		Exercise 2. Điền giới từ ‘in, on’ phù hợp vào chỗ trống.	In England, it often snows ……… December.					
-120	reading	short	2			Do you work ……… Mondays?					
-121	reading	short	2			Her birthday is ……… 20th November.					
-122	reading	short	2			The New Year’s Eve is ……… December 31st					
-123	reading	short	2			We came back ……… April.					
-124	listening	mcq	3		https://drive.google.com/file/d/1U4znLSy3YwwoKDeUBukmxqn4xmsw_RF_/view?usp=drive_link// Exercise 3: Các từ sau chứa /ɔː/  hay /ɒ/	bottle	/ɔː/	/ɒ/			b
-125	listening	mcq	3			ball	/ɔː/	/ɒ/			a
-126	listening	mcq	3			call	/ɔː/	/ɒ/			a
-127	listening	mcq	3			hospital	/ɔː/	/ɒ/			b
-128	listening	mcq	3			fourteenth	/ɔː/	/ɒ/			a
-129	listening	mcq	3			shop	/ɔː/	/ɒ/			b
-130	listening	mcq	3			tall	/ɔː/	/ɒ/			a
-131	listening	mcq	3			walk	/ɔː/	/ɒ/			a
-132	listening	mcq	3			door	/ɔː/	/ɒ/			a
-133	listening	mcq	3			sorry	/ɔː/	/ɒ/			b
-134	listening	mcq	3			clock	/ɔː/	/ɒ/			b
-135	listening	mcq	3		https://drive.google.com/file/d/1BDTiR_jY3mygyDwwikcj-hjbXcaC6Jbf/view?usp=drive_link	all	/ɔː/	/ɒ/			a
-136	listening	mcq	3			quarter	/ɔː/	/ɒ/			a
-137	listening	mcq	3			dog	/ɔː/	/ɒ/			b
+114	reading	4	1	short	Exercise 1. Viết cách đọc thứ ngày tháng trong tiếng Anh cho các trường hợp sau. // Ví dụ: "Wed, 2/10: It is Wednesday, the second of October."// hoặc "It is October the second."	What is the date today? (Sat, 21/2)					It is Saturday, February the second.| It is Saturday, the second of February.| It's Saturday, February the second.| It's Saturday, the second of February.| 
+115	reading	4	1	short		What is today's date? (Tues, 3/6)					It is Tuesday, June the third.|It is Tuesday, the third of June.|It's Tuesday, June the third.|It's Tuesday, the third of June.
+116	reading	4	1	short		What is the date today? (Wed, 7/8)					It is Wednesday, August the seventh.| It is Wednesday, the seventh of August.|It's Wednesday, August the seventh.| It's Wednesday, the seventh of August.
+117	reading	4	1	short		What is today's date? (Sun, 1/1)					It is Sunday, January the first.|It is Sunday, the first of January.|It's Sunday, January the first.|It's Sunday, the first of January.
+118	reading	4	1	short		What is the date today? (Sat, 30/11)					It is Saturday, November the thirtieth. | It is Saturday, the thirtieth of November.|It's Saturday, November the thirtieth. | It's Saturday, the thirtieth of November.
+119	reading	4	2	short	Exercise 2. Điền giới từ ‘in, on’ phù hợp vào chỗ trống.	In England, it often snows ……… December.					In
+120	reading	4	2	short		Do you work ……… Mondays?					On
+121	reading	4	2	short		Her birthday is ……… 20th November.					On
+122	reading	4	2	short		The New Year’s Eve is ……… December 31st					On
+123	reading	4	2	short		We came back ……… April.					In 
+124	listening	4	3	mcq	https://drive.google.com/file/d/1QJlH-9Maq1cWUaUnUpQGcu1ZkfeLrcrA/view?usp=drive_link // Exercise 3: Các từ sau chứa /ɔː/  hay /ɒ/	bottle	/ɔː/	/ɒ/			b
+125	listening	4	3	mcq		ball	/ɔː/	/ɒ/			a
+126	listening	4	3	mcq		call	/ɔː/	/ɒ/			a
+127	listening	4	3	mcq		hospital	/ɔː/	/ɒ/			b
+128	listening	4	3	mcq		fourteenth	/ɔː/	/ɒ/			a
+129	listening	4	3	mcq		shop	/ɔː/	/ɒ/			b
+130	listening	4	3	mcq		tall	/ɔː/	/ɒ/			a
+131	listening	4	3	mcq		walk	/ɔː/	/ɒ/			a
+132	listening	4	3	mcq		door	/ɔː/	/ɒ/			a
+133	listening	4	3	mcq		sorry	/ɔː/	/ɒ/			b
+134	listening	4	3	mcq		clock	/ɔː/	/ɒ/			b
+135	listening	4	3	mcq		all	/ɔː/	/ɒ/			a
+136	listening	4	3	mcq		quarter	/ɔː/	/ɒ/			a
+137	listening	4	3	mcq		dog	/ɔː/	/ɒ/			b
+138	listening	4	4	short	https://drive.google.com/file/d/1NhTjy-9k6_6z24zVcop9jQbpcPKIvI4w/view?usp=drive_link// Exercise 4. Nghe điền từ còn thiếu vào chỗ trống.	My birthday is on the ………………… of September.					Fourteenth| 14th
+139	listening	4	4	short		See you in …………………					August
+140	listening	4	4	short		Do we have a final test in …………………?					October 
+141	listening	4	4	short		My doctor doesn’t like these …………………					sports
+142	listening	4	4	short		These ………………… are very dirty.					pots
+143	reading	4	5	short	Exercise 5. Viết thành chữ các số thứ tự sau.// Ví dụ: 1st : first	2nd					second
+144	reading	4	5	short		6th					sixth
+145	reading	4	5	short		23rd					twenty-third
+146	reading	4	5	short		30th					thirtieth
+147	reading	4	5	short		3rd					third
+148	reading	4	5	short		20th					twentieth
+149	reading	4	5	short		22nd					twenty-second
+150	reading	4	5	short		4th					fourth
+151	reading	4	5	short		15th					fifteenth
+152	reading	4	5	short		9th					ninth
+153	reading	4	5	short		5th					fifth
+154	reading	4	5	short		12th					twelfth
+155	reading	4	5	short		31st					thirty-first
+156	reading	4	5	short		40th					fortieth
 `; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
     // ====== CODE CHUNG – KHÔNG CẦN SỬA BÊN DƯỚI ======
