@@ -283,7 +283,7 @@ async function loadTestTitle() {
 221	reading	5	4	short		9. They/watch TV/evening.					They watch TV in the evening.
 222	reading	5	4	short		10. You/put/rubbish/out? – Yes, I do.					Do you put the rubbish out?
 223	reading	5	4	short		11. What time/he/have breakfast?					What time does he have breakfast?
-224	listening	5	5	short	https://drive.google.com/file/d/1gekHm51qd3yeseTWENNixs5BCkUK4DYG/view?usp=drive_link // Exercise 5. Nghe và viết số giờ bạn nghe được.// Ví dụ: It's ten past two. -> 2:10	1. It’s ...............................................................................................................................................					1:40| twenty to two
+224	listening	5	5	short	https://drive.google.com/file/d/1gekHm51qd3yeseTWENNixs5BCkUK4DYG/view?usp=drive_link // Exercise 5. Nghe và viết số giờ bạn nghe được. // Ví dụ: It's ten past two. -> 2:10	1. It’s ...............................................................................................................................................					1:40| twenty to two
 225	listening	5	5	short		2. It’s ...............................................................................................................................................					2:00| two o'clock| 2 o'clock
 226	listening	5	5	short		3. It’s ...............................................................................................................................................					2:20| two twenty
 227	listening	5	5	short		4. It’s ...............................................................................................................................................					10:05| five past ten|10:5
@@ -502,72 +502,74 @@ async function loadTestTitle() {
           title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
           groupDiv.appendChild(title);
 
-                         if (pTrim) {
-        // Tách thành nhiều "mảnh" theo dấu //
-        const segments = pTrim.split('//').map(s => s.trim()).filter(s => s);
-        const textSegments = [];
+          if (pTrim) {
+  // Tách theo " // " (có khoảng trắng hai bên) để tránh đụng https://
+  const segments = pTrim
+    .split(' // ')
+    .map(s => s.trim())
+    .filter(s => s);
 
-        segments.forEach(seg => {
-          // 1) Mảnh là ẢNH: dùng cú pháp [IMG:...]
-          if (/^\[IMG:/i.test(seg)) {
-            // Để nguyên, lát nữa cho vào passage và render bằng renderImgToken
-            textSegments.push(seg);
-            return;
-          }
+  const textSegments = [];
 
-          // 2) Kiểm tra xem có phải URL audio không
-          const isHttp = /^https?:\/\//i.test(seg);
-          const hasAudioExt = /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(seg);
-          const isDriveLink = /drive\.google\.com/i.test(seg);
-          const isAudioUrl = isHttp && hasAudioExt;
+  segments.forEach(seg => {
+    // 1) ẢNH: dạng [IMG:...]
+    if (/^\[IMG:/i.test(seg)) {
+      // giữ nguyên, lát nữa sẽ render bằng renderImgToken
+      textSegments.push(seg);
+      return;
+    }
 
-          // Nếu là Listening + là audio thì render audio
-          if (g.skill === 'listening' && (isDriveLink || isAudioUrl)) {
-            // 2a. Audio Google Drive (dùng iframe preview)
-            if (isDriveLink) {
-              let fileId = '';
-              const m1 = seg.match(/\/d\/([^\/]+)/);
-              const m2 = seg.match(/[?&]id=([^&]+)/);
-              if (m1 && m1[1]) fileId = m1[1];
-              else if (m2 && m2[1]) fileId = m2[1];
+    // 2) AUDIO: link Google Drive hoặc file .mp3/.m4a/.wav/.ogg...
+    const isHttp = /^https?:\/\//i.test(seg);
+    const hasAudioExt = /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(seg);
+    const isDriveLink = /drive\.google\.com/i.test(seg);
+    const isAudioUrl = isHttp && hasAudioExt;
 
-              if (fileId) {
-                const iframe = document.createElement('iframe');
-                iframe.className = 'audio-frame';
-                iframe.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
-                iframe.allow = 'autoplay';
-                groupDiv.appendChild(iframe);
-              }
-            }
-            // 2b. Audio file thường (.mp3, .m4a,...)
-            else if (isAudioUrl) {
-              const audio = document.createElement('audio');
-              audio.controls = true;
-              audio.src = seg;
-              groupDiv.appendChild(audio);
-            }
-          } else {
-            // 3) Còn lại là text thường -> ghép vào passage
-            textSegments.push(seg);
-          }
-        });
+    if (g.skill === 'listening' && (isDriveLink || isAudioUrl)) {
+      // 2a. Audio Google Drive
+      if (isDriveLink) {
+        let fileId = '';
+        const m1 = seg.match(/\/d\/([^\/]+)/);
+        const m2 = seg.match(/[?&]id=([^&]+)/);
+        if (m1 && m1[1]) fileId = m1[1];
+        else if (m2 && m2[1]) fileId = m2[1];
 
-        // Sau khi xử lý hết các segment:
-        // nếu vẫn còn text/IMG thì hiển thị trong khối passage
-        if (textSegments.length) {
-          const passageDiv = document.createElement('div');
-          passageDiv.className = 'passage';
-
-          let html = escapeHtml(textSegments.join(' // '));
-          // xuống dòng khi gặp //
-          html = html.replace(/\/\/\s*/g, '<br><br>');
-          // render [IMG:...] => iframe / <img>
-          html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
-
-          passageDiv.innerHTML = html;
-          groupDiv.appendChild(passageDiv);
+        if (fileId) {
+          const iframe = document.createElement('iframe');
+          iframe.className = 'audio-frame';
+          iframe.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+          iframe.allow = 'autoplay';
+          groupDiv.appendChild(iframe);
         }
       }
+      // 2b. Audio file thường
+      else if (isAudioUrl) {
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = seg;
+        groupDiv.appendChild(audio);
+      }
+    } else {
+      // 3) Phần chữ (text) còn lại
+      textSegments.push(seg);
+    }
+  });
+
+  // Nếu có text/IMG thì hiển thị trong passage
+  if (textSegments.length) {
+    const passageDiv = document.createElement('div');
+    passageDiv.className = 'passage';
+
+    let html = escapeHtml(textSegments.join(' '));
+    // KHÔNG replace // nữa để tránh đụng https://
+    // Render [IMG:...] thành iframe / img
+    html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+
+    passageDiv.innerHTML = html;
+    groupDiv.appendChild(passageDiv);
+  }
+}
+
 
 
 
