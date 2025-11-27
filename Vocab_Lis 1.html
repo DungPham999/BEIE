@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vocabulary Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 16px;
+      background-color: #fff7e6;
+      line-height: 1.5;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .info {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background-color: #fafafa;
+    }
+    .info p { margin: 4px 0; }
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+    }
+    .quiz-box {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 14px 16px;
+      background: #ffffff;
+      margin-bottom: 16px;
+    }
+    .vn-text {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .audio-wrapper {
+      margin: 8px 0 12px 0;
+    }
+    audio {
+      width: 100%;
+    }
+    .answer-wrapper {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    #answerInput {
+      flex: 1;
+      min-width: 180px;
+      padding: 6px 8px;
+      font-size: 16px;
+    }
+    .btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover { background-color: #e0e0e0; }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    #feedback {
+      margin-top: 10px;
+      font-size: 15px;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+    #feedback.ok {
+      background-color: #e6ffe6;
+      color: #155724;
+      border: 1px solid #b7e0b7;
+    }
+    #feedback.ng {
+      background-color: #ffe6e6;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .status-line {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    .result-box {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px 14px;
+      background: #fff;
+      display: none;
+    }
+    .result-main {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007acc;
+      margin: 6px 0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 16px 0;
+      color: #444;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+  <h1>Vocabulary Quiz</h1>
+
+  <div class="info">
+    <p><strong>Thời gian còn lại:</strong> <span id="timer">--:--</span></p>
+    <p><strong>Mục tiêu:</strong> làm đúng <span id="targetCorrectText">--</span> câu để hoàn thành.</p>
+    <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A" />
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: TOEIC Reading 1" />
+      </label>
+    </p>
+  </div>
+
+  <div class="quiz-box" id="quizBox">
+    <div class="status-line">
+      Câu đúng: <span id="correctCount">0</span> /
+      Câu đã làm: <span id="totalDone">0</span>
+    </div>
+    <hr />
+
+    <div class="vn-text" id="vnText">Đang tải câu hỏi...</div>
+
+    <div class="audio-wrapper">
+      <audio id="audioPlayer" controls></audio>
+    </div>
+
+    <div class="answer-wrapper">
+      <input
+        type="text"
+        id="answerInput"
+        placeholder="Gõ đáp án tiếng Anh..."
+        autocomplete="off"
+      />
+      <button class="btn" id="checkBtn">Check</button>
+      <button class="btn" id="nextBtn" style="display:none;">Câu tiếp</button>
+    </div>
+
+    <div id="feedback"></div>
+  </div>
+
+  <div class="result-box" id="resultBox">
+    <div><strong>Kết quả bài làm:</strong></div>
+    <div class="result-main" id="resultScore"></div>
+    <div id="resultDetail"></div>
+  </div>
+
+  <div class="footer">
+    © <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.
+  </div>
+
+<script>
+  // ========= CẤU HÌNH =========
+  const TEST_ID = 'Vocab_Lis 1';         // đổi tên bài test
+  const TARGET_CORRECT = 30;          // số câu cần đúng để kết thúc
+  const TIME_LIMIT_MINUTES = 20;      // thời gian tối đa (phút)
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+
+  // ========= NGÂN HÀNG CÂU HỎI =========
+  // Copy 4 cột: ID | VN | Answer | Audio (KHÔNG lấy dòng tiêu đề)
+  // từ Google Sheets và dán vào giữa cặp ` ... ` dưới đây.
+  const RAW_DATA = `
+
+1	Mũ bảo hộ	Protective helmet	https://drive.google.com/file/d/1nPHLr0-riBdaXnjTyGgXVzeD5pw-y5-0/view?usp=drivesdk
+2	Công nhân viên chức	Officer worker	https://drive.google.com/file/d/1lcUsLW1wp3ECcZ3T3VIS5eRp-ngqZMS3/view?usp=drivesdk
+3	Hấp dẫn, bắt tai	Catchy	https://drive.google.com/file/d/1-x8aCMIiize9SwcMcNxoWuMR_AY5_msn/view?usp=drivesdk
+4	Ngày hết hạn	Expiration date	https://drive.google.com/file/d/1XDZuLbaocCHtual9_WoSx19ai3apsgno/view?usp=drivesdk
+5	Bảo hành	Warranty	https://drive.google.com/file/d/1aPGw1OWc6KpfRE6VzcHuqdMd3hXisMEn/view?usp=drivesdk
+6	Tham gia vào	Participate in	https://drive.google.com/file/d/1LiRds0EHdFv-rBHQUBvBv_ratN7DDHw_/view?usp=drivesdk
+7	Thực hiện, thực thi	Implement	https://drive.google.com/file/d/1vwMEMl5nlzYQBP6L8hkqaYTc417yiYsF/view?usp=drivesdk
+8	Mẫu thử	Free sample	https://drive.google.com/file/d/1pK2GmtqaUqKcXEh54pXb3UppncW0POGG/view?usp=drivesdk
+9	Được bao quanh	Be surrounded	https://drive.google.com/file/d/1bBTfwfol_9Mhup--r45wbv8_aIxpjZYa/view?usp=drivesdk
+10	Đường cao tốc	Highway	https://drive.google.com/file/d/1ijny6JHiasBDpFr7MCP4LFH0g-c756YY/view?usp=drivesdk
+11	Quyết định (làm gì)	Decide to	https://drive.google.com/file/d/1pDviyeDY700v-8MGWxeK4dY_6k5zGjh2/view?usp=drivesdk
+12	Sa thải	Lay off	https://drive.google.com/file/d/12WtZ9l_edog_VXzhtDoWvQVNmPPxQXK-/view?usp=drivesdk
+13	Làm khảo sát	Conduct a survey	https://drive.google.com/file/d/1aZH_ee6TW7_YQmIN4d3W5JOEWT5TstTy/view?usp=drivesdk
+14	Tìm ra	Find out	https://drive.google.com/file/d/1W5joYhECHwfj4mk1-DohBboLVKN9gKRr/view?usp=drivesdk
+15	Kế hoạch nghỉ mát	Vacation plans	https://drive.google.com/file/d/1iJCHoL7ILD2kPA4IxaFmiC1YyxHS1Pwa/view?usp=drivesdk
+16	Bảng thông báo	Bulletin board	https://drive.google.com/file/d/16U5l5LUp8Xi8P7mXiktMsHtX7tdqe1RJ/view?usp=drivesdk
+17	Cho phép ai (làm gì đó)	Enable somebody to	https://drive.google.com/file/d/1j0abMI1uv2shKMmmwtuuuIK6uby00qAg/view?usp=drivesdk
+18	Sự bổ nhiệm	Appointment	https://drive.google.com/file/d/1qizb9xEDe468dRyr1MgUaPIW1u9SpxE1/view?usp=drivesdk
+19	Hoàn thiện	Finalize	https://drive.google.com/file/d/1pBYfGWmEvzxpofH9klUr55w_3lwlu306/view?usp=drivesdk
+20	Đi dạo	Strolling	https://drive.google.com/file/d/1bIsh5teJqjtMTsMbccSXozph1Xgu_GbA/view?usp=drivesdk
+21	Lên (tàu, xe, máy bay)	Boarding	https://drive.google.com/file/d/15LEeVB2-srXy0pEQM3re6ISu7o320Kmg/view?usp=drivesdk
+22	Tập thể dục	Working out	https://drive.google.com/file/d/1lvATTcKM7gii8SLtYzyG2Q6bW7d-bohW/view?usp=drivesdk
+23	Cầm/giữ tài liệu	Holding documents	https://drive.google.com/file/d/1AzQpHPSSZDKoic9TsWOSRz5hKkx5t1Ml/view?usp=drivesdk
+24	Di chuyển đồ đạc / nội thất	Moving some furniture	https://drive.google.com/file/d/1cUTfdFmRkAbf6bhrD-HdyBemHI1m_TDe/view?usp=drivesdk
+25	Mang / khuân chậu cây	Carrying potted plants	https://drive.google.com/file/d/12vSmzblyVvK8OR4fiwF2gE0rMjWI01cD/view?usp=drivesdk
+26	Chỉ vào màn hình	Pointing at a monitor	https://drive.google.com/file/d/1XfPTw98PQp4mQ8C97MnD7Y7D9p3RRtFC/view?usp=drivesdk
+27	Hái hoa	Picking up some flowers	https://drive.google.com/file/d/1gECRS8cmtR4Pn_T4pzx_fnPBFX-5L2WP/view?usp=drivesdk
+28	Nhìn vào màn hình	Looking at the screen	https://drive.google.com/file/d/18sv8VIBjfI_dTPKl7wub_4q2wS8sVine/view?usp=drivesdk
+29	xem biểu diễn đường phố	Watching a street performance	https://drive.google.com/file/d/1X8LatIbD8bA_0qmVWdQb4YdXHim9VHLW/view?usp=drivesdk
+30	kiểm tra nắp xe	Checking the hood	https://drive.google.com/file/d/1VI9UnEie4-z9eBHGmcPzsFHk-lJZR_eU/view?usp=drivesdk
+31	đọc tạp chí	Reading a magazine	https://drive.google.com/file/d/1Ne_G2wEN_ALpggGx0aB2NuUcfjwQP0dK/view?usp=drivesdk
+32	kiểm tra 1 cái máy	Inspecting a machine	https://drive.google.com/file/d/1_LcUic483tEzY5B-UvCa-w73O-ygmOAx/view?usp=drivesdk
+33	Nhìn chằm chằm vào trần nhà	Stare at the ceiling	https://drive.google.com/file/d/1HdNE4jYhPGFUN4QsMhMBVcZzd0yq_zRD/view?usp=drivesdk
+34	Mặc một bộ vest quần	Wearing a pantsuit	https://drive.google.com/file/d/1ahYrZ_qOUZ2UMTisrNgTDsOjDoHHtX5o/view?usp=drivesdk
+35	Đeo khăn	Wearing a scarf	https://drive.google.com/file/d/16qlQz_JH2-ZSRN14HJJNZHwXUWVzb7TQ/view?usp=drivesdk
+36	Đang mang giầy (in progress)	Putting on shoes	https://drive.google.com/file/d/11KJyVB_OZTlI6hKRb2W39YDzIxyXwVjB/view?usp=drivesdk
+37	Cởi áo khoác	Taking off a jacket	https://drive.google.com/file/d/1Lof_Z7c_QY6xMkPQ2SEPUs7ePkh7Vgv_/view?usp=drivesdk
+38	Thử chiếc váy	Trying on a dress	https://drive.google.com/file/d/1yTD-CaUixd-XVtrCWtKjrlALwc00_Xcv/view?usp=drivesdk
+39	Thắc mắc	Wonder	https://drive.google.com/file/d/1_w_tAdz5QeZxqz2DeZicB65fE80Hb7X7/view?usp=drivesdk
+
+`; // <-- THAY BẰNG DỮ LIỆU THẬT CỦA THẦY
+
+  // ========= CODE CHUNG =========
+
+  function normalize(str) {
+    return (str || '')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function parseBank(raw) {
+    const lines = raw.trim().split('\n').filter(l => l.trim() !== '');
+    const items = [];
+    lines.forEach(line => {
+      const cols = line.split('\t');
+      if (cols.length < 4) return;
+      const id    = (cols[0] || '').trim();
+      const vn    = (cols[1] || '').trim();
+      const ans   = (cols[2] || '').trim();
+      const audio = (cols[3] || '').trim();
+      if (!vn || !ans) return;
+      items.push({ id, vn, answer: ans, audio });
+    });
+    return items;
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function getDriveAudioSrc(url) {
+    if (!url) return '';
+    if (/drive\.google\.com/.test(url)) {
+      let id = '';
+      const m1 = url.match(/\/d\/([^\/]+)/);
+      const m2 = url.match(/[?&]id=([^&]+)/);
+      if (m1 && m1[1]) id = m1[1];
+      else if (m2 && m2[1]) id = m2[1];
+
+      if (id) {
+        return 'https://docs.google.com/uc?export=download&id=' + id;
+      }
+    }
+    return url;
+  }
+
+  let bank = [];
+  let currentIndex = 0;
+  let correctCount = 0;
+  let totalDone = 0;
+  let quizFinished = false;
+  let startTime = null;
+  let timerInterval = null;
+  let timeLeft = TIME_LIMIT_MINUTES * 60; // giây
+
+  const vnTextEl = document.getElementById('vnText');
+  const audioEl = document.getElementById('audioPlayer');
+  const answerInput = document.getElementById('answerInput');
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedbackEl = document.getElementById('feedback');
+  const correctCountEl = document.getElementById('correctCount');
+  const totalDoneEl = document.getElementById('totalDone');
+  const timerEl = document.getElementById('timer');
+  const resultBox = document.getElementById('resultBox');
+  const resultScore = document.getElementById('resultScore');
+  const resultDetail = document.getElementById('resultDetail');
+
+  document.getElementById('targetCorrectText').textContent = TARGET_CORRECT;
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  function startTimer() {
+    startTime = new Date();
+    timeLeft = TIME_LIMIT_MINUTES * 60;
+
+    function renderTime() {
+      const m = Math.floor(timeLeft / 60);
+      const s = timeLeft % 60;
+      timerEl.textContent =
+        String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    }
+    renderTime();
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        renderTime();
+        clearInterval(timerInterval);
+        finishQuiz('Hết thời gian');
+      } else {
+        renderTime();
+      }
+    }, 1000);
+  }
+
+  function showQuestion() {
+    if (quizFinished) return;
+
+    if (bank.length === 0) {
+      vnTextEl.textContent = 'Không có câu hỏi nào trong ngân hàng.';
+      return;
+    }
+
+    if (currentIndex >= bank.length) {
+      shuffle(bank);
+      currentIndex = 0;
+    }
+
+    const q = bank[currentIndex];
+    vnTextEl.textContent = q.vn;
+    audioEl.src = getDriveAudioSrc(q.audio);
+    audioEl.load();
+
+    answerInput.value = '';
+    answerInput.disabled = false;
+    answerInput.focus();
+
+    feedbackEl.textContent = '';
+    feedbackEl.className = '';
+    checkBtn.disabled = false;
+    nextBtn.style.display = 'none';
+  }
+
+  function checkAnswer() {
+    if (quizFinished) return;
+
+    const name = (document.getElementById('studentName').value || '').trim();
+    const cls  = (document.getElementById('studentClass').value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập HỌ TÊN và LỚP/NHÓM trước khi làm bài.');
+      return;
+    }
+
+    const q = bank[currentIndex];
+    const user = normalize(answerInput.value);
+    if (!user) {
+      alert('Hãy gõ đáp án trước khi bấm Check.');
+      return;
+    }
+
+    // danh sách đáp án chấp nhận, phân biệt số ít/số nhiều (không can thiệp)
+    const acceptable = q.answer
+      .split('|')
+      .map(a => normalize(a))
+      .filter(a => a);
+
+    totalDone++;
+    const isCorrect = acceptable.includes(user);
+
+    if (isCorrect) {
+      correctCount++;
+      feedbackEl.className = 'ok';
+      feedbackEl.textContent = 'Đúng. Đáp án: ' + q.answer;
+    } else {
+      feedbackEl.className = 'ng';
+      feedbackEl.textContent = 'Sai. Đáp án đúng: ' + q.answer;
+    }
+
+    correctCountEl.textContent = correctCount;
+    totalDoneEl.textContent = totalDone;
+
+    answerInput.disabled = true;
+    checkBtn.disabled = true;
+    nextBtn.style.display = 'inline-block';
+
+    if (correctCount >= TARGET_CORRECT) {
+      finishQuiz('Bạn đã hoàn thành đủ ' + TARGET_CORRECT + ' câu đúng.');
+    }
+  }
+
+  function finishQuiz(reasonText) {
+    if (quizFinished) return;
+    quizFinished = true;
+
+    if (timerInterval) clearInterval(timerInterval);
+    answerInput.disabled = true;
+    checkBtn.disabled = true;
+    nextBtn.disabled = true;
+
+    const endTime = new Date();
+    const durationSec = Math.round((endTime - startTime) / 1000);
+    const percent = totalDone > 0
+      ? Math.round(correctCount * 100 / totalDone)
+      : 0;
+
+    resultBox.style.display = 'block';
+    resultScore.textContent = `${percent}% chính xác`;
+    resultDetail.innerHTML =
+      `Đúng ${correctCount} / ${totalDone} câu.<br>` +
+      `Thời gian làm bài: ${durationSec} giây.<br>` +
+      (reasonText ? `Kết thúc: ${reasonText}.` : '');
+
+    // gửi log lên Apps Script (cùng file với IELTS)
+    const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+    const cls  = (document.getElementById('studentClass').value || '').trim();
+    const timestamp = new Date().toLocaleString();
+
+    const rawLog =
+      name + '\t' +
+      cls + '\t' +
+      TEST_ID + '\t' +
+      timestamp + '\t' +
+      correctCount + '\t' +
+      totalDone + '\t' +
+      percent + '\t' +
+      durationSec;
+
+    const payload = {
+      testId: TEST_ID,
+      name: name,
+      className: cls,
+      correct: correctCount,
+      total: totalDone,
+      percent: percent,
+      duration: durationSec,
+      rawLog: rawLog
+    };
+
+    if (LOG_ENDPOINT && LOG_ENDPOINT.startsWith('http')) {
+      fetch(LOG_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(err => {
+        console.error('Error sending result:', err);
+      });
+    }
+  }
+
+  // ====== GẮN SỰ KIỆN ======
+  checkBtn.addEventListener('click', checkAnswer);
+  nextBtn.addEventListener('click', () => {
+    if (quizFinished) return;
+    currentIndex++;
+    showQuestion();
+  });
+
+  answerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (!checkBtn.disabled) {
+        checkAnswer();
+      } else if (!nextBtn.disabled && nextBtn.style.display !== 'none') {
+        nextBtn.click();
+      }
+    }
+  });
+
+  // ====== KHỞI ĐỘNG ======
+  (function init() {
+    bank = parseBank(RAW_DATA);
+    if (!bank.length) {
+      vnTextEl.textContent = 'Không có dữ liệu trong RAW_DATA.';
+      return;
+    }
+    shuffle(bank);
+    startTimer();
+    showQuestion();
+  })();
+
+</script>
+</body>
+</html>
