@@ -248,31 +248,31 @@ async function loadTestTitle() {
     // 2) Cmd + C
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
-    
-190	reading	5	1	short	Exercise 1. Sắp xếp chữ cái tạo thành từ có nghĩa điền vào chỗ trống.	When I get up in the morning, the first thing that I do is (1) ………………………… (avhe) a shower					have
-191	reading	5	1	short		I then go to the kitchen and make breakfast. After breakfast, I (2) ………………………… (bhusr) my teeth. "					brush
+
+    190	reading	5	1	short	Exercise 1. Sắp xếp chữ cái tạo thành từ có nghĩa điền vào chỗ trống.	When I get up in the morning, the first thing that I do is (1) ………………………… (avhe) a shower					have
+191	reading	5	1	short		I then go to the kitchen and make breakfast. After breakfast, I (2) ………………………… (bhusr) my teeth. 					brush
 192	reading	5	1	short		Then I (3) ………………………… (emte) my friends.					meet
 193	reading	5	1	short		We (4) ………………………… (chact) the bus to the college. At college, we study all day, but we have a break for lunch at 12 o'clock.					catch
 194	reading	5	1	short		At four o'clock, we (5) ………………………… (vlaee) the college and go home by bus.					leave
 195	reading	5	1	short		 In the evenings, I usually (6) ………………………… (cwaht) TV, unless I have a lot of homework. 					watch
 196	reading	5	1	short		I always (7) ………………………… (od) my homework in the evenings.					do
 197	reading	5	1	short		At night, I always go to bed and (8) ………………………… (lafl) asleep straight away.					fall
-198	reading	5	2	short	Exercise 2. Viết cách đọc các giờ dưới đây. // Ví dụ: 8:40 – eight forty hoặc twenty to nine.	02:30					half past two| two thirty
+198	reading	5	2	short	Exercise 2. Viết cách đọc các giờ dưới đây. //  Ví dụ: 8:40 – eight forty hoặc twenty to nine.	02:30					half past two| two thirty
 199	reading	5	2	short		03:45					three forty-five| a quarter to four| fifteen to four
 200	reading	5	2	short		09:20					nine twenty| twenty past nine
 201	reading	5	2	short		06:00					six o'clock
 202	reading	5	2	short		10:50					ten fifty| ten to eleven
 203	reading	5	2	short		07:15					seven fifteen| fifteen past seven| a quarter past seven
-204	listening	5	3	short	[IMG:https://drive.google.com/file/d/19SiFzKzv9RBera4Ted2CD6ptSCVfRPvn/view?usp=drive_link] // https://drive.google.com/file/d/1DBpMGvzkMIWCwyYSYFXaiF7wGDbCeQND/view?usp=drive_link // Exercise 3. Nghe và hoàn thành bảng dưới đây. (No more than TWO words AND/OR a number)	(a)					7:00|7 am|7 a.m.
+204	listening	5	3	short	[IMG:https://drive.google.com/file/d/19SiFzKzv9RBera4Ted2CD6ptSCVfRPvn/view?usp=drive_link] // https://drive.google.com/file/d/1DBpMGvzkMIWCwyYSYFXaiF7wGDbCeQND/view?usp=drive_link // Exercise 3. Nghe và hoàn thành bảng dưới đây. (No more than TWO words and/or a number)	(a)					7:00|7 am|7 a.m.
 205	listening	5	3	short		(b)					6 p.m.| 6 pm
-206	listening	5	3	short		(c)					11 pm| 11 p.m.|11:00
+206	listening	5	3	short		(c )					11 pm| 11 p.m.|11:00|11
 207	listening	5	3	short		(d)					before 5 a.m.| before 5 am
 208	listening	5	3	short		(e)					9 p.m.| 9 pm
 209	listening	5	3	short		(f)					around 10| around 10 pm| around 10 p.m.| 10| 10 p.m.| 10 pm
 210	listening	5	3	short		(g)					8 a.m.|8 am
 211	listening	5	3	short		(h)					8 p.m.|8 pm
 212	listening	5	3	short		(i)					1 am| 1 a.m.
-213	reading	5	4	short	Exercise 4. Sử dụng các từ dưới đây để viết lại câu hỏi đúng. // Ví dụ: What time/you/get up –> What time do you get up?	1. What/you/have/for breakfast?					What do you have for breakfast?
+213	reading	5	4	short	Exercise 4. Sử dụng các từ dưới đây để viết lại câu hỏi đúng.  //  Ví dụ: What time/you/get up –> What time do you get up?	1. What/you/have/for breakfast?					What do you have for breakfast?
 214	reading	5	4	short		2. When/you/watch TV?					When do you watch TV?
 215	reading	5	4	short		3. You/visit/friends/at the weekend?					Do you visit friends at the weekend?| Do you visit your friends at the weekend?
 216	reading	5	4	short		4. Your family/prepare meals/together?					Does your family prepare meals together?
@@ -295,6 +295,7 @@ async function loadTestTitle() {
 233	listening	5	6	short		Chị tôi thức dậy lúc 6 giờ sáng.					My sister gets up at 6am.
 234	listening	5	6	short		Mẹ tôi xem TV sau bữa tối.					My mother watches TV after dinner.
 235	listening	5	6	short		Bố tôi chuẩn bị bữa ăn.					My father prepares the meal.
+
 `; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
     // ====== CODE CHUNG – KHÔNG CẦN SỬA BÊN DƯỚI ======
@@ -739,27 +740,6 @@ function normalizeText(str) {
   `;
 }
 
-function lockAfterSubmit() {
-  // nếu muốn, dừng luôn đồng hồ
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  // Khóa tất cả ô TEXT trong phần bài làm (#quiz)
-  const quizDiv = document.getElementById('quiz');
-  const textInputs = quizDiv.querySelectorAll('input[type="text"]');
-  textInputs.forEach(inp => {
-    inp.disabled = true;
-  });
-
-  // Khóa luôn nút Nộp bài để không bấm lại được
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đã nộp bài';
-  }
-}
-
 
     function copyLogLine() {
       const ta = document.getElementById('logLine');
@@ -796,7 +776,6 @@ document.getElementById('submitBtn').addEventListener('click', () => {
 
   // Đủ thông tin thì mới chấm điểm
   gradeQuiz();
-  lockAfterSubmit();  
 });
 
 document.getElementById('retryBtn').addEventListener('click', () => {
