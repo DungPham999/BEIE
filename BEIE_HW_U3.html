@@ -175,7 +175,7 @@
 
 <script>
   // ====== CẤU HÌNH CHO GIÁO VIÊN ======
-  const DURATION_MINUTES = 60;
+  const DURATION_MINUTES = 40;
   const TEST_ID = 'BEIE_HW_U3';   // thầy đổi tên tuỳ từng đề
   // URL CSV chứa thông tin meta (TestID, Title, ...)
   
@@ -248,7 +248,6 @@ async function loadTestTitle() {
     // 2) Cmd + C
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
-    
 45	reading	3	Ex 1	mcq	Exercise 1. Chọn từ có âm tiết được gạch chân có phát âm khác với những từ còn lại. // [IMG: https://drive.google.com/file/d/1TcgZhSjTD6B-41CuOEuFpiNhMNVyIOso/view?usp=sharing]	1	Pretty	City	Machine	Hit	C
 46	reading	3	Ex 1	mcq		2	Cheese	Screen	Keep	Become	D
 47	reading	3	Ex 1	mcq		3	Win	Thief	Guitar	Miss	B
@@ -272,7 +271,7 @@ async function loadTestTitle() {
 65	reading	3	Ex 4.1	short		7					It 
 66	reading	3	Ex 4.1	short		8					It 
 67	reading	3	Ex 4.1	short		9					Him 
-68	reading	3	Ex 4.1	short		10					Her 
+68	reading	3	Ex 4.1	short		10					Her     
 
 `; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
@@ -718,26 +717,6 @@ function normalizeText(str) {
   `;
 }
 
-function lockAfterSubmit() {
-  // nếu muốn, dừng luôn đồng hồ
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  // Khóa tất cả ô TEXT trong phần bài làm (#quiz)
-  const quizDiv = document.getElementById('quiz');
-  const textInputs = quizDiv.querySelectorAll('input[type="text"]');
-  textInputs.forEach(inp => {
-    inp.disabled = true;
-  });
-
-  // Khóa luôn nút Nộp bài để không bấm lại được
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đã nộp bài';
-  }
-}
 
     function copyLogLine() {
       const ta = document.getElementById('logLine');
@@ -774,7 +753,6 @@ document.getElementById('submitBtn').addEventListener('click', () => {
 
   // Đủ thông tin thì mới chấm điểm
   gradeQuiz();
-  lockAfterSubmit();
 });
 
 document.getElementById('retryBtn').addEventListener('click', () => {
