@@ -176,7 +176,7 @@
 <script>
   // ====== CẤU HÌNH CHO GIÁO VIÊN ======
   const DURATION_MINUTES = 40;
-  const TEST_ID = 'BEIE_LP_U6';   // thầy đổi tên tuỳ từng đề
+  const TEST_ID = 'BEIE_LP_U5';   // thầy đổi tên tuỳ từng đề
   // URL CSV chứa thông tin meta (TestID, Title, ...)
   
   const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
@@ -248,29 +248,29 @@ async function loadTestTitle() {
     // 2) Cmd + C
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
-
-    230	reading	LP6	1	short	Exercise 1. Nhìn tranh và điền các từ đúng vào chỗ trống. //  [IMG:https://drive.google.com/file/d/1dn9IkFh9JGROkmD2gGtN7USU5Gcnx0PW/view?usp=drive_link]	1					Teacher
-231	reading	LP6	1	short		2					Athlete
-232	reading	LP6	1	short		3					Architect
-233	reading	LP6	1	short		4					Doctor
-234	reading	LP6	1	short		5					Banker 
-235	reading	LP6	1	short		6					Musician
-236	reading	LP6	1	short		7					Pilot
-237	reading	LP6	1	short		8					Flight attendant
-238	reading	LP6	1	short		9					Scientist
-239	reading	LP6	1	short		10					Nurse
-240	listening	LP6	2	short	https://drive.google.com/file/d/1vw5---IQ-w4O8N8YenP9tnFbfO3CA8-W/view?usp=drive_link // Exercise 2. Nghe audio và điền các từ vựng về nghề nghiệp vào chỗ trống để hoàn thành các cuộc hội thoại. Nếu phải điền 2 khoảng trống trong cùng một đoạn hội thoại thì điền  theo cú pháp **đáp án 1 - đáp án 2**. //  Ví dụ: pilot - farmer	1. A: What do you do? // B: I’m an ……………… And you? // A: I’m a ………………					architect - singer 
-241	listening	LP6	2	short		2. A: Is your sister a ………………? // B: No, she isn’t. She’s a ………………					teacher - student
-242	listening	LP6	2	short		3. A: What does Jason do? // B: He’s a ……………… // A: Oh, and how about Mindy? // B: She’s a ………………					banker - pilot 
-243	listening	LP6	2	short		4. A: Are your parents ………………? // B: Yes, they are. They work in a nearby hospital.					doctors
-244	listening	LP6	2	short		5. A: Are you a ………………? // B: No, I’m not. I’m an ………………					musician - athlete 
-245	listening	LP6	3	short	https://drive.google.com/file/d/17_OcTO3PRCR5ZeJf9ObzY65yD3Y-vqbA/view?usp=drive_link // [IMG:https://drive.google.com/file/d/1rcrUmz9RWyCvHpVZZMRrIibHEtcpbh_d/view?usp=drive_link] // Exercise 3. Nghe và đánh số các bức tranh theo thứ tự được nhắc đến trong audio.	a					6
-246	listening	LP6	3	short		b					4
-247	listening	LP6	3	short		c					2
-248	listening	LP6	3	short		d					3
-249	listening	LP6	3	short		e					1
-250	listening	LP6	3	short		f					5
-251	listening	LP6	video	mcq	https://drive.google.com/file/d/18VjNZaafGtyW-YRy1K2UCRr1TXeO9GYt/view?usp=drive_link // Watch this video and check your answer.	Have you watched this video?	Yes, I've done.	Not yet!			a
+    
+236	reading	LP6	1	short	Exercise 1. Nhìn tranh và điền các từ đúng vào chỗ trống. //  [IMG:https://drive.google.com/file/d/1dn9IkFh9JGROkmD2gGtN7USU5Gcnx0PW/view?usp=drive_link]	1					Teacher
+237	reading	LP6	1	short		2					Athlete
+238	reading	LP6	1	short		3					Architect
+239	reading	LP6	1	short		4					Doctor
+240	reading	LP6	1	short		5					Banker 
+241	reading	LP6	1	short		6					Musician
+242	reading	LP6	1	short		7					Pilot
+243	reading	LP6	1	short		8					Flight attendant
+244	reading	LP6	1	short		9					Scientist
+245	reading	LP6	1	short		10					Nurse
+246	listening	LP6	2	short	https://drive.google.com/file/d/1vw5---IQ-w4O8N8YenP9tnFbfO3CA8-W/view?usp=drive_link // Exercise 2. Nghe audio và điền các từ vựng về nghề nghiệp vào chỗ trống để hoàn thành các cuộc hội thoại. Nếu phải điền 2 khoảng trống trong cùng một đoạn hội thoại thì điền  theo cú pháp **đáp án 1 - đáp án 2**. //  Ví dụ: pilot - farmer	1. A: What do you do? // B: I’m an ……………… And you? // A: I’m a ………………					architect - singer 
+247	listening	LP6	2	short		2. A: Is your sister a ………………? // B: No, she isn’t. She’s a ………………					teacher - student
+248	listening	LP6	2	short		3. A: What does Jason do? // B: He’s a ……………… // A: Oh, and how about Mindy? // B: She’s a ………………					banker - pilot 
+249	listening	LP6	2	short		4. A: Are your parents ………………? // B: Yes, they are. They work in a nearby hospital.					doctors
+250	listening	LP6	2	short		5. A: Are you a ………………? // B: No, I’m not. I’m an ………………					musician - athlete 
+251	listening	LP6	3	short	https://drive.google.com/file/d/17_OcTO3PRCR5ZeJf9ObzY65yD3Y-vqbA/view?usp=drive_link // [IMG:https://drive.google.com/file/d/1rcrUmz9RWyCvHpVZZMRrIibHEtcpbh_d/view?usp=drive_link] // Exercise 3. Nghe và đánh số các bức tranh theo thứ tự được nhắc đến trong audio.	a					6
+252	listening	LP6	3	short		b					4
+253	listening	LP6	3	short		c					2
+254	listening	LP6	3	short		d					3
+255	listening	LP6	3	short		e					1
+256	listening	LP6	3	short		f					5
+257	listening	LP6	video	mcq	https://drive.google.com/file/d/18VjNZaafGtyW-YRy1K2UCRr1TXeO9GYt/view?usp=drive_link // Watch this video and check your answer.	Have you watched this video?	Yes, I've done.	Not yet!			a
 
 `; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
@@ -716,26 +716,6 @@ function normalizeText(str) {
   `;
 }
 
-function lockAfterSubmit() {
-  // nếu muốn, dừng luôn đồng hồ
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  // Khóa tất cả ô TEXT trong phần bài làm (#quiz)
-  const quizDiv = document.getElementById('quiz');
-  const textInputs = quizDiv.querySelectorAll('input[type="text"]');
-  textInputs.forEach(inp => {
-    inp.disabled = true;
-  });
-
-  // Khóa luôn nút Nộp bài để không bấm lại được
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đã nộp bài';
-  }
-}
 
     function copyLogLine() {
       const ta = document.getElementById('logLine');
@@ -772,7 +752,6 @@ document.getElementById('submitBtn').addEventListener('click', () => {
 
   // Đủ thông tin thì mới chấm điểm
   gradeQuiz();
-  lockAfterSubmit();  
 });
 
 document.getElementById('retryBtn').addEventListener('click', () => {
