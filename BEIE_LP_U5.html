@@ -248,7 +248,6 @@ async function loadTestTitle() {
     // 2) Cmd + C
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
-    
 157	reading	LP5	1	short	Exercise 1. Nhìn tranh và điền các từ đúng vào chỗ trống.// [IMG: https://drive.google.com/file/d/1lzuZsenjhmd4eC0tgnV4Vg3s3p7T19Uw/view?usp=sharing]	1					watch TV
 158	reading	LP5	1	short		2					get up
 159	reading	LP5	1	short		3					relax with friends
@@ -281,7 +280,7 @@ async function loadTestTitle() {
 186	reading	LP5	4	short		Can you help me ……………………… the cleaning in the living room?					do
 187	reading	LP5	4	short		Mom ……………………… lunch for us today.					makes|prepares
 188	reading	LP5	4	short		Don't forget to ……………………… your bedroom before you go out.					tidy up|clean
-189	listening	LP5	video	mcq	https://drive.google.com/file/d/1Tt-2yjl9e8snztID-ZiaceeB1zQwySk3/view?usp=sharing	Have you watched this video?	Yes, I've done.	Not yet!			a
+189	listening	LP5	video	mcq	https://drive.google.com/file/d/1Tt-2yjl9e8snztID-ZiaceeB1zQwySk3/view?usp=sharing	Have you watched this video?	Yes, I've done.	Not yet!			a    
 
 `; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
@@ -727,26 +726,6 @@ function normalizeText(str) {
   `;
 }
 
-function lockAfterSubmit() {
-  // nếu muốn, dừng luôn đồng hồ
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  // Khóa tất cả ô TEXT trong phần bài làm (#quiz)
-  const quizDiv = document.getElementById('quiz');
-  const textInputs = quizDiv.querySelectorAll('input[type="text"]');
-  textInputs.forEach(inp => {
-    inp.disabled = true;
-  });
-
-  // Khóa luôn nút Nộp bài để không bấm lại được
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đã nộp bài';
-  }
-}
 
     function copyLogLine() {
       const ta = document.getElementById('logLine');
@@ -783,7 +762,6 @@ document.getElementById('submitBtn').addEventListener('click', () => {
 
   // Đủ thông tin thì mới chấm điểm
   gradeQuiz();
-  lockAfterSubmit();
 });
 
 document.getElementById('retryBtn').addEventListener('click', () => {
