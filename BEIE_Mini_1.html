@@ -175,7 +175,7 @@
 
 <script>
   // ====== CẤU HÌNH CHO GIÁO VIÊN ======
-  const DURATION_MINUTES = 60;
+  const DURATION_MINUTES = 40;
   const TEST_ID = 'BEIE_Mini_1';   // thầy đổi tên tuỳ từng đề
   // URL CSV chứa thông tin meta (TestID, Title, ...)
   
@@ -739,26 +739,6 @@ function normalizeText(str) {
   `;
 }
 
-function lockAfterSubmit() {
-  // nếu muốn, dừng luôn đồng hồ
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  // Khóa tất cả ô TEXT trong phần bài làm (#quiz)
-  const quizDiv = document.getElementById('quiz');
-  const textInputs = quizDiv.querySelectorAll('input[type="text"]');
-  textInputs.forEach(inp => {
-    inp.disabled = true;
-  });
-
-  // Khóa luôn nút Nộp bài để không bấm lại được
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đã nộp bài';
-  }
-}
 
     function copyLogLine() {
       const ta = document.getElementById('logLine');
@@ -795,7 +775,6 @@ document.getElementById('submitBtn').addEventListener('click', () => {
 
   // Đủ thông tin thì mới chấm điểm
   gradeQuiz();
-  lockAfterSubmit();
 });
 
 document.getElementById('retryBtn').addEventListener('click', () => {
