@@ -175,7 +175,7 @@
 
 <script>
   // ====== CẤU HÌNH CHO GIÁO VIÊN ======
-  const DURATION_MINUTES = 60;
+  const DURATION_MINUTES = 40;
   const TEST_ID = 'BEIE_HW_U2';   // thầy đổi tên tuỳ từng đề
   // URL CSV chứa thông tin meta (TestID, Title, ...)
   
@@ -248,8 +248,8 @@ async function loadTestTitle() {
     // 2) Cmd + C
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
-    
-19	listening	2	Ex 1.1	short	https://drive.google.com/file/d/1naB8CmHw41BIZ2jG_xTcJnH2pxh0lfF-/view?usp=drive_link	Ms. Hee //First name					Su
+
+    19	listening	2	Ex 1.1	short	https://drive.google.com/file/d/1naB8CmHw41BIZ2jG_xTcJnH2pxh0lfF-/view?usp=drive_link	Ms. Hee //First name					Su
 20	listening	2	Ex 1.1	short		Country					Japan
 21	listening	2	Ex 1.1	short		Nationality					Japanese
 22	listening	2	Ex 1.2	short	https://drive.google.com/file/d/15BQ6pmEo3_U5-HQw5JiAD1Q-k452rHJQ/view?usp=drive_link	Mr. Smith //First name					Charlie
@@ -720,26 +720,6 @@ function normalizeText(str) {
   `;
 }
 
-function lockAfterSubmit() {
-  // nếu muốn, dừng luôn đồng hồ
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  // Khóa tất cả ô TEXT trong phần bài làm (#quiz)
-  const quizDiv = document.getElementById('quiz');
-  const textInputs = quizDiv.querySelectorAll('input[type="text"]');
-  textInputs.forEach(inp => {
-    inp.disabled = true;
-  });
-
-  // Khóa luôn nút Nộp bài để không bấm lại được
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đã nộp bài';
-  }
-}
 
     function copyLogLine() {
       const ta = document.getElementById('logLine');
@@ -776,7 +756,6 @@ document.getElementById('submitBtn').addEventListener('click', () => {
 
   // Đủ thông tin thì mới chấm điểm
   gradeQuiz();
-  lockAfterSubmit();
 });
 
 document.getElementById('retryBtn').addEventListener('click', () => {
