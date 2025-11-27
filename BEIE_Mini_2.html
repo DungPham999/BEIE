@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Practice Test</title>
+  <title>IELTS Listening & Reading – Practice Test</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -10,7 +11,7 @@
       margin: 20px auto;
       padding: 0 15px;
       line-height: 1.5;
-      background-color: #fff7e6;
+      background-color: #fff7e6;  /* vàng cam rất nhẹ */
     }
     h1 {
       text-align: center;
@@ -113,21 +114,23 @@
       display: block;
     }
     .btn-row {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 40px;
-      padding: 20px 0;
-      color: #444;
-      font-size: 14px;
-      opacity: 0.85;
-    }
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;     /* khoảng cách giữa 2 nút */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px 0;
+  color: #444;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+
     /* Layout hai cột cho Reading */
     .reading-layout {
       display: flex;
@@ -141,25 +144,15 @@
     .reading-right {
       flex: 1;
     }
-    /* Hiển thị đáp án đúng */
-    .correct-answer {
-      font-size: 14px;
-      font-weight: bold;
-      color: #28a745;
-      margin-top: 5px;
-      padding: 5px;
-      background-color: #e1f8e1;
-      border-radius: 4px;
-    }
   </style>
 </head>
 <body>
-  <h1 id="pageTitle">Đang tải tiêu đề...</h1>
+ <h1 id="pageTitle">Đang tải tiêu đề...</h1>
 
   <div class="info">
     <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
     <p>Làm xong hãy bấm <strong>Nộp bài</strong> để xem điểm. Có thể tải lại trang để làm lại.</p>
-    <p>
+ <p>
       <label>Họ tên học viên:
         <input type="text" id="studentName" placeholder="Nguyễn Văn A">
       </label>
@@ -173,31 +166,88 @@
 
   <div id="quiz"></div>
 
-  <div class="btn-row">
-    <button class="btn" id="submitBtn">Nộp bài & xem kết quả</button>
-    <button class="btn" id="retryBtn">Làm lại từ đầu</button>
-  </div>
+ <div class="btn-row">
+  <button class="btn" id="submitBtn">Nộp bài & xem kết quả</button>
+  <button class="btn" id="retryBtn">Làm lại từ đầu</button>
+</div>
 
   <div class="result" id="resultBox" style="display:none;"></div>
 
-  <footer class="footer">
-    <p>© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
-  </footer>
-
 <script>
-  // ====== CẤU HÌNH CHUNG ======
-  const DURATION_MINUTES = 40;
-  // TestID tự động = tên file (không có .html)
-  const TEST_ID = location.pathname.split("/").pop().replace(/\.html?$/i, "");
-  // Link meta CSV (Level, Title, File, ...)
-  const META_CSV_URL =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
-  // Apps Script nhận log kết quả
-  const LOG_ENDPOINT =
-    "https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec";
+  // ====== CẤU HÌNH CHO GIÁO VIÊN ======
+  const DURATION_MINUTES = 60;
+  const TEST_ID = 'BEIE_Mini_2';   // thầy đổi tên tuỳ từng đề
+  // URL CSV chứa thông tin meta (TestID, Title, ...)
+  
+  const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
+// ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
 
-  // ====== DỮ LIỆU ĐỀ – DÁN TỪ SHEET VÀO ĐÂY ======
-  const RAW_DATA = `
+
+  
+  
+  // Parse CSV rất đơn giản: tách dòng, tách cột theo dấu phẩy
+function parseMetaCSV(text) {
+  const lines = text.trim().split("\n");
+  if (lines.length < 2) return [];
+
+  const header = lines[0].split(",").map(h => h.trim());
+  const rows = lines.slice(1);
+
+  return rows.map(row => {
+    const cols = row.split(",");
+    const obj = {};
+    header.forEach((h, i) => {
+      obj[h] = (cols[i] || "").trim();
+    });
+    return obj;
+  });
+}
+
+// Tải CSV và cập nhật title theo cột "File"
+async function loadTestTitle() {
+  try {
+    const resp = await fetch(META_CSV_URL);
+    const text = await resp.text();
+    const data = parseMetaCSV(text);
+
+    // Lấy tên file hiện tại, ví dụ "BEIE_HW_U2.html"
+    const currentFile = location.pathname.split("/").pop();
+
+    // Tìm dòng trong CSV có cột File trùng với tên file
+    const meta = data.find(r =>
+      (r.File || "").toLowerCase() === (currentFile || "").toLowerCase()
+    );
+
+    if (meta && meta.Title) {
+      document.title = meta.Title;           // tiêu đề tab trình duyệt
+      const h1 = document.getElementById("pageTitle");
+      if (h1) h1.textContent = meta.Title;   // tiêu đề lớn trên trang
+    } else {
+      const h1 = document.getElementById("pageTitle");
+      if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+        h1.textContent = "Practice Test";
+      }
+    }
+  } catch (err) {
+    console.error("Không đọc được meta CSV:", err);
+    const h1 = document.getElementById("pageTitle");
+    if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+      h1.textContent = "Practice Test";
+    }
+  }
+}
+
+  
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec'; 
+
+
+
+
+    // DỮ LIỆU ĐỀ – GIÁO VIÊN DÁN TỪ EXCEL/GOOGLE SHEETS VÀO ĐÂY
+    // 1) Lọc & chọn các dòng câu hỏi (KHÔNG chọn dòng tiêu đề)
+    // 2) Cmd + C
+    // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
+    const RAW_DATA = `
 280	listening	Mini 2	1	short	[IMG:https://drive.google.com/file/d/1wodgn0uJ91xysxt0PnvoZOQ85vRrHBbS/view?usp=drive_link] // https://drive.google.com/file/d/1FwZ4s2MHplCoX1SyEud4J2mSbCStapzF/view?usp=drive_link  // Questions 1-6. Don is checking messages on his voicemail. Listen and write the date and time of each event. You can listen TWICE. (Cú pháp: đáp án 1 - đáp án 2)	1					August 3rd - 9:30 a.m.
 281	listening	Mini 2	1	short		2					July 28th - 8 p.m.|July 28th - 8 pm|July 28th - 8 pm|July 28th - 8:00 p.m.|July 28th - 8:00 pm
 282	listening	Mini 2	1	short		3					August 10th - 11:15 a.m.| August 10th - 11:15 am|August 10th - 11:15
@@ -211,198 +261,268 @@
 290	reading	Mini 2	2	short		Anh trai tôi rất lười. Anh ấy không bao giờ dọn dẹp.					My brother is very lazy. He never tidies up. | My older brother is very lazy. He never tidies up. 
 291	reading	Mini 2	2	short		Bố tôi xem TV sau bữa tối. 					My father watches TV after dinner.| My father watches TV after supper.
 292	reading	Mini 2	3a	short	[IMG: https://drive.google.com/file/d/1PvbxqggotaWRMYWOL_YEYM6k3a0uF_im/view?usp=drive_link] // Questions 13-17. Match the job to its description.	Nurse					d
-293	reading	Mini 3	3a	short		Scientist					e
-294	reading	Mini 4	3a	short		Musician					a
-295	reading	Mini 5	3a	short		Teacher					c
-296	reading	Mini 6	3a	short		Flight attendant					b
-297	reading	Mini 7	3b	short	Question 18-21. Answer the questions. Write **ONE WORD** only.	Where do nurses work?					hospital|hospitals
-298	reading	Mini 8	3b	short		Where do scientists work?					lab|labs|laboratory|laboratories
-299	reading	Mini 9	3b	short		Where do teachers work?					school|schools
-300	reading	Mini 10	3b	short		Where do flight attendants work?					airplane| airplanes|airport| airports
-301	reading	Mini 11	3b	short	Questions 22-26. Use appropriate prepositions (in/on/at) to complete the sentences below.	I have breakfast ________________7 a.m. every morning.					at
-302	reading	Mini 12	3b	short		I usually go shopping ________________Saturdays.					on
-303	reading	Mini 13	3b	short		I'll go on vacation ________________July.					in
-304	reading	Mini 14	3b	short		She starts her new job ________________September.					in
-305	reading	Mini 15	3b	short		Our class starts ________________9:30 a.m.					at
-306	reading	Mini 16	4	short	Questions 27-31. Fill in the gaps with the correct form of the verbs in brackets. Use present simple tense.	She __________ (work) as a teacher at a primary school.					works
-307	reading	Mini 17	4	short		They __________ (enjoy) watching movies on weekends.					enjoy
-308	reading	Mini 18	4	short		He __________ (cook) dinner for his family every evening.					cooks
-309	reading	Mini 19	4	short		I __________ (study) English at the language school.					study
-310	reading	Mini 20	4	short		My dad __________ (drive) to work every day.					drives
-311	reading	Mini 21	5	short	Questions 32-36. Fill in the gaps with "a", "an”, or “x” if no article is needed. Cú pháp: đáp án 1 - đáp án 2	She wants to be __________ nurse and work at __________ hospital.					a - a
-312	reading	Mini 22	5	short		 He dreams of becoming __________ astronaut and traveling to __________ space.					an - x
-313	reading	Mini 23	5	short		 I need __________ job, so I'm looking for __________ employment opportunity.					a - an
-314	reading	Mini 24	5	short		Being __________ architect requires __________ creativity and passion.					an - x
-315	reading	Mini 25	5	short		My father is __________ scientist. He works in __________ lab.					a - a
-`;
+293	reading	Mini 2	3a	short		Scientist					e
+294	reading	Mini 2	3a	short		Musician					a
+295	reading	Mini 2	3a	short		Teacher					c
+296	reading	Mini 2	3a	short		Flight attendant					b
+297	reading	Mini 2	3b	short	Question 18-21. Answer the questions. Write **ONE WORD** only.	Where do nurses work?					hospital|hospitals
+298	reading	Mini 2	3b	short		Where do scientists work?					lab|labs|laboratory|laboratories
+299	reading	Mini 2	3b	short		Where do teachers work?					school|schools
+300	reading	Mini 2	3b	short		Where do flight attendants work?					airplane| airplanes|airport| airports
+301	reading	Mini 2	3b	short	Questions 22-26. Use appropriate prepositions (in/on/at) to complete the sentences below.	I have breakfast ________________7 a.m. every morning.					at
+302	reading	Mini 2	3b	short		I usually go shopping ________________Saturdays.					on
+303	reading	Mini 2	3b	short		I'll go on vacation ________________July.					in
+304	reading	Mini 2	3b	short		She starts her new job ________________September.					in
+305	reading	Mini 2	3b	short		Our class starts ________________9:30 a.m.					at
+306	reading	Mini 2	4	short	Questions 27-31. Fill in the gaps with the correct form of the verbs in brackets. Use present simple tense.	She __________ (work) as a teacher at a primary school.					works
+307	reading	Mini 2	4	short		They __________ (enjoy) watching movies on weekends.					enjoy
+308	reading	Mini 2	4	short		He __________ (cook) dinner for his family every evening.					cooks
+309	reading	Mini 2	4	short		I __________ (study) English at the language school.					study
+310	reading	Mini 2	4	short		My dad __________ (drive) to work every day.					drives
+311	reading	Mini 2	5	short	Questions 32-36. Fill in the gaps with "a", "an”, or “x” if no article is needed. Cú pháp: đáp án 1 - đáp án 2	She wants to be __________ nurse and work at __________ hospital.					a - a
+312	reading	Mini 2	5	short		 He dreams of becoming __________ astronaut and traveling to __________ space.					an - x
+313	reading	Mini 2	5	short		 I need __________ job, so I'm looking for __________ employment opportunity.					a - an
+314	reading	Mini 2	5	short		Being __________ architect requires __________ creativity and passion.					an - x
+315	reading	Mini 2	5	short		My father is __________ scientist. He works in __________ lab.					a - a    
 
-  // ====== HÀM PHỤ TRỢ ======
+`; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
-  function startTimer(totalSeconds) {
-    let timeLeft = totalSeconds;
-    const timerEl = document.getElementById('timer');
+    // ====== CODE CHUNG – KHÔNG CẦN SỬA BÊN DƯỚI ======
+
     let timerInterval = null;
+    let timeLeft = 0;
 
-    function updateDisplay() {
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      timerEl.textContent =
-        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    function startTimer(totalSeconds) {
+      timeLeft = totalSeconds;
+      const timerEl = document.getElementById('timer');
+      if (timerInterval) clearInterval(timerInterval);
+
+      function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent =
+          String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+      }
+
+      updateDisplay();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timeLeft = 0;
+          updateDisplay();
+          alert('Hết thời gian! Hệ thống sẽ tự chấm điểm.');
+          gradeQuiz();
+        } else {
+          updateDisplay();
+        }
+      }, 1000);
     }
 
-    updateDisplay();
-
-    timerInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft <= 0) {
-        clearInterval(timerInterval);
-        timeLeft = 0;
-        updateDisplay();
-        alert('Hết thời gian! Hệ thống sẽ tự chấm điểm.');
-        gradeQuiz();
-      } else {
-        updateDisplay();
-      }
-    }, 1000);
-  }
-
-  function escapeHtml(str) {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
-
-  // Hiển thị [IMG: url]
-  function renderImgToken(urlRaw) {
-    const url = urlRaw.trim();
-
-    // Google Drive -> iframe preview
-    if (/drive\.google\.com/i.test(url)) {
-      let id = '';
-      const m1 = url.match(/\/d\/([^\/]+)/);
-      const m2 = url.match(/[?&]id=([^&]+)/);
-      if (m1 && m1[1]) id = m1[1];
-      else if (m2 && m2[1]) id = m2[1];
-
-      if (id) {
-        const preview = 'https://drive.google.com/file/d/' + id + '/preview';
-        return '<br><iframe class="img-frame" src="' + preview + '" allow="autoplay"></iframe>';
-      }
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
     }
-    // Link thường
-    return '<br><img class="q-img" src="' + url + '" alt="image">';
-  }
 
-  // Parse meta CSV lấy Title
-  function parseMetaCSV(text) {
-    const lines = text.trim().split("\n");
-    if (lines.length < 2) return [];
+        // Hiển thị token [IMG:...] – nếu là Google Drive thì dùng iframe preview
+    function renderImgToken(urlRaw) {
+      const url = urlRaw.trim();
 
-    const header = lines[0].split(",").map(h => h.trim());
-    const rows = lines.slice(1);
+      // Trường hợp Google Drive
+      if (/drive\.google\.com/i.test(url)) {
+        let id = '';
+        const m1 = url.match(/\/d\/([^\/]+)/);
+        const m2 = url.match(/[?&]id=([^&]+)/);
+        if (m1 && m1[1]) id = m1[1];
+        else if (m2 && m2[1]) id = m2[1];
 
-    return rows.map(row => {
-      const cols = row.split(",");
-      const obj = {};
-      header.forEach((h, i) => {
-        obj[h] = (cols[i] || "").trim();
-      });
-      return obj;
-    });
-  }
-
-  async function loadTestTitle() {
-    try {
-      const resp = await fetch(META_CSV_URL);
-      const text = await resp.text();
-      const data = parseMetaCSV(text);
-
-      const currentFile = location.pathname.split("/").pop();
-      const meta = data.find(r =>
-        (r.File || "").toLowerCase() === (currentFile || "").toLowerCase()
-      );
-
-      if (meta && meta.Title) {
-        document.title = meta.Title;
-        const h1 = document.getElementById("pageTitle");
-        if (h1) h1.textContent = meta.Title;
-      } else {
-        const h1 = document.getElementById("pageTitle");
-        if (h1 && h1.textContent === "Đang tải tiêu đề...") {
-          h1.textContent = "Practice Test";
+        if (id) {
+          const preview = 'https://drive.google.com/file/d/' + id + '/preview';
+          return '<br><iframe class="img-frame" src="' + preview + '" allow="autoplay"></iframe>';
         }
       }
-    } catch (err) {
-      console.error("Không đọc được meta CSV:", err);
-      const h1 = document.getElementById("pageTitle");
-      if (h1 && h1.textContent === "Đang tải tiêu đề...") {
-        h1.textContent = "Practice Test";
-      }
+
+      // Link không phải Google Drive -> hiển thị ảnh trực tiếp
+      return '<br><img class="q-img" src="' + url + '" alt="image">';
     }
-  }
 
-  // Parse RAW_DATA (tab-separated)
-  function parseSheet(rawText) {
-    if (!rawText.trim()) return [];
-    const lines = rawText.trim().split('\n').filter(l => l.trim() !== '');
-    const questions = [];
 
-    lines.forEach((line, index) => {
-      const cols = line.split('\t');
-      const q = {
-        id: cols[0] || String(index + 1),
-        skill: (cols[1] || '').toLowerCase(),
-        part: cols[2] || '',
-        group: cols[3] || ('G' + (index + 1)),
-        type: (cols[4] || 'mcq').toLowerCase(),
-        passage: cols[5] || '',
-        question: cols[6] || '',
-        options: [
-          cols[7] || '',
-          cols[8] || '',
-          cols[9] || '',
-          cols[10] || ''
-        ],
-        answer: (cols[11] || '').trim()
-      };
-      questions.push(q);
-    });
+    // Phân tích dữ liệu từ RAW_DATA (tab-separated)
+    function parseSheet(rawText) {
+      if (!rawText.trim()) return [];
+      const lines = rawText.trim().split('\n').filter(l => l.trim() !== '');
+      const questions = [];
 
-    return questions;
-  }
+      lines.forEach((line, index) => {
+        const cols = line.split('\t');
 
-  // Passage có thể gồm nhiều phần, phân tách bằng " // ":
-//  - [IMG: url]  → ảnh (hoặc iframe Google Drive)
-//  - url audio   → audio (mp3, m4a, wav, ogg hoặc link Drive)
-//  - text        → hiển thị trong khung .passage
-function renderPassageWithMedia(pTrim, parentElem, skill) {
-  if (!pTrim) return;
+        const q = {
+          id: cols[0] || String(index + 1),
+          skill: (cols[1] || '').toLowerCase(),
+          part: cols[2] || '',
+          group: cols[3] || ('G' + (index + 1)),
+          type: (cols[4] || 'mcq').toLowerCase(),
+          passage: cols[5] || '',
+          question: cols[6] || '',
+          options: [
+            cols[7] || '',
+            cols[8] || '',
+            cols[9] || '',
+            cols[10] || ''
+          ],
+          answer: (cols[11] || '').trim()
+        };
+        questions.push(q);
+      });
 
+      return questions;
+    }
+
+    function renderQuiz(questions) {
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.innerHTML = '';
+
+      const groups = {};
+      const groupOrder = [];
+
+      // gom theo group
+      questions.forEach((q, idx) => {
+        const key = (q.group && q.group.trim()) ? q.group.trim() : ('G' + q.id);
+        if (!groups[key]) {
+          groups[key] = {
+            skill: q.skill,
+            passage: q.passage,
+            questions: []
+          };
+          groupOrder.push(key);
+        }
+        groups[key].questions.push(q);
+      });
+
+      let questionCounter = 0;
+
+      groupOrder.forEach(key => {
+        const g = groups[key];
+        const pTrim = (g.passage || '').trim();
+
+        // ===== READING: layout 2 cột =====
+        if (g.skill === 'reading') {
+          const layout = document.createElement('div');
+          layout.className = 'reading-layout';
+
+          // Cột trái: passage
+          const left = document.createElement('div');
+          left.className = 'reading-left group-block';
+
+          const title = document.createElement('h2');
+          title.textContent = 'Reading ' + key;
+          left.appendChild(title);
+
+          if (pTrim) {
+            const passageDiv = document.createElement('div');
+            passageDiv.className = 'passage';
+
+            let html = escapeHtml(pTrim);
+            html = html.replace(/\/\/\s*/g, '<br><br>');
+            html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+
+            passageDiv.innerHTML = html;
+
+            left.appendChild(passageDiv);
+          }
+
+          // Cột phải: câu hỏi
+          const right = document.createElement('div');
+          right.className = 'reading-right';
+
+          g.questions.forEach(q => {
+            questionCounter++;
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.dataset.answer = (q.answer || '').trim();
+            qDiv.dataset.type = q.type || 'short';
+
+            const titleP = document.createElement('p');
+            let qHtml = escapeHtml(q.question || '');
+            qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+            qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => {
+              const src = convertDriveImageUrl(url.trim());
+              return '<br><img class="q-img" src="' + src + '" alt="image">';
+            });
+            qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            titleP.innerHTML =
+              '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+            qDiv.appendChild(titleP);
+
+            if (q.type === 'mcq') {
+              ['A','B','C','D'].forEach((labelOpt, i) => {
+                if (!q.options[i]) return;
+                const optLabel = document.createElement('label');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'q' + questionCounter;
+                radio.value = labelOpt;
+                optLabel.appendChild(radio);
+                optLabel.appendChild(
+                  document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+                );
+                qDiv.appendChild(optLabel);
+                qDiv.appendChild(document.createElement('br'));
+              });
+            } else {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.name = 'q' + questionCounter;
+              input.className = 'short-answer-input';
+              qDiv.appendChild(input);
+            }
+
+            right.appendChild(qDiv);
+          });
+
+          layout.appendChild(left);
+          layout.appendChild(right);
+          quizDiv.appendChild(layout);
+
+        // ===== LISTENING & KHÁC: layout dọc =====
+        } else {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'group-block';
+
+          const title = document.createElement('h2');
+          title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
+          groupDiv.appendChild(title);
+
+          if (pTrim) {
+  // Tách theo " // " (có khoảng trắng hai bên) để tránh đụng https://
   const segments = pTrim
-    .split(' // ')        // tách theo " // " để không làm vỡ https://
+    .split(' // ')
     .map(s => s.trim())
-    .filter(Boolean);
+    .filter(s => s);
 
   const textSegments = [];
 
   segments.forEach(seg => {
-    // 1) ẢNH: dạng [IMG: ...]
+    // 1) ẢNH: dạng [IMG:...]
     if (/^\[IMG:/i.test(seg)) {
-      // giữ nguyên, lát nữa convert trong HTML
+      // giữ nguyên, lát nữa sẽ render bằng renderImgToken
       textSegments.push(seg);
       return;
     }
 
-    // 2) AUDIO: link Drive hoặc file .mp3/.wav/.m4a/.ogg...
-    const isHttp      = /^https?:\/\//i.test(seg);
+    // 2) AUDIO: link Google Drive hoặc file .mp3/.m4a/.wav/.ogg...
+    const isHttp = /^https?:\/\//i.test(seg);
     const hasAudioExt = /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(seg);
-    const isDrive     = /drive\.google\.com/i.test(seg);
-    const isAudioUrl  = isHttp && hasAudioExt;
+    const isDriveLink = /drive\.google\.com/i.test(seg);
+    const isAudioUrl = isHttp && hasAudioExt;
 
-    if ((skill === 'listening' || skill === 'reading') && (isDrive || isAudioUrl)) {
-      // 2a. Audio Google Drive → iframe preview
-      if (isDrive) {
+    if (g.skill === 'listening' && (isDriveLink || isAudioUrl)) {
+      // 2a. Audio Google Drive
+      if (isDriveLink) {
         let fileId = '';
         const m1 = seg.match(/\/d\/([^\/]+)/);
         const m2 = seg.match(/[?&]id=([^&]+)/);
@@ -414,7 +534,7 @@ function renderPassageWithMedia(pTrim, parentElem, skill) {
           iframe.className = 'audio-frame';
           iframe.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
           iframe.allow = 'autoplay';
-          parentElem.appendChild(iframe);
+          groupDiv.appendChild(iframe);
         }
       }
       // 2b. Audio file thường
@@ -422,183 +542,88 @@ function renderPassageWithMedia(pTrim, parentElem, skill) {
         const audio = document.createElement('audio');
         audio.controls = true;
         audio.src = seg;
-        parentElem.appendChild(audio);
+        groupDiv.appendChild(audio);
       }
     } else {
-      // 3) Text còn lại
+      // 3) Phần chữ (text) còn lại
       textSegments.push(seg);
     }
   });
 
-  // Nếu còn text/IMG thì gộp vào một khung passage
+  // Nếu có text/IMG thì hiển thị trong passage
   if (textSegments.length) {
     const passageDiv = document.createElement('div');
     passageDiv.className = 'passage';
 
-    // Ghép lại, dùng " // " rồi đổi thành xuống dòng
-    let html = escapeHtml(textSegments.join(' // '));
-    html = html.replace(/\/\/\s*/g, '<br><br>');
-    // Đổi [IMG: url] thành iframe / img thực tế
+    let html = escapeHtml(textSegments.join(' '));
+    // KHÔNG replace // nữa để tránh đụng https://
+    // Render [IMG:...] thành iframe / img
     html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
 
     passageDiv.innerHTML = html;
-    parentElem.appendChild(passageDiv);
+    groupDiv.appendChild(passageDiv);
   }
 }
 
-  // ====== RENDER ĐỀ ======
-  function renderQuiz(questions) {
-    const quizDiv = document.getElementById('quiz');
-    quizDiv.innerHTML = '';
 
-    const groups = {};
-    const groupOrder = [];
 
-    questions.forEach((q, idx) => {
-      const key = (q.group && q.group.trim()) ? q.group.trim() : ('G' + q.id);
-      if (!groups[key]) {
-        groups[key] = {
-          skill: q.skill,
-          passage: q.passage,
-          questions: []
-        };
-        groupOrder.push(key);
-      }
-      groups[key].questions.push(q);
-    });
 
-    let questionCounter = 0;
 
-    groupOrder.forEach(key => {
-      const g = groups[key];
-      const pTrim = (g.passage || '').trim();
+          g.questions.forEach(q => {
+            questionCounter++;
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.dataset.answer = (q.answer || '').trim();
+            qDiv.dataset.type = q.type || 'short';
 
-      // READING: layout 2 cột
-      if (g.skill === 'reading') {
-        const layout = document.createElement('div');
-        layout.className = 'reading-layout';
+            const titleP = document.createElement('p');
+            let qHtml = escapeHtml(q.question || '');
+            qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+            qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+            qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-        const left = document.createElement('div');
-        left.className = 'reading-left group-block';
 
-        const title = document.createElement('h2');
-        title.textContent = 'Reading ' + key;
-        left.appendChild(title);
+            titleP.innerHTML =
+              '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+            qDiv.appendChild(titleP);
 
-        if (pTrim) {
-  renderPassageWithMedia(pTrim, left, g.skill);
+            if (q.type === 'mcq') {
+              ['A','B','C','D'].forEach((labelOpt, i) => {
+                if (!q.options[i]) return;
+                const optLabel = document.createElement('label');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'q' + questionCounter;
+                radio.value = labelOpt;
+                optLabel.appendChild(radio);
+                optLabel.appendChild(
+                  document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+                );
+                qDiv.appendChild(optLabel);
+                qDiv.appendChild(document.createElement('br'));
+              });
+            } else {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.name = 'q' + questionCounter;
+              input.className = 'short-answer-input';
+              qDiv.appendChild(input);
+            }
+
+            groupDiv.appendChild(qDiv);
+          });
+
+          quizDiv.appendChild(groupDiv);
+        }
+      });
+    }
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")  // ‘ và ’  -> '
+    .replace(/\s+/g, ' ')            // gộp nhiều khoảng trắng
+    .trim();
 }
-
-
-        const right = document.createElement('div');
-        right.className = 'reading-right';
-
-        g.questions.forEach(q => {
-          questionCounter++;
-          const qDiv = document.createElement('div');
-          qDiv.className = 'question';
-          qDiv.dataset.answer = (q.answer || '').trim();
-          qDiv.dataset.type = q.type || 'short';
-
-          const titleP = document.createElement('p');
-          let qHtml = escapeHtml(q.question || '');
-          qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
-          qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
-
-          titleP.innerHTML =
-            '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
-          qDiv.appendChild(titleP);
-
-          if (q.type === 'mcq') {
-            ['A','B','C','D'].forEach((labelOpt, i) => {
-              if (!q.options[i]) return;
-              const optLabel = document.createElement('label');
-              const radio = document.createElement('input');
-              radio.type = 'radio';
-              radio.name = 'q' + questionCounter;
-              radio.value = labelOpt;
-              optLabel.appendChild(radio);
-              optLabel.appendChild(
-                document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
-              );
-              qDiv.appendChild(optLabel);
-              qDiv.appendChild(document.createElement('br'));
-            });
-          } else {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.name = 'q' + questionCounter;
-            input.className = 'short-answer-input';
-            qDiv.appendChild(input);
-          }
-
-          right.appendChild(qDiv);
-        });
-
-        layout.appendChild(left);
-        layout.appendChild(right);
-        quizDiv.appendChild(layout);
-
-      } else {
-        // LISTENING & KHÁC: layout dọc
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'group-block';
-
-        const title = document.createElement('h2');
-        title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
-        groupDiv.appendChild(title);
-
-       if (pTrim) {
-  renderPassageWithMedia(pTrim, groupDiv, g.skill);
-}
-
-
-        g.questions.forEach(q => {
-          questionCounter++;
-          const qDiv = document.createElement('div');
-          qDiv.className = 'question';
-          qDiv.dataset.answer = (q.answer || '').trim();
-          qDiv.dataset.type = q.type || 'short';
-
-          const titleP = document.createElement('p');
-          let qHtml = escapeHtml(q.question || '');
-          qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
-          qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
-
-          titleP.innerHTML =
-            '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
-          qDiv.appendChild(titleP);
-
-          if (q.type === 'mcq') {
-            ['A','B','C','D'].forEach((labelOpt, i) => {
-              if (!q.options[i]) return;
-              const optLabel = document.createElement('label');
-              const radio = document.createElement('input');
-              radio.type = 'radio';
-              radio.name = 'q' + questionCounter;
-              radio.value = labelOpt;
-              optLabel.appendChild(radio);
-              optLabel.appendChild(
-                document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
-              );
-              qDiv.appendChild(optLabel);
-              qDiv.appendChild(document.createElement('br'));
-            });
-          } else {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.name = 'q' + questionCounter;
-            input.className = 'short-answer-input';
-            qDiv.appendChild(input);
-          }
-
-          groupDiv.appendChild(qDiv);
-        });
-
-        quizDiv.appendChild(groupDiv);
-      }
-    });
-  }
 
  function gradeQuiz() {
   const quizDiv = document.getElementById('quiz');
@@ -609,41 +634,34 @@ function renderPassageWithMedia(pTrim, parentElem, skill) {
   questionDivs.forEach(div => {
     const type = div.dataset.type || 'short';
 
-    // Lấy đáp án gốc (nguyên văn, để hiển thị)
+    // Lấy đáp án gốc (giữ nguyên để hiển thị nếu cần)
     const answerRawDisplay = (div.dataset.answer || '').trim();
 
-    // Chuẩn hóa đáp án để so sánh (lowercase)
-    const answerRaw = answerRawDisplay.toLowerCase();
-
-    // Tách thành nhiều đáp án bằng | / ;  (vd: "airport|the airport")
-    const answerList = answerRaw
-      .split(/[\|;/]+/)
-      .map(a => a.trim())
-      .filter(a => a);
+    // Tạo danh sách đáp án đúng, cho phép nhiều đáp án ngăn cách bởi |
+    const answerList = answerRawDisplay
+      .split('|')
+      .map(normalizeText)   // dùng hàm chuẩn hóa ở trên
+      .filter(s => s);
 
     let userAnswer = '';
 
     if (type === 'mcq') {
       const checked = div.querySelector('input[type="radio"]:checked');
       if (checked) {
-        userAnswer = checked.value.trim().toLowerCase();
+        userAnswer = normalizeText(checked.value);
       }
     } else {
       const input = div.querySelector('input[type="text"]');
       if (input) {
-        userAnswer = input.value.trim().toLowerCase();
+        userAnswer = normalizeText(input.value);
       }
     }
 
-    // So sánh: đúng nếu userAnswer trùng BẤT KỲ phần tử nào trong answerList
     let isCorrect = false;
     if (answerList.length && userAnswer) {
-      if (type === 'mcq') {
-        // MCQ thì thường chỉ có 1 đáp án, nhưng vẫn cho phép nhiều (A|B...)
-        isCorrect = answerList.includes(userAnswer);
-      } else {
-        // Short answer
-        isCorrect = answerList.includes(userAnswer);
+      // Đúng nếu userAnswer trùng BẤT KỲ phần tử nào
+      if (answerList.includes(userAnswer)) {
+        isCorrect = true;
       }
     }
 
@@ -655,36 +673,15 @@ function renderPassageWithMedia(pTrim, parentElem, skill) {
       div.classList.add('incorrect');
       div.classList.remove('correct');
     }
-
-    // ----- HIỆN ĐÁP ÁN ĐÚNG -----
-    // Nếu đã có <div class="correct-answer"> thì không tạo thêm
-    let correctAnswerDiv = div.querySelector('.correct-answer');
-    if (!correctAnswerDiv) {
-      correctAnswerDiv = document.createElement('div');
-      correctAnswerDiv.className = 'correct-answer';
-
-      // Hiển thị đẹp: thay | / ; bằng " / "
-      const displayText = answerRawDisplay.replace(/[\|;/]+/g, ' / ');
-      correctAnswerDiv.textContent = 'Đáp án đúng: ' + displayText;
-      div.appendChild(correctAnswerDiv);
-    }
-
-    // ----- KHÓA CÁC Ô TRẢ LỜI -----
-    const inputs = div.querySelectorAll('input');
-    inputs.forEach(input => {
-      input.disabled = true;
-    });
   });
 
-  // Tính % điểm
   const percent = Math.round(correct * 100 / Math.max(total, 1));
 
   const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
   const cls  = (document.getElementById('studentClass').value || '').trim();
   const now  = new Date();
-  const timestamp = now.toLocaleString();  // giờ & ngày hiện tại
+  const timestamp = now.toLocaleString();
 
-  // Dòng báo cáo dạng TSV (tab-separated) để dán vào Google Sheet
   const logLine =
     name + '\t' +
     cls + '\t' +
@@ -694,7 +691,6 @@ function renderPassageWithMedia(pTrim, parentElem, skill) {
     total + '\t' +
     percent;
 
-  // Gửi kết quả lên Google Sheet (LOG_ENDPOINT đã cấu hình phía trên)
   if (typeof LOG_ENDPOINT !== 'undefined' && LOG_ENDPOINT) {
     const payload = {
       testId:   TEST_ID,
@@ -709,16 +705,13 @@ function renderPassageWithMedia(pTrim, parentElem, skill) {
     fetch(LOG_ENDPOINT, {
       method: 'POST',
       mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     }).catch(err => {
       console.error('Error sending result to Sheet:', err);
     });
   }
 
-  // Hiển thị box kết quả
   const box = document.getElementById('resultBox');
   box.style.display = 'block';
   box.innerHTML = `
@@ -734,45 +727,74 @@ function renderPassageWithMedia(pTrim, parentElem, skill) {
       ${percent}%
     </div>
   `;
-
-  // ----- KHÓA NÚT NỘP BÀI, MỞ NÚT LÀM LẠI -----
-  const submitBtn = document.getElementById('submitBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đã nộp bài';
-  }
-
-  const retryBtn = document.getElementById('retryBtn');
-  if (retryBtn) {
-    retryBtn.disabled = false;
-    retryBtn.textContent = 'Làm lại từ đầu';
-  }
 }
 
 
-  // ====== GẮN SỰ KIỆN ======
-  document.getElementById('submitBtn').addEventListener('click', gradeQuiz);
-  document.getElementById('retryBtn').addEventListener('click', () => {
-    location.reload();
-  });
-
-  // ====== KHỞI ĐỘNG ======
-  (function initExam() {
-    const qs = parseSheet(RAW_DATA);
-    if (!qs.length) {
-      document.getElementById('quiz').innerHTML =
-        '<p style="color:red;">Giáo viên chưa dán dữ liệu đề vào biến RAW_DATA.</p>';
-      return;
+    function copyLogLine() {
+      const ta = document.getElementById('logLine');
+      if (!ta) return;
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        alert('Đã copy. Hãy dán vào Zalo hoặc Google Sheet gửi cho giáo viên.');
+      } catch (e) {
+        alert('Trình duyệt không cho copy tự động. Hãy tự bôi đen và copy dòng trong ô.');
+      }
     }
-    renderQuiz(qs);
-    startTimer(DURATION_MINUTES * 60);
-  })();
 
-  // Cập nhật năm footer
-  document.getElementById("year").textContent = new Date().getFullYear();
+// Bắt buộc nhập Họ tên và Lớp/Nhóm trước khi nộp bài
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('studentName');
+  const classInput = document.getElementById('studentClass');
 
-  // Lấy title từ Google Sheet
-  loadTestTitle();
-</script>
+  const name = (nameInput.value || '').trim();
+  const cls  = (classInput.value || '').trim();
+
+  if (!name || !cls) {
+    alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi nộp bài.');
+    
+    // Đưa con trỏ vào ô còn thiếu
+    if (!name) {
+      nameInput.focus();
+    } else if (!cls) {
+      classInput.focus();
+    }
+    return; // Không gọi gradeQuiz nếu thiếu thông tin
+  }
+
+  // Đủ thông tin thì mới chấm điểm
+  gradeQuiz();
+});
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  location.reload();
+});
+
+
+    // Khởi động
+    (function initExam() {
+      const qs = parseSheet(RAW_DATA);
+      if (!qs.length) {
+        document.getElementById('quiz').innerHTML =
+          '<p style="color:red;">Giáo viên chưa dán dữ liệu đề vào biến RAW_DATA.</p>';
+        return;
+      }
+      renderQuiz(qs);
+      startTimer(DURATION_MINUTES * 60);
+    })();
+  
+  // Sau khi trang tải, lấy Title từ Google Sheet
+loadTestTitle();
+  </script>
+  
+  <footer class="footer">
+  <p>© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
