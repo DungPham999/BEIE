@@ -128,7 +128,8 @@
   <h1>Vocabulary Quiz</h1>
 
   <div class="info">
-    <p><strong>Thời gian còn lại:</strong> <span id="timer">--:--</span></p>
+    <p><strong>Thời gian làm bài:</strong> <span id="timer">00:00</span></p>
+
     <p><strong>Mục tiêu:</strong> làm đúng <span id="targetCorrectText">--</span> câu để hoàn thành.</p>
     <p>
       <label>Họ tên học viên:
@@ -199,46 +200,92 @@
   // từ Google Sheets và dán vào giữa cặp ` ... ` dưới đây.
   const RAW_DATA = `
 
-1	Mũ bảo hộ	Protective helmet	https://drive.google.com/file/d/1nPHLr0-riBdaXnjTyGgXVzeD5pw-y5-0/view?usp=drivesdk
-2	Công nhân viên chức	Officer worker	https://drive.google.com/file/d/1lcUsLW1wp3ECcZ3T3VIS5eRp-ngqZMS3/view?usp=drivesdk
-3	Hấp dẫn, bắt tai	Catchy	https://drive.google.com/file/d/1-x8aCMIiize9SwcMcNxoWuMR_AY5_msn/view?usp=drivesdk
-4	Ngày hết hạn	Expiration date	https://drive.google.com/file/d/1XDZuLbaocCHtual9_WoSx19ai3apsgno/view?usp=drivesdk
-5	Bảo hành	Warranty	https://drive.google.com/file/d/1aPGw1OWc6KpfRE6VzcHuqdMd3hXisMEn/view?usp=drivesdk
-6	Tham gia vào	Participate in	https://drive.google.com/file/d/1LiRds0EHdFv-rBHQUBvBv_ratN7DDHw_/view?usp=drivesdk
-7	Thực hiện, thực thi	Implement	https://drive.google.com/file/d/1vwMEMl5nlzYQBP6L8hkqaYTc417yiYsF/view?usp=drivesdk
-8	Mẫu thử	Free sample	https://drive.google.com/file/d/1pK2GmtqaUqKcXEh54pXb3UppncW0POGG/view?usp=drivesdk
-9	Được bao quanh	Be surrounded	https://drive.google.com/file/d/1bBTfwfol_9Mhup--r45wbv8_aIxpjZYa/view?usp=drivesdk
-10	Đường cao tốc	Highway	https://drive.google.com/file/d/1ijny6JHiasBDpFr7MCP4LFH0g-c756YY/view?usp=drivesdk
-11	Quyết định (làm gì)	Decide to	https://drive.google.com/file/d/1pDviyeDY700v-8MGWxeK4dY_6k5zGjh2/view?usp=drivesdk
-12	Sa thải	Lay off	https://drive.google.com/file/d/12WtZ9l_edog_VXzhtDoWvQVNmPPxQXK-/view?usp=drivesdk
-13	Làm khảo sát	Conduct a survey	https://drive.google.com/file/d/1aZH_ee6TW7_YQmIN4d3W5JOEWT5TstTy/view?usp=drivesdk
-14	Tìm ra	Find out	https://drive.google.com/file/d/1W5joYhECHwfj4mk1-DohBboLVKN9gKRr/view?usp=drivesdk
-15	Kế hoạch nghỉ mát	Vacation plans	https://drive.google.com/file/d/1iJCHoL7ILD2kPA4IxaFmiC1YyxHS1Pwa/view?usp=drivesdk
-16	Bảng thông báo	Bulletin board	https://drive.google.com/file/d/16U5l5LUp8Xi8P7mXiktMsHtX7tdqe1RJ/view?usp=drivesdk
-17	Cho phép ai (làm gì đó)	Enable somebody to	https://drive.google.com/file/d/1j0abMI1uv2shKMmmwtuuuIK6uby00qAg/view?usp=drivesdk
-18	Sự bổ nhiệm	Appointment	https://drive.google.com/file/d/1qizb9xEDe468dRyr1MgUaPIW1u9SpxE1/view?usp=drivesdk
-19	Hoàn thiện	Finalize	https://drive.google.com/file/d/1pBYfGWmEvzxpofH9klUr55w_3lwlu306/view?usp=drivesdk
-20	Đi dạo	Strolling	https://drive.google.com/file/d/1bIsh5teJqjtMTsMbccSXozph1Xgu_GbA/view?usp=drivesdk
-21	Lên (tàu, xe, máy bay)	Boarding	https://drive.google.com/file/d/15LEeVB2-srXy0pEQM3re6ISu7o320Kmg/view?usp=drivesdk
-22	Tập thể dục	Working out	https://drive.google.com/file/d/1lvATTcKM7gii8SLtYzyG2Q6bW7d-bohW/view?usp=drivesdk
-23	Cầm/giữ tài liệu	Holding documents	https://drive.google.com/file/d/1AzQpHPSSZDKoic9TsWOSRz5hKkx5t1Ml/view?usp=drivesdk
-24	Di chuyển đồ đạc / nội thất	Moving some furniture	https://drive.google.com/file/d/1cUTfdFmRkAbf6bhrD-HdyBemHI1m_TDe/view?usp=drivesdk
-25	Mang / khuân chậu cây	Carrying potted plants	https://drive.google.com/file/d/12vSmzblyVvK8OR4fiwF2gE0rMjWI01cD/view?usp=drivesdk
-26	Chỉ vào màn hình	Pointing at a monitor	https://drive.google.com/file/d/1XfPTw98PQp4mQ8C97MnD7Y7D9p3RRtFC/view?usp=drivesdk
-27	Hái hoa	Picking up some flowers	https://drive.google.com/file/d/1gECRS8cmtR4Pn_T4pzx_fnPBFX-5L2WP/view?usp=drivesdk
-28	Nhìn vào màn hình	Looking at the screen	https://drive.google.com/file/d/18sv8VIBjfI_dTPKl7wub_4q2wS8sVine/view?usp=drivesdk
-29	xem biểu diễn đường phố	Watching a street performance	https://drive.google.com/file/d/1X8LatIbD8bA_0qmVWdQb4YdXHim9VHLW/view?usp=drivesdk
-30	kiểm tra nắp xe	Checking the hood	https://drive.google.com/file/d/1VI9UnEie4-z9eBHGmcPzsFHk-lJZR_eU/view?usp=drivesdk
-31	đọc tạp chí	Reading a magazine	https://drive.google.com/file/d/1Ne_G2wEN_ALpggGx0aB2NuUcfjwQP0dK/view?usp=drivesdk
-32	kiểm tra 1 cái máy	Inspecting a machine	https://drive.google.com/file/d/1_LcUic483tEzY5B-UvCa-w73O-ygmOAx/view?usp=drivesdk
-33	Nhìn chằm chằm vào trần nhà	Stare at the ceiling	https://drive.google.com/file/d/1HdNE4jYhPGFUN4QsMhMBVcZzd0yq_zRD/view?usp=drivesdk
-34	Mặc một bộ vest quần	Wearing a pantsuit	https://drive.google.com/file/d/1ahYrZ_qOUZ2UMTisrNgTDsOjDoHHtX5o/view?usp=drivesdk
-35	Đeo khăn	Wearing a scarf	https://drive.google.com/file/d/16qlQz_JH2-ZSRN14HJJNZHwXUWVzb7TQ/view?usp=drivesdk
-36	Đang mang giầy (in progress)	Putting on shoes	https://drive.google.com/file/d/11KJyVB_OZTlI6hKRb2W39YDzIxyXwVjB/view?usp=drivesdk
-37	Cởi áo khoác	Taking off a jacket	https://drive.google.com/file/d/1Lof_Z7c_QY6xMkPQ2SEPUs7ePkh7Vgv_/view?usp=drivesdk
-38	Thử chiếc váy	Trying on a dress	https://drive.google.com/file/d/1yTD-CaUixd-XVtrCWtKjrlALwc00_Xcv/view?usp=drivesdk
-39	Thắc mắc	Wonder	https://drive.google.com/file/d/1_w_tAdz5QeZxqz2DeZicB65fE80Hb7X7/view?usp=drivesdk
-
+97	tổ chức lễ hội	organize a festival	https://drive.google.com/file/d/17uoOgnwhSgRX5KXZSRr-YUXk-rPmOStM/view?usp=drivesdk
+98	phối hợp với một tổ chức từ thiện	coordinate with a charity	https://drive.google.com/file/d/1AeTDLxIlvMuT-709nSd_3xZAZbtTRZmk/view?usp=drivesdk
+99	quản lý xe bán đồ ăn	manage a food cart	https://drive.google.com/file/d/1ydG3gYJXrjVOrRpfnw_lDOavcpgy3EZO/view?usp=drivesdk
+100	dạy các lớp nấu ăn	lead cooking classes	https://drive.google.com/file/d/1YeSm1mMo2fJ8AypAFmBl-e9a-AIqHRVp/view?usp=drivesdk
+101	mẫu hoàn trả chi phí	a reimbursement form	https://drive.google.com/file/d/13xO1Dtz0QlOsJxVVyZoG5iFjnwGd7n9k/view?usp=drivesdk
+102	thư giới thiệu	a letter of recommendation	https://drive.google.com/file/d/1DDJngZrQzpqpJ0r1ZJuYh-h-etjJ180H/view?usp=drivesdk
+103	tìm kiếm trong cơ sở dữ liệu	searching a database	https://drive.google.com/file/d/1hRNyDHbwcds117a4bzxJ5NGkTsIXwKMs/view?usp=drivesdk
+104	cải thiện kỹ năng viết	improving writing skills	https://drive.google.com/file/d/1MJe5Onj-CrzNsluPPPDVxQG2Hl3C3yTg/view?usp=drivesdk
+105	chỉnh sửa ảnh kỹ thuật số	edit digital photographs	https://drive.google.com/file/d/1caU3cXHyWbzmBQ6-ql1X4dWKeISpCEPu/view?usp=drivesdk
+106	tạo trang web	create a web page	https://drive.google.com/file/d/1A0sOUWNErPMD85aPXpPeRUqfq1Fj7JXf/view?usp=drivesdk
+107	truy cập vào máy tính	access a computer	https://drive.google.com/file/d/1Yk5zDcWjQvpN0ShAyroihTUFItOOUYI2/view?usp=drivesdk
+108	bằng lái xe	a driver’s license	https://drive.google.com/file/d/14o2dGBkoRO2A1mapthvw6VR96p8eB5CE/view?usp=drivesdk
+109	gọi điện lại	return a phone call	https://drive.google.com/file/d/1ML2h_oD5u3OkSN98jQMHmwj0n3rWVq3z/view?usp=drivesdk
+110	giao mẫu thử miễn phí	deliver a free sample	https://drive.google.com/file/d/1vdWBiuFHRC-0lOB5EPOIVm7LqX0GTJpd/view?usp=drivesdk
+111	cung cấp bảo hành mở rộng	provide an extended warranty	https://drive.google.com/file/d/1QX8zT8aomrLwb8tOWIUeonTDWF6fzN9x/view?usp=drivesdk
+112	hỏi về ngày giao hàng	inquire about a delivery date	https://drive.google.com/file/d/19q2tNs39ViKB0xwvUt-aghtU52pBIqg4/view?usp=drivesdk
+113	báo cáo vấn đề với sản phẩm	report a problem with a product	https://drive.google.com/file/d/1OaHaFV7Q2xbLWQ7ROno1ubOc2Sj1Biyo/view?usp=drivesdk
+114	sửa đổi địa chỉ thanh toán	revise a billing address	https://drive.google.com/file/d/1U2BZsW09z-bL9lNxkNHWyWOdXEBwX0qk/view?usp=drivesdk
+115	thuyết trình tại hội nghị	present at a conference	https://drive.google.com/file/d/1rkHHl-zX3FuJeK66liw7iO9EnNzv48iX/view?usp=drivesdk
+116	đi khám răng	have a dental examination	https://drive.google.com/file/d/1d-1EC7812KbRL8Jt_ECd6Lix9tgX30vW/view?usp=drivesdk
+117	từ chối lời mời	reject an invitation	https://drive.google.com/file/d/1aIMoY5gSWlaolVX-yIcVunqNyTMCjlZp/view?usp=drivesdk
+118	đề nghị giúp đỡ	offer assistance	https://drive.google.com/file/d/1nl9m4d9fEX3KTohPeavg1fyt0YqexAp1/view?usp=drivesdk
+119	yêu cầu thay đổi	request a change	https://drive.google.com/file/d/1rSLOgArSAvAvGZotWw04MJlzT_xtEr1P/view?usp=drivesdk
+120	hoàn tất hợp đồng	finalize a contract	https://drive.google.com/file/d/1HR4Dn5q6U5q3YhrJ7Y6WQ8tZkALpPuar/view?usp=drivesdk
+121	thuyết trình	give a presentation	https://drive.google.com/file/d/12zLFh7660WMk6hEg8QmS1BOjulp1i3Xq/view?usp=drivesdk
+122	tăng doanh số/hoạt động kinh doanh	increase business	https://drive.google.com/file/d/1PuftV-KXPn9Dpd0i392tPoYLRcz1-JCE/view?usp=drivesdk
+123	điều chỉnh quảng cáo	modify an advertisement	https://drive.google.com/file/d/1H2uz90Q_JuJxz1b96K6-PPudB6jz68l8/view?usp=drivesdk
+124	thấp hơn ngân sách	be well under budget	https://drive.google.com/file/d/1FCwnnMQttfzjNSSx6tQQRNqE77cLpD6c/view?usp=drivesdk
+125	chuyển đến vùng ngoại ô	move to suburban areas	https://drive.google.com/file/d/1zIwBo-fMoKMfilGpK1vb_THxkzCMeC_h/view?usp=drivesdk
+126	chiến lược bán hàng	a sales strategy	https://drive.google.com/file/d/1irXlNEauy9f_52zFq31GhsRsTPczOd_e/view?usp=drivesdk
+127	công ty giao hàng	a delivery company	https://drive.google.com/file/d/1IJ3UG6Fjcb_RFYHK4T_uhcAOyFY43qHh/view?usp=drivesdk
+128	cửa hàng đồ gia dụng	an appliance store	https://drive.google.com/file/d/1gNtDMmipaUfyuPkCKPxmOnFmRJhxPKAh/view?usp=drivesdk
+129	cửa hàng sửa chữa	a repair shop	https://drive.google.com/file/d/137X52T2E8TgZvudf_lDGFvhduWyPHICe/view?usp=drivesdk
+130	cuộc thanh tra ở nhà hàng	a restaurant inspection	https://drive.google.com/file/d/1C0C27S-LtoEjmPcvjdk7OgBejwGJ_H0m/view?usp=drivesdk
+131	giờ hoạt động	the hours of operation	https://drive.google.com/file/d/1VZjRYUeTEoF6ynZUmXcpuQyBKYIvsWJt/view?usp=drivesdk
+132	lắp đặt thiết bị mới	install new equipment	https://drive.google.com/file/d/103LGu3NPSdgnEBXn9TwwcMwZUEu0mmuz/view?usp=drivesdk
+133	tiệc kỷ niệm	an anniversary party	https://drive.google.com/file/d/100CIAXP5cZYMI_teEQHq3nu8Lj8Og4JM/view?usp=drivesdk
+134	cuộc thanh tra ở tòa nhà	a building inspection	https://drive.google.com/file/d/1RUgPkLbF6fRPpPFzXXf0D4aYJXhVyrTi/view?usp=drivesdk
+135	học thực đơn mới/công trình	study an updated menu	https://drive.google.com/file/d/1rBqPcHDIDyvAat9neHpdyc7H4K3EuXMd/view?usp=drivesdk
+136	mặc đồng phục quy định	wear a specific uniform	https://drive.google.com/file/d/1VuE3I0U67-pScFxwQKDGu9fBuWqwOOwn/view?usp=drivesdk
+137	đọc hướng dẫn	read a set of instructions	https://drive.google.com/file/d/1gZvLV0mPIWdwMjcOAv1Jv-vDzMW1JcSt/view?usp=drivesdk
+138	đăng ký ca làm thêm	sign up for extra work shifts	https://drive.google.com/file/d/1l4CV3OqhohB38ZbOicX-a5Mrj6zWsncW/view?usp=drivesdk
+139	sự quản lý nhà máy	factory management	https://drive.google.com/file/d/17uLVP9waT1AYjtbLsit7FWqtLuTSDI_I/view?usp=drivesdk
+140	việc sửa chữa ô tô	automotive repair	https://drive.google.com/file/d/1MjpDYqJ72TS1auNfEVFBCia4bCsG4Scu/view?usp=drivesdk
+141	Khóa học này có gì khác?	How is the course different?	https://drive.google.com/file/d/1TDuaSzgRbDDWt70cR5f2dryuPf3YDVxd/view?usp=drivesdk
+142	được dạy bởi giảng viên mới	taught by a new instructor	https://drive.google.com/file/d/1Tl19xxkhRw4g41CUHsimWMDxWEXXsou6/view?usp=drivesdk
+143	phát tài liệu khóa học	distribute a course catalog	https://drive.google.com/file/d/1gB0KRl14N7mPBFLZ2fvI84W2HnsoDXWi/view?usp=drivesdk
+144	xử lý thanh toán nhập học	process admissions payments	https://drive.google.com/file/d/15Uu3ok2VsXWNQMS8LlccEZh9VNKSVUY4/view?usp=drivesdk
+145	cấp mã sinh viên	assign student ID numbers	https://drive.google.com/file/d/1RhO0RXyBdYpATuPiTA4pEQrG8xZPZ-K3/view?usp=drivesdk
+146	thảo luận quy trình nhập học	discuss the enrollment process	https://drive.google.com/file/d/1A9pqM8BXbPUiXYXbg4823rQedb3BTr1E/view?usp=drivesdk
+147	có nhiều nội dung phải học/xử lý	have a lot of material to cover	https://drive.google.com/file/d/19p1nQ2B4sJRFm6cVmCWkd4vwDH7lolJn/view?usp=drivesdk
+148	quản lý tài chính của phòng ban	manage department finances	https://drive.google.com/file/d/1xY8S7_TEWEAr3pArNHNjKET9m_2LNtXA/view?usp=drivesdk
+149	kỹ năng giao tiếp hiệu quả	effective communication skills	https://drive.google.com/file/d/1HaRckh4sOg1Lr9l1Wm0VYSDBpuPygnxr/view?usp=drivesdk
+150	cải thiện năng suất	improve productivity	https://drive.google.com/file/d/1lEE5beHC8Ms19POZSFlfzrv9rfUDSNWV/view?usp=drivesdk
+151	đăng nhập cơ sở dữ liệu	log in to a database	https://drive.google.com/file/d/1k9EdJwZ6AhF4o4a8O-GnRiijI2DZv32C/view?usp=drivesdk
+152	trình giấy tờ	show identification	https://drive.google.com/file/d/1FipnqM4YXjJMZ7yAYvxuhKuIBlNvlvLk/view?usp=drivesdk
+153	làm việc theo cặp	work with a partner	https://drive.google.com/file/d/1W2Y6ec5Me7ILLTmDG3jE01xowsZyu2hv/view?usp=drivesdk
+154	nhân viên bất động sản	real estate agent	https://drive.google.com/file/d/1tSZHl51fDwLkaKWJ4l05qXza0bP9_Sod/view?usp=drivesdk
+155	nhà thầu xây dựng	building contractor	https://drive.google.com/file/d/1OMi2AaEQ_cEKo-GdAdDd_AAweZSNAlGn/view?usp=drivesdk
+156	chi phí dự toán cao hơn mong đợi	an estimate is higher than expected	https://drive.google.com/file/d/1inhi4r1clXLKTVuAR2fZRl1hpuYQCSyf/view?usp=drivesdk
+157	công việc bị trễ tiến độ	some work is behind schedule	https://drive.google.com/file/d/1owuR9QMREQXAmfiBWNWYws52gDZEd8ee/view?usp=drivesdk
+158	một số vật liệu bị thiếu	materials are unavailable	https://drive.google.com/file/d/1JzBLnZA_J4LUnPlEblowXMYWOPUBtIeP/view?usp=drivesdk
+159	hoàn thành dự án theo từng giai đoạn	complete a project in stages	https://drive.google.com/file/d/1ULZ1BrRhDca97iI32zemg30_mgwcW_JS/view?usp=drivesdk
+160	mua bất động sản khác	buy a different property	https://drive.google.com/file/d/1iX6lljhfrdRxv-frgGAViMmUg6074hg_/view?usp=drivesdk
+161	danh bạ điện thoại	telephone directory	https://drive.google.com/file/d/1BTjKSFF126hUdfS2bdXtj9eYGhWjixxW/view?usp=drivesdk
+162	văn phòng khám/ y tế	a medical office	https://drive.google.com/file/d/1eRk7hRDCxh5Bd36sWmL9CmgqOmg8kGjL/view?usp=drivesdk
+163	cửa hàng điện tử	an electronics store	https://drive.google.com/file/d/1m1hL4sq5Gk1nah1LJMzi05EAdBbTT5yP/view?usp=drivesdk
+164	trả lời câu hỏi về hóa đơn	answer questions about billing	https://drive.google.com/file/d/1Sh0jPrYlq45oGSqAHgPfIjzgp6k45_bU/view?usp=drivesdk
+165	điền mẫu đăng ký thành viên	fill out a membership form	https://drive.google.com/file/d/1bkkzM4yP1f9T69AD4vCzKYfqVp-kL8yO/view?usp=drivesdk
+166	tìm hiểu về chính sách mới cập nhật	learn about an updated policy	https://drive.google.com/file/d/1FtWk6-GdsbHESFbA-BjlumbT_O18anCO/view?usp=drivesdk
+167	nộp hồ sơ/ lý lịch nhân viên	submit employee biographies	https://drive.google.com/file/d/1z7ULWJ72H_ptme_hvrBrIBum1-OvN5ZP/view?usp=drivesdk
+168	mẹo dinh dưỡng	nutrition tips	https://drive.google.com/file/d/10OZUreGhltH3Ogiz-LX_u-oH0TXOqpts/view?usp=drivesdk
+169	tiếng ồn từ xây dựng	construction noise	https://drive.google.com/file/d/1sSanLN3FKO0x49N-biXe4CvFXwcR0ERe/view?usp=drivesdk
+170	gây gián đoạn, gây phiền	be disruptive	https://drive.google.com/file/d/1vo12sK4ZIs7OWC6UJrobJ_M7ZPzWwd-l/view?usp=drivesdk
+171	phí gửi xe	the parking fee	https://drive.google.com/file/d/1MxpyO6-qFC6oG8ruE5_fmBIwjv97ooJp/view?usp=drivesdk
+172	một địa điểm bất tiện	an inconvenient location	https://drive.google.com/file/d/1RPwf7zGf8DSYMeBZggXkk1YJALM_F6mC/view?usp=drivesdk
+173	khu vực chỗ ngồi ngoài trời	outdoor seating space	https://drive.google.com/file/d/15Rz7egQC7mT2xtge0WbZ7DjfNVckoBDe/view?usp=drivesdk
+174	xây thêm một khu mới	add a new wing	https://drive.google.com/file/d/1kQBMXdEdOptUGGcIno5koZuCUwIzys5M/view?usp=drivesdk
+175	thảo luận về ngân sách	discuss a budget	https://drive.google.com/file/d/1WLYMpGuuoQxBmVYVNChZqECxHOOo2Hwe/view?usp=drivesdk
+176	lễ kỷ niệm sắp tới	an upcoming celebration	https://drive.google.com/file/d/1qdd4_0lE86ZMVBhinWroK5CrXM2Cl_C8/view?usp=drivesdk
+177	dự án tình nguyện	a volunteer project	https://drive.google.com/file/d/1mBSgwAwp1kZKxwValYbwyYsaePEo_vIf/view?usp=drivesdk
+178	khu đỗ xe	the parking area	https://drive.google.com/file/d/1aBB_p19OrYm94S2ASHT7OA5TFpW7h1su/view?usp=drivesdk
+179	bản đề xuất thi công	a construction proposal	https://drive.google.com/file/d/1XYvAicGRw-WUZLXm9D5pY5m907WUlvTS/view?usp=drivesdk
+180	nộp đơn	submit an application	https://drive.google.com/file/d/1vAHkJmLhe4Au8bsWTwgO6W2ek8PycCLo/view?usp=drivesdk
+181	sự mở rộng cơ sở	new facility expansion	https://drive.google.com/file/d/1DfOCst3Z5FpdUPV8C8Hr3KLFPqHYBPWu/view?usp=drivesdk
+182	danh mục nhân viên	employee directory	https://drive.google.com/file/d/1Yj3reCfNmMzuCu9j3wJp6fsUWt9OLslT/view?usp=drivesdk
 `; // <-- THAY BẰNG DỮ LIỆU THẬT CỦA THẦY
 
   // ========= CODE CHUNG =========
@@ -277,14 +324,19 @@
  
 
 
-  let bank = [];
-  let currentIndex = 0;
-  let correctCount = 0;
-  let totalDone = 0;
-  let quizFinished = false;
-  let startTime = null;
-  let timerInterval = null;
-  let timeLeft = TIME_LIMIT_MINUTES * 60; // giây
+ let bank = [];
+let currentIndex = 0;
+let correctCount = 0;
+let totalDone = 0;
+let quizFinished = false;
+
+// Timer đếm lên
+let startTime = null;
+let timerInterval = null;
+let elapsedSec = 0;        // số giây đã làm
+
+// Đánh dấu đã ghi log hay chưa (để tránh ghi 2 lần)
+let hasLogged = false;
 
   const vnTextEl = document.getElementById('vnText');
 // LẤY IFRAME THAY VÌ AUDIO
@@ -303,31 +355,27 @@ const audioFrame = document.getElementById('audioFrame');
   document.getElementById('targetCorrectText').textContent = TARGET_CORRECT;
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  function startTimer() {
-    startTime = new Date();
-    timeLeft = TIME_LIMIT_MINUTES * 60;
+function startTimer() {
+  startTime = new Date();
+  elapsedSec = 0;
 
-    function renderTime() {
-      const m = Math.floor(timeLeft / 60);
-      const s = timeLeft % 60;
-      timerEl.textContent =
-        String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    }
-    renderTime();
-
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft <= 0) {
-        timeLeft = 0;
-        renderTime();
-        clearInterval(timerInterval);
-        finishQuiz('Hết thời gian');
-      } else {
-        renderTime();
-      }
-    }, 1000);
+  function renderTime() {
+    const m = Math.floor(elapsedSec / 60);
+    const s = elapsedSec % 60;
+    timerEl.textContent =
+      String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
+
+  renderTime();
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    renderTime();
+  }, 1000);
+}
+
+  
 // Chuyển link Google Drive thành link preview cho iframe
 function getDrivePreviewUrl(url) {
   if (!url) return '';
@@ -439,64 +487,71 @@ function getDrivePreviewUrl(url) {
   }
 
   function finishQuiz(reasonText) {
-    if (quizFinished) return;
-    quizFinished = true;
+  if (quizFinished) return;
+  quizFinished = true;
+  hasLogged = true;   // đánh dấu đã ghi log để onbeforeunload không gửi nữa
 
-    if (timerInterval) clearInterval(timerInterval);
-    answerInput.disabled = true;
-    checkBtn.disabled = true;
-    nextBtn.disabled = true;
+  if (timerInterval) clearInterval(timerInterval);
+  answerInput.disabled = true;
+  checkBtn.disabled = true;
+  nextBtn.disabled = true;
 
-    const endTime = new Date();
-    const durationSec = Math.round((endTime - startTime) / 1000);
-    const percent = totalDone > 0
-      ? Math.round(correctCount * 100 / totalDone)
-      : 0;
+  // Dùng elapsedSec (đã đếm sẵn)
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
 
-    resultBox.style.display = 'block';
-    resultScore.textContent = `${percent}% chính xác`;
-    resultDetail.innerHTML =
-      `Đúng ${correctCount} / ${totalDone} câu.<br>` +
-      `Thời gian làm bài: ${durationSec} giây.<br>` +
-      (reasonText ? `Kết thúc: ${reasonText}.` : '');
+  // Format thời gian: X phút YY giây
+  const mm = Math.floor(durationSec / 60);
+  const ss = durationSec % 60;
+  const timeText = `${mm} phút ${String(ss).padStart(2, '0')} giây`;
 
-    // gửi log lên Apps Script (cùng file với IELTS)
-    const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
-    const cls  = (document.getElementById('studentClass').value || '').trim();
-    const timestamp = new Date().toLocaleString();
+  resultBox.style.display = 'block';
+  resultScore.textContent = `${percent}% chính xác`;
+  resultDetail.innerHTML =
+    `Đúng ${correctCount} / ${totalDone} câu.<br>` +
+    `Thời gian làm bài: ${timeText}.<br>` +
+    (reasonText ? `Kết thúc: ${reasonText}.` : '');
 
-    const rawLog =
-      name + '\t' +
-      cls + '\t' +
-      TEST_ID + '\t' +
-      timestamp + '\t' +
-      correctCount + '\t' +
-      totalDone + '\t' +
-      percent + '\t' +
-      durationSec;
+  // gửi log lên Apps Script (cùng file với IELTS)
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+  const timestamp = new Date().toLocaleString();
 
-    const payload = {
-      testId: TEST_ID,
-      name: name,
-      className: cls,
-      correct: correctCount,
-      total: totalDone,
-      percent: percent,
-      duration: durationSec,
-      rawLog: rawLog
-    };
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationSec;
 
-    if (LOG_ENDPOINT && LOG_ENDPOINT.startsWith('http')) {
-      fetch(LOG_ENDPOINT, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(err => {
-        console.error('Error sending result:', err);
-      });
-    }
+  const payload = {
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog
+  };
+
+  if (LOG_ENDPOINT && LOG_ENDPOINT.startsWith('http')) {
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => {
+      console.error('Error sending result:', err);
+    });
   }
+}
+
 
   // ====== GẮN SỰ KIỆN ======
   checkBtn.addEventListener('click', checkAnswer);
@@ -528,6 +583,69 @@ function getDrivePreviewUrl(url) {
     showQuestion();
   })();
 
+// ====== GHI LOG KHI HỌC SINH THOÁT GIỮA CHỪNG ======
+window.addEventListener('beforeunload', () => {
+  // Nếu đã finishQuiz() thì không log nữa
+  if (hasLogged) return;
+
+  // Nếu chưa làm gì (chưa trả lời câu nào) thì thôi, khỏi log
+  if (totalDone === 0) return;
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  const timestamp = new Date().toLocaleString();
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationSec + '\tThoát giữa chừng';
+
+  const payload = {
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'aborted'
+  };
+
+  hasLogged = true;
+
+  if (LOG_ENDPOINT && LOG_ENDPOINT.startsWith('http')) {
+    const data = JSON.stringify(payload);
+
+    // Ưu tiên dùng sendBeacon (phù hợp cho beforeunload)
+    if (navigator.sendBeacon) {
+      const blob = new Blob([data], { type: 'application/json' });
+      navigator.sendBeacon(LOG_ENDPOINT, blob);
+    } else {
+      // Phòng khi trình duyệt cũ không hỗ trợ
+      fetch(LOG_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json' },
+        body: data
+      }).catch(() => {});
+    }
+  }
+});
+
+  
 </script>
 </body>
 </html>
