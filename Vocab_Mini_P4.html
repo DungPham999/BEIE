@@ -502,6 +502,9 @@ function getDrivePreviewUrl(url) {
     checkBtn.disabled = true;
     nextBtn.style.display = 'inline-block';
 
+    // >>> GHI LOG TIẾN ĐỘ MỖI LẦN HỌC SINH NHẤN CHECK
+    logProgress();
+
     if (correctCount >= TARGET_CORRECT) {
       finishQuiz('Bạn đã hoàn thành đủ ' + TARGET_CORRECT + ' câu đúng.');
     }
@@ -574,6 +577,53 @@ function getDrivePreviewUrl(url) {
   sendLog(payload, false);
 }
 
+// GHI LOG TIẾN ĐỘ MỖI LẦN NHẤN CHECK
+function logProgress() {
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  const timestamp = new Date().toLocaleString();
+
+  // Đổi duration sang hh:mm:ss để nhìn cho dễ trong RawLog
+  const hh  = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationHMS;
+
+  const payload = {
+    attemptId: ATTEMPT_ID,   // cùng AttemptId -> luôn ghi đè 1 dòng
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'progress'       // khác với finished / aborted
+  };
+
+  // Gửi log bình thường
+  sendLog(payload, false);
+}
 
 
   // ====== GẮN SỰ KIỆN ======
