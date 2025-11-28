@@ -194,6 +194,8 @@
   const TARGET_CORRECT = 30;          // số câu cần đúng để kết thúc
   const TIME_LIMIT_MINUTES = 20;      // thời gian tối đa (phút)
   const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+    // Mỗi lần mở trang -> 1 attemptId riêng
+  const ATTEMPT_ID = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
 
   // ========= NGÂN HÀNG CÂU HỎI =========
   // Copy 4 cột: ID | VN | Answer | Audio (KHÔNG lấy dòng tiêu đề)
@@ -322,6 +324,25 @@
   }
 
  
+function sendLog(payload, useBeacon = false) {
+  if (!LOG_ENDPOINT || !LOG_ENDPOINT.startsWith('http')) return;
+
+  const data = JSON.stringify(payload);
+
+  // Nếu dùng cho beforeunload thì ưu tiên sendBeacon
+  if (useBeacon && navigator.sendBeacon) {
+    navigator.sendBeacon(LOG_ENDPOINT, data);
+  } else {
+    // Còn lại dùng fetch bình thường
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: useBeacon,          // cho case beforeunload
+      headers: { 'Content-Type': 'application/json' },
+      body: data
+    }).catch(() => {});
+  }
+}
 
 
  let bank = [];
@@ -496,13 +517,12 @@ function getDrivePreviewUrl(url) {
   checkBtn.disabled = true;
   nextBtn.disabled = true;
 
-  // Dùng elapsedSec (đã đếm sẵn)
   const durationSec = elapsedSec;
   const percent = totalDone > 0
     ? Math.round((correctCount * 100) / totalDone)
     : 0;
 
-  // Format thời gian: X phút YY giây
+  // Format thời gian: X phút YY giây (hiển thị cho học sinh)
   const mm = Math.floor(durationSec / 60);
   const ss = durationSec % 60;
   const timeText = `${mm} phút ${String(ss).padStart(2, '0')} giây`;
@@ -514,12 +534,11 @@ function getDrivePreviewUrl(url) {
     `Thời gian làm bài: ${timeText}.<br>` +
     (reasonText ? `Kết thúc: ${reasonText}.` : '');
 
-  // gửi log lên Apps Script (cùng file với IELTS)
   const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
   const cls  = (document.getElementById('studentClass').value || '').trim();
   const timestamp = new Date().toLocaleString();
 
-    // Format thời gian dạng hh:mm:ss để ghi log
+  // hh:mm:ss cho log
   const hh = Math.floor(durationSec / 3600);
   const mm2 = Math.floor((durationSec % 3600) / 60);
   const ss2 = durationSec % 60;
@@ -538,8 +557,8 @@ function getDrivePreviewUrl(url) {
     percent + '\t' +
     durationHMS;
 
-
   const payload = {
+    attemptId: ATTEMPT_ID,   // rất quan trọng để ghi đè 1 dòng
     testId: TEST_ID,
     name: name,
     className: cls,
@@ -547,20 +566,14 @@ function getDrivePreviewUrl(url) {
     total: totalDone,
     percent: percent,
     duration: durationSec,
-    rawLog: rawLog
+    rawLog: rawLog,
+    status: 'finished'
   };
 
-  if (LOG_ENDPOINT && LOG_ENDPOINT.startsWith('http')) {
-    fetch(LOG_ENDPOINT, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).catch(err => {
-      console.error('Error sending result:', err);
-    });
-  }
+  // Gửi log dùng fetch thường
+  sendLog(payload, false);
 }
+
 
 
   // ====== GẮN SỰ KIỆN ======
@@ -598,7 +611,7 @@ window.addEventListener('beforeunload', (event) => {
   // Nếu đã finishQuiz() thì không log nữa
   if (hasLogged) return;
 
-  // Nếu chưa làm gì (chưa trả lời câu nào) thì thôi, khỏi log
+  // Nếu chưa làm gì (chưa trả lời câu nào) thì khỏi log
   if (totalDone === 0) return;
 
   const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
@@ -611,7 +624,7 @@ window.addEventListener('beforeunload', (event) => {
 
   const timestamp = new Date().toLocaleString();
 
-    // Format thời gian dạng hh:mm:ss cho log thoát giữa chừng
+  // hh:mm:ss
   const hh = Math.floor(durationSec / 3600);
   const mm2 = Math.floor((durationSec % 3600) / 60);
   const ss2 = durationSec % 60;
@@ -630,8 +643,8 @@ window.addEventListener('beforeunload', (event) => {
     percent + '\t' +
     durationHMS + '\tThoát giữa chừng';
 
-
   const payload = {
+    attemptId: ATTEMPT_ID,   // dùng cùng attemptId -> ghi đè đúng dòng
     testId: TEST_ID,
     name: name,
     className: cls,
@@ -645,26 +658,10 @@ window.addEventListener('beforeunload', (event) => {
 
   hasLogged = true;
 
-  if (LOG_ENDPOINT && LOG_ENDPOINT.startsWith('http')) {
-    const data = JSON.stringify(payload);
-
-    // Dùng sendBeacon với chuỗi JSON (đơn giản, tương thích Apps Script)
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(LOG_ENDPOINT, data);
-    } else {
-      // Trình duyệt cũ không hỗ trợ sendBeacon: cố gắng gửi nhanh bằng fetch
-      fetch(LOG_ENDPOINT, {
-        method: 'POST',
-        mode: 'no-cors',
-        keepalive: true,
-        headers: { 'Content-Type': 'application/json' },
-        body: data
-      }).catch(() => {});
-    }
-  }
-
-  // (không cần chặn unload, chỉ log "best effort")
+  // Gửi log bằng sendBeacon (useBeacon = true)
+  sendLog(payload, true);
 });
+
 
 
   
