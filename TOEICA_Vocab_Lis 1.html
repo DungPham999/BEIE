@@ -204,7 +204,8 @@
   </style>
 </head>
 <body>
-  <h1>Vocabulary Quiz</h1>
+  <h1 id="title"></h1>
+
 
   <div class="info">
     <p><strong>Thời gian làm bài:</strong> <span id="timer">00:00</span></p>
@@ -269,7 +270,9 @@
 
 <script>
   // ========= CẤU HÌNH =========
-  const TEST_ID = 'Vocab_Lis 1';         // đổi tên bài test
+// Tự lấy tên file hiện tại làm TestID
+const TEST_ID = location.pathname.split('/').pop().replace('.html','') || 'DefaultTest';
+
   const TARGET_CORRECT = 30;          // số câu cần đúng để kết thúc
   const TIME_LIMIT_MINUTES = 20;      // thời gian tối đa (phút)
   const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
@@ -726,6 +729,7 @@ function logProgress() {
     startTimer();
     showQuestion();
   })();
+document.getElementById('title').textContent = TEST_ID;
 
 // ====== GHI LOG KHI HỌC SINH THOÁT GIỮA CHỪNG ======
 window.addEventListener('beforeunload', (event) => {
