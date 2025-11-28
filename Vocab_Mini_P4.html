@@ -584,7 +584,7 @@ function getDrivePreviewUrl(url) {
   })();
 
 // ====== GHI LOG KHI HỌC SINH THOÁT GIỮA CHỪNG ======
-window.addEventListener('beforeunload', () => {
+window.addEventListener('beforeunload', (event) => {
   // Nếu đã finishQuiz() thì không log nữa
   if (hasLogged) return;
 
@@ -628,12 +628,11 @@ window.addEventListener('beforeunload', () => {
   if (LOG_ENDPOINT && LOG_ENDPOINT.startsWith('http')) {
     const data = JSON.stringify(payload);
 
-    // Ưu tiên dùng sendBeacon (phù hợp cho beforeunload)
+    // Dùng sendBeacon với chuỗi JSON (đơn giản, tương thích Apps Script)
     if (navigator.sendBeacon) {
-      const blob = new Blob([data], { type: 'application/json' });
-      navigator.sendBeacon(LOG_ENDPOINT, blob);
+      navigator.sendBeacon(LOG_ENDPOINT, data);
     } else {
-      // Phòng khi trình duyệt cũ không hỗ trợ
+      // Trình duyệt cũ không hỗ trợ sendBeacon: cố gắng gửi nhanh bằng fetch
       fetch(LOG_ENDPOINT, {
         method: 'POST',
         mode: 'no-cors',
@@ -643,7 +642,10 @@ window.addEventListener('beforeunload', () => {
       }).catch(() => {});
     }
   }
+
+  // (không cần chặn unload, chỉ log "best effort")
 });
+
 
   
 </script>
