@@ -270,8 +270,13 @@
 
 <script>
   // ========= CẤU HÌNH =========
-// Tự lấy tên file hiện tại làm TestID
-const TEST_ID = location.pathname.split('/').pop().replace('.html','') || 'DefaultTest';
+// Tự lấy tên file hiện tại làm TestID (đã giải mã %20 -> khoảng trắng)
+const fileSegment = location.pathname.split('/').pop() || '';
+const TEST_ID = decodeURIComponent(
+  fileSegment.replace(/\.[^/.]+$/, '')   // bỏ .html, .htm...
+) || 'DefaultTest';
+
+
 
   const TARGET_CORRECT = 30;          // số câu cần đúng để kết thúc
   const TIME_LIMIT_MINUTES = 20;      // thời gian tối đa (phút)
