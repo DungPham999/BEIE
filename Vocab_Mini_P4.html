@@ -519,6 +519,15 @@ function getDrivePreviewUrl(url) {
   const cls  = (document.getElementById('studentClass').value || '').trim();
   const timestamp = new Date().toLocaleString();
 
+    // Format thời gian dạng hh:mm:ss để ghi log
+  const hh = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
   const rawLog =
     name + '\t' +
     cls + '\t' +
@@ -527,7 +536,8 @@ function getDrivePreviewUrl(url) {
     correctCount + '\t' +
     totalDone + '\t' +
     percent + '\t' +
-    durationSec;
+    durationHMS;
+
 
   const payload = {
     testId: TEST_ID,
@@ -601,6 +611,15 @@ window.addEventListener('beforeunload', (event) => {
 
   const timestamp = new Date().toLocaleString();
 
+    // Format thời gian dạng hh:mm:ss cho log thoát giữa chừng
+  const hh = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
   const rawLog =
     name + '\t' +
     cls + '\t' +
@@ -609,7 +628,8 @@ window.addEventListener('beforeunload', (event) => {
     correctCount + '\t' +
     totalDone + '\t' +
     percent + '\t' +
-    durationSec + '\tThoát giữa chừng';
+    durationHMS + '\tThoát giữa chừng';
+
 
   const payload = {
     testId: TEST_ID,
