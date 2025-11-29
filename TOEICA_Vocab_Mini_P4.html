@@ -617,6 +617,7 @@ function getDrivePreviewUrl(url) {
   resultBox.style.display = 'block';
   resultScore.textContent = `${percent}% chính xác`;
   resultDetail.innerHTML =
+    `Bài test: <strong>${TEST_ID}</strong><br>` +
     `Đúng ${correctCount} / ${totalDone} câu.<br>` +
     `Thời gian làm bài: ${timeText}.<br>` +
     (reasonText ? `Kết thúc: ${reasonText}.` : '');
