@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Vocabulary Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 16px;
+      background-color: #fff7e6;
+      line-height: 1.5;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .info {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background-color: #fafafa;
+    }
+    .info p { margin: 4px 0; }
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+    }
+    .quiz-box {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 14px 16px;
+      background: #ffffff;
+      margin-bottom: 16px;
+    }
+    .vn-text {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .audio-wrapper {
+      margin: 8px 0 12px 0;
+    }
+    audio {
+      width: 100%;
+    }
+  
+    .audio-frame {
+  width: 100%;
+  height: 80px;        /* có thể tăng/giảm */
+  border: 0;
+  margin: 8px 0 10px 0;
+}
+
+    
+    .answer-wrapper {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    #answerInput {
+      flex: 1;
+      min-width: 180px;
+      padding: 6px 8px;
+      font-size: 16px;
+    }
+    .btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover { background-color: #e0e0e0; }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    #feedback {
+      margin-top: 10px;
+      font-size: 15px;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+    #feedback.ok {
+      background-color: #e6ffe6;
+      color: #155724;
+      border: 1px solid #b7e0b7;
+    }
+    #feedback.ng {
+      background-color: #ffe6e6;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .status-line {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    .result-box {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px 14px;
+      background: #fff;
+      display: none;
+    }
+    .result-main {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007acc;
+      margin: 6px 0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 16px 0;
+      color: #444;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* ===== TỐI ƯU CHO MÀN HÌNH NHỎ (ĐIỆN THOẠI) ===== */
+@media (max-width: 600px) {
+  body {
+    max-width: 100%;
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 16px;         /* chữ to hơn một chút */
+  }
+
+  h1 {
+    font-size: 22px;
+    margin: 12px 0;
+    text-align: center;
+  }
+
+  .info {
+    padding: 10px;
+  }
+
+  .info label {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .info input {
+    width: 100%;             /* ô nhập Họ tên / Lớp full chiều ngang */
+    box-sizing: border-box;
+    margin-top: 3px;
+    padding: 8px 10px;
+    font-size: 16px;
+  }
+
+  .quiz-box {
+    padding: 10px 10px;
+  }
+
+  .vn-text {
+    font-size: 18px;
+  }
+
+  .audio-frame {
+    height: 100px;           /* to hơn chút cho dễ bấm nút play */
+  }
+
+  .answer-wrapper {
+    flex-direction: column;  /* input và nút xếp theo cột */
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  #answerInput {
+    font-size: 18px;
+    padding: 10px 12px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 10px 14px;
+    width: 100%;             /* nút rộng cả dòng, dễ bấm */
+    text-align: center;
+  }
+
+  .status-line {
+    font-size: 14px;
+  }
+
+  #feedback {
+    font-size: 14px;
+  }
+
+  .result-main {
+    font-size: 20px;
+  }
+}
+
+    
+  </style>
+</head>
+<body>
+  <h1 id="title"></h1>
+
+  <div class="info">
+    <p><strong>Thời gian làm bài:</strong> <span id="timer">00:00</span></p>
+
+    <p><strong>Mục tiêu:</strong> làm đúng <span id="targetCorrectText">--</span> câu để hoàn thành.</p>
+    <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A" />
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: TOEIC Reading 1" />
+      </label>
+    </p>
+  </div>
+
+  <div class="quiz-box" id="quizBox">
+    <div class="status-line">
+      Câu đúng: <span id="correctCount">0</span> /
+      Câu đã làm: <span id="totalDone">0</span>
+    </div>
+    <hr />
+
+    <div class="vn-text" id="vnText">Đang tải câu hỏi...</div>
+
+    <div class="audio-wrapper">
+     
+      <!-- Dùng iframe giống IELTS -->
+<iframe
+  id="audioFrame"
+  class="audio-frame"
+  allow="autoplay">
+</iframe>
+
+      
+    </div>
+
+    <div class="answer-wrapper">
+      <input
+        type="text"
+        id="answerInput"
+        placeholder="Gõ đáp án tiếng Anh..."
+        autocomplete="off"
+      />
+      <button class="btn" id="checkBtn">Check</button>
+      <button class="btn" id="nextBtn" style="display:none;">Câu tiếp</button>
+    </div>
+
+    <div id="feedback"></div>
+  </div>
+
+  <div class="result-box" id="resultBox">
+    <div><strong>Kết quả bài làm:</strong></div>
+    <div class="result-main" id="resultScore"></div>
+    <div id="resultDetail"></div>
+  </div>
+
+  <div class="footer">
+    © <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.
+  </div>
+
+<script>
+  // ========= CẤU HÌNH =========
+ // Tự lấy tên file hiện tại làm TestID
+const TEST_ID = location.pathname.split('/').pop().replace('.html','') || 'DefaultTest';
+
+  const TARGET_CORRECT = 30;          // số câu cần đúng để kết thúc
+  const TIME_LIMIT_MINUTES = 20;      // thời gian tối đa (phút)
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+    // Mỗi lần mở trang -> 1 attemptId riêng
+  const ATTEMPT_ID = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+
+  // ========= NGÂN HÀNG CÂU HỎI =========
+  // Copy 4 cột: ID | VN | Answer | Audio (KHÔNG lấy dòng tiêu đề)
+  // từ Google Sheets và dán vào giữa cặp ` ... ` dưới đây.
+  const RAW_DATA = `
+
+53	một buổi lễ trao giải	an award ceremony	https://drive.google.com/file/d/1xU_BUiD7Ap-Y7ri-1KW11pHZiCTW3xk7/view?usp=drivesdk
+54	một vết bẩn lớn	a big stain	https://drive.google.com/file/d/1sv99m_PDf29ewH0vW2e5QBRRWVZ4bpKI/view?usp=drivesdk
+55	dịch vụ khẩn cấp	an emergency service	https://drive.google.com/file/d/1hvGMR8avLqhv1bUMLQrSRDlcJSl5nc8k/view?usp=drivesdk
+56	bảng giá	the price list	https://drive.google.com/file/d/11iNH0adTubqOLFSApppj5Q32SjBZN6Mq/view?usp=drivesdk
+57	thực tập sinh của tôi	my intern	https://drive.google.com/file/d/12bq8-Ag71AhjkawyP2jIYjXijsUXBPp2/view?usp=drivesdk
+58	chỗ đỗ xe	a parking spot	https://drive.google.com/file/d/18HJV4wV8zliUWERdTEdJqVnMmtOmuoOb/view?usp=drivesdk
+59	không gian trưng bày	the display space	https://drive.google.com/file/d/1JCybhUkqkXwZe6uMPTO6QhzR3EaCxQUi/view?usp=drivesdk
+60	quảng cáo radio này	this radio advertisement	https://drive.google.com/file/d/1tVvPTTqGK8ZUH9ClPkgTNESOTPswd3fV/view?usp=drivesdk
+61	nhiều sự lựa chọn	a wide selection	https://drive.google.com/file/d/1I03TwqY-KwPRmJKWbgG0ekBy583dWoyG/view?usp=drivesdk
+62	mẫu điện thoại mới nhất	the newest model of cell phone	https://drive.google.com/file/d/1ZvWsc-GA-gZlmWVGeodugNNcBphos5wW/view?usp=drivesdk
+63	buổi trình diễn/giới thiệu sản phẩm	a product demonstration	https://drive.google.com/file/d/1DlGkrSniHNEftxsA8BqFz4VjEuQE1OeG/view?usp=drivesdk
+64	ngành điện tử tiêu dùng	the consumer electronics industry	https://drive.google.com/file/d/1_y_lMoZDbT0L-LQxkIk0LFy8qKRgd1hy/view?usp=drivesdk
+65	trung tâm điều khiển giao thông	the traffic control center	https://drive.google.com/file/d/1iQcQkfMqYzhkF7tmKzFA1-FEj6xMN87i/view?usp=drivesdk
+66	quy trình tuyển thực tập sinh	the intern screening process	https://drive.google.com/file/d/1ZTOpoSyHH10f_ljJ-EFRgESVmVrbgYHL/view?usp=drivesdk
+67	tham dự lễ trao giải	to attend an award ceremony	https://drive.google.com/file/d/18n4go3wDHHkRMyQSnqIjiO-X4Z8A-k5Z/view?usp=drivesdk
+68	trì hoãn đơn hàng của khách khác	to delay other people’s orders	https://drive.google.com/file/d/1QH2YgIfT_gz7o-GeO7RVLzUwBGhbim_M/view?usp=drivesdk
+69	đi lấy nó tối nay	to pick it up tonight	https://drive.google.com/file/d/1OX-qjEB1bMZxmrNPTF0Pw5yTQvA_99tA/view?usp=drivesdk
+70	mở rộng không gian trưng bày	to expand the display space	https://drive.google.com/file/d/1nVAZKTb1IuxxqfZlvIMz6OoG2Slz3AnO/view?usp=drivesdk
+71	chúc mừng việc tu sửa	to celebrate our renovation	https://drive.google.com/file/d/10txs2PHtGKhFJDiLJa56U8pkRptnePNH/view?usp=drivesdk
+72	lắp cửa sổ cách nhiệt	to install insulated windows	https://drive.google.com/file/d/1igiHPzsaxwblQgq_Pu8kvJTjCkTQV_18/view?usp=drivesdk
+73	bổ sung lớp bảo vệ	to add an extra layer of protection	https://drive.google.com/file/d/1PtgqO67A-TrRxTL4tv5Zgr18GHZ0IMou/view?usp=drivesdk
+74	giảm chi phí sưởi hàng tháng	to lower your monthly heating costs	#N/A
+75	trở thành người thử nghiệm	to become a beta tester	https://drive.google.com/file/d/1jPdCOQk1BRbo5ZqgiMSlAcYjzZ4D0j-Y/view?usp=drivesdk
+76	nói chuyện với đại diện của chúng tôi	to talk to our representative	https://drive.google.com/file/d/1RyZ0N3AKZvpRxnm_xtGTrO1hYUm4P5c_/view?usp=drivesdk
+77	tiết lộ bất kỳ thông tin gì	to release any details	https://drive.google.com/file/d/10OYjfzHdwSyqBXxaKp4blVk3GyWtmGn1/view?usp=drivesdk
+78	tuyển thêm thực tập sinh	to recruit some more interns	https://drive.google.com/file/d/17oHv_wZBkOLV-a2Ov1vA461lRxdqXf7l/view?usp=drivesdk
+79	xin lỗi vì đến muộn	be sorry for being late	https://drive.google.com/file/d/1D6NzdWZFcKa-BZr0X1wdkOPFGRdhPFyH/view?usp=drivesdk
+80	bị cấm tiết lộ	be forbidden to release	https://drive.google.com/file/d/1SCFy-2Yie8i8PmzgPjyC8OzGKGzxQayf/view?usp=drivesdk
+81	bị trì hoãn	be delayed	https://drive.google.com/file/d/1swGoJh7NMChvqWVfhhEJ8nkz7uQRFK0k/view?usp=drivesdk
+82	gặp sự cố / trục trặc	be suffering from a malfunction	https://drive.google.com/file/d/1R_W493pZgz3cX-Pxl4Uyc1pSVIm5hMPA/view?usp=drivesdk
+83	điều chỉnh kế hoạch cho phù hợp	to adjust your plans accordingly	https://drive.google.com/file/d/14idnK0KLtleQejYJSRsSsg9YHK2B-L-e/view?usp=drivesdk
+85	giảm giá 10% cho mọi đơn hàng	to offer 10% off all purchases	https://drive.google.com/file/d/1dPGXynw6q59FpbrXm6EdzmZiHZr4ZK-N/view?usp=drivesdk
+87	 hoàn thành dự án này	to get this project finished	https://drive.google.com/file/d/1bFUP1Zfs5t_4BNXNwduvvlXANzfOuwYX/view?usp=drivesdk
+88	đội ngũ pháp lý	the legal team	https://drive.google.com/file/d/1B-pH89TZYf4oAeVlyUtqunYSPtiVELAS/view?usp=drivesdk
+89	vài tuần tới	the next several weeks	https://drive.google.com/file/d/1HU-I7gGoWUns8KKDGb7Kgzkxzcwsz5pi/view?usp=drivesdk
+90	cách sắp xếp hoa và trang trí bàn	the centerpieces and flower setups	https://drive.google.com/file/d/1WpfV0B0grBF6edn5GzP8o-E0A3znwVnZ/view?usp=drivesdk
+91	một thông báo	an announcement	https://drive.google.com/file/d/1OTRAXY33uotJmn6nu5_S__EsdGR_DsPj/view?usp=drivesdk
+92	danh sách âm nhạc	the music selection	https://drive.google.com/file/d/1cQsE2bDd5tbwzcniII_rq9jggOx_tlsX/view?usp=drivesdk
+93	nghệ sĩ nhạc thế giới	world music artists	https://drive.google.com/file/d/1kLI7_CNQN6GLn1JTr2cCCcK-rnI6MAfQ/view?usp=drivesdk
+94	buổi biểu diễn trực tiếp	a live performance	https://drive.google.com/file/d/13vlOVvY7UE1KyDuC9dWbdnM8XZ2kMSu3/view?usp=drivesdk
+95	mẫu điện thoại mới	the new model of cell phone	https://drive.google.com/file/d/1TeODdmvQTMYBzTczF0R0gpJD_Eo7Yr_v/view?usp=drivesdk
+96	trung tâm thông tin	the Information Center	https://drive.google.com/file/d/1VJQQ9vSaYZyus01m-KV84bT3LBlicPc3/view?usp=drivesdk
+97	đường mòn men theo sườn đồi	a trail that goes along the cliff drop	https://drive.google.com/file/d/1rCrZwdlp2coIjulM51nXTtThxf8xctND/view?usp=drivesdk
+98	phòng tài chính	the Finance department	https://drive.google.com/file/d/1ehcZmEKk3cDd_J0w0W6qzpWbdH-8gghE/view?usp=drivesdk
+99	chuyển sang luật doanh nghiệp	to move into corporate law	https://drive.google.com/file/d/1BiNCMDcqOYfRD4FcJY9zVAx4CS7p-vg0/view?usp=drivesdk
+100	tiếp tục tiến lên	to keep moving up	https://drive.google.com/file/d/1YOQW5ghJCVxl0M0XH95KS1TN3n76sh06/view?usp=drivesdk
+101	nghiên cứu/xem kỹ tài liệu này	to study this material	https://drive.google.com/file/d/1icQhBnsz_TKAlQOmFFkHFJLEMfX3ZAR6/view?usp=drivesdk
+102	duy trì tỉ lệ thắng	to maintain our win rate	https://drive.google.com/file/d/1Q8x_Ncy1NaDDZMH2RAjb6lado_t4Z1HR/view?usp=drivesdk
+103	công ty tiếp tục phát triển	to continue growing as a firm	https://drive.google.com/file/d/1OYu3fc2QrcNjBCfBTRu6gC4vF4qhInut/view?usp=drivesdk
+104	cho tôi xem bản thiết kế	to show me the design	https://drive.google.com/file/d/1BQ00L4vlO6SiJ8IwI6my-TUuSzEClIYB/view?usp=drivesdk
+105	xem lại cách sắp xếp hoa	to go over the centerpieces	https://drive.google.com/file/d/16jEa_nge8NLa02FeiXdr3wLyJF3lgFsI/view?usp=drivesdk
+106	quảng bá chuyến lưu diễn	to promote their tour	https://drive.google.com/file/d/1v6caZaYbVmg10FrdIKCrLso4KFwQkOBS/view?usp=drivesdk
+107	tiếp tục tập trung vào	to keep an emphasis on	https://drive.google.com/file/d/14DX3zomJFHs_8yqA28QK6NXpx1WABJlV/view?usp=drivesdk
+108	liên hệ với các phòng ban	to contact the departments	https://drive.google.com/file/d/1iN-0HrxUZcQ6jaAEXy9Z-39IZGE0kTVl/view?usp=drivesdk
+109	đảm bảo họ không vượt ngân sách	to make sure they stay within the budget	https://drive.google.com/file/d/1uGRDaiYDShB6imJBh11UXAIJWyLy_ZXp/view?usp=drivesdk
+110	tránh các vấn đề	to avoid problems	https://drive.google.com/file/d/1DUV6Jvn5Ns5mjJF0-1SMr8aWa9op7hsr/view?usp=drivesdk
+111	hân hạnh thông báo	be pleased to announce	https://drive.google.com/file/d/1gfPlgRAkQUdsYF8LSHKQpoNDKastHeay/view?usp=drivesdk
+112	rất mong được làm việc với bạn	be excited to work with you	https://drive.google.com/file/d/1gZm0r0mwTD-P9t2E4Xs12k7eLLtv9WhF/view?usp=drivesdk
+113	đóng cửa với công chúng	be closed to the public	https://drive.google.com/file/d/1Hq4w9yJcLKK_XfInYeuNQONDsXKXJ7G6/view?usp=drivesdk
+114	sợ độ cao	be afraid of heights	https://drive.google.com/file/d/1NVsQg-49cV1LekXIy7E576j9a0NrrPLN/view?usp=drivesdk
+115	có thể mở rộng	be able to expand	https://drive.google.com/file/d/1PERwvd6_VL7maMin0dZEjTmSw98c1cOQ/view?usp=drivesdk
+116	rất ấn tượng với công việc của bạn	be impressed with your work	https://drive.google.com/file/d/1YcIp4dz0KSsLMljp9IpZXf7jKdr8DSUp/view?usp=drivesdk
+
+`; // <-- THAY BẰNG DỮ LIỆU THẬT CỦA THẦY
+
+  // ========= CODE CHUNG =========
+
+  function normalize(str) {
+    return (str || '')
+      .toLowerCase()
+         // Chuẩn hoá tất cả dạng dấu nháy về 1 kiểu
+    .replace(/[’‘`]/g, "'")         // ’ ‘ `  -> '
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function parseBank(raw) {
+    const lines = raw.trim().split('\n').filter(l => l.trim() !== '');
+    const items = [];
+    lines.forEach(line => {
+      const cols = line.split('\t');
+      if (cols.length < 4) return;
+      const id    = (cols[0] || '').trim();
+      const vn    = (cols[1] || '').trim();
+      const ans   = (cols[2] || '').trim();
+      const audio = (cols[3] || '').trim();
+      if (!vn || !ans) return;
+      items.push({ id, vn, answer: ans, audio });
+    });
+    return items;
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+ 
+function sendLog(payload, useBeacon = false) {
+  if (!LOG_ENDPOINT || !LOG_ENDPOINT.startsWith('http')) return;
+
+  const data = JSON.stringify(payload);
+
+  // Nếu dùng cho beforeunload thì ưu tiên sendBeacon
+  if (useBeacon && navigator.sendBeacon) {
+    navigator.sendBeacon(LOG_ENDPOINT, data);
+  } else {
+    // Còn lại dùng fetch bình thường
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: useBeacon,          // cho case beforeunload
+      headers: { 'Content-Type': 'application/json' },
+      body: data
+    }).catch(() => {});
+  }
+}
+
+
+ let bank = [];
+let currentIndex = 0;
+let correctCount = 0;
+let totalDone = 0;
+let quizFinished = false;
+
+// Timer đếm lên
+let startTime = null;
+let timerInterval = null;
+let elapsedSec = 0;        // số giây đã làm
+
+// Đánh dấu đã ghi log hay chưa (để tránh ghi 2 lần)
+let hasLogged = false;
+
+  const vnTextEl = document.getElementById('vnText');
+// LẤY IFRAME THAY VÌ AUDIO
+const audioFrame = document.getElementById('audioFrame');
+  const answerInput = document.getElementById('answerInput');
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedbackEl = document.getElementById('feedback');
+  const correctCountEl = document.getElementById('correctCount');
+  const totalDoneEl = document.getElementById('totalDone');
+  const timerEl = document.getElementById('timer');
+  const resultBox = document.getElementById('resultBox');
+  const resultScore = document.getElementById('resultScore');
+  const resultDetail = document.getElementById('resultDetail');
+
+  document.getElementById('targetCorrectText').textContent = TARGET_CORRECT;
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+function startTimer() {
+  startTime = new Date();
+  elapsedSec = 0;
+
+  function renderTime() {
+    const m = Math.floor(elapsedSec / 60);
+    const s = elapsedSec % 60;
+    timerEl.textContent =
+      String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  renderTime();
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    renderTime();
+  }, 1000);
+}
+
+  
+// Chuyển link Google Drive thành link preview cho iframe
+function getDrivePreviewUrl(url) {
+  if (!url) return '';
+  url = url.trim();
+
+  // Chỉ xử lý nếu là link Google Drive
+  if (/drive\.google\.com/.test(url)) {
+    let id = '';
+
+    // Trường hợp: .../file/d/FILE_ID/view?...
+    const m1 = url.match(/\/d\/([^\/]+)/);
+
+    // Trường hợp: ...open?id=FILE_ID...
+    const m2 = url.match(/[?&]id=([^&]+)/);
+
+    if (m1 && m1[1]) {
+      id = m1[1];
+    } else if (m2 && m2[1]) {
+      id = m2[1];
+    }
+
+    if (id) {
+      // Link /preview cho iframe
+      return 'https://drive.google.com/file/d/' + id + '/preview';
+    }
+  }
+
+  // Nếu không phải Drive thì trả lại nguyên link
+  return url;
+}
+
+  function showQuestion() {
+  if (quizFinished) return;
+
+  if (bank.length === 0) {
+    vnTextEl.textContent = 'Không có câu hỏi nào trong ngân hàng.';
+    return;
+  }
+
+  if (currentIndex >= bank.length) {
+    shuffle(bank);
+    currentIndex = 0;
+  }
+
+  const q = bank[currentIndex];
+  vnTextEl.textContent = q.vn;
+
+  // DÙNG LINK /preview CHO IFRAME
+  const previewUrl = getDrivePreviewUrl(q.audio);
+  audioFrame.src = previewUrl;
+
+  answerInput.value = '';
+  answerInput.disabled = false;
+  answerInput.focus();
+
+  feedbackEl.textContent = '';
+  feedbackEl.className = '';
+  checkBtn.disabled = false;
+  nextBtn.style.display = 'none';
+}
+
+
+
+  function checkAnswer() {
+    if (quizFinished) return;
+
+    const name = (document.getElementById('studentName').value || '').trim();
+    const cls  = (document.getElementById('studentClass').value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập HỌ TÊN và LỚP/NHÓM trước khi làm bài.');
+      return;
+    }
+
+    const q = bank[currentIndex];
+    const user = normalize(answerInput.value);
+    if (!user) {
+      alert('Hãy gõ đáp án trước khi bấm Check.');
+      return;
+    }
+
+    // danh sách đáp án chấp nhận, phân biệt số ít/số nhiều (không can thiệp)
+    const acceptable = q.answer
+      .split('|')
+      .map(a => normalize(a))
+      .filter(a => a);
+
+    totalDone++;
+    const isCorrect = acceptable.includes(user);
+
+    if (isCorrect) {
+      correctCount++;
+      feedbackEl.className = 'ok';
+      feedbackEl.textContent = 'Đúng. Đáp án: ' + q.answer;
+    } else {
+      feedbackEl.className = 'ng';
+      feedbackEl.textContent = 'Sai. Đáp án đúng: ' + q.answer;
+    }
+
+    correctCountEl.textContent = correctCount;
+    totalDoneEl.textContent = totalDone;
+
+    answerInput.disabled = true;
+    checkBtn.disabled = true;
+    nextBtn.style.display = 'inline-block';
+
+    // >>> GHI LOG TIẾN ĐỘ MỖI LẦN HỌC SINH NHẤN CHECK
+    logProgress();
+
+    if (correctCount >= TARGET_CORRECT) {
+      finishQuiz('Bạn đã hoàn thành đủ ' + TARGET_CORRECT + ' câu đúng.');
+    }
+  }
+
+  function finishQuiz(reasonText) {
+  if (quizFinished) return;
+  quizFinished = true;
+  hasLogged = true;   // đánh dấu đã ghi log để onbeforeunload không gửi nữa
+
+  if (timerInterval) clearInterval(timerInterval);
+  answerInput.disabled = true;
+  checkBtn.disabled = true;
+  nextBtn.disabled = true;
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  // Format thời gian: X phút YY giây (hiển thị cho học sinh)
+  const mm = Math.floor(durationSec / 60);
+  const ss = durationSec % 60;
+  const timeText = `${mm} phút ${String(ss).padStart(2, '0')} giây`;
+
+  resultBox.style.display = 'block';
+  resultScore.textContent = `${percent}% chính xác`;
+  resultDetail.innerHTML =
+    `Bài test: <strong>${TEST_ID}</strong><br>` +
+    `Đúng ${correctCount} / ${totalDone} câu.<br>` +
+    `Thời gian làm bài: ${timeText}.<br>` +
+    (reasonText ? `Kết thúc: ${reasonText}.` : '');
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+  const timestamp = new Date().toLocaleString();
+
+  // hh:mm:ss cho log
+  const hh = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationHMS;
+
+  const payload = {
+    attemptId: ATTEMPT_ID,   // rất quan trọng để ghi đè 1 dòng
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'finished'
+  };
+
+  // Gửi log dùng fetch thường
+  sendLog(payload, false);
+}
+
+// GHI LOG TIẾN ĐỘ MỖI LẦN NHẤN CHECK
+function logProgress() {
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  const timestamp = new Date().toLocaleString();
+
+  // Đổi duration sang hh:mm:ss để nhìn cho dễ trong RawLog
+  const hh  = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationHMS;
+
+  const payload = {
+    attemptId: ATTEMPT_ID,   // cùng AttemptId -> luôn ghi đè 1 dòng
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'progress'       // khác với finished / aborted
+  };
+
+  // Gửi log bình thường
+  sendLog(payload, false);
+}
+
+
+  // ====== GẮN SỰ KIỆN ======
+  checkBtn.addEventListener('click', checkAnswer);
+  nextBtn.addEventListener('click', () => {
+    if (quizFinished) return;
+    currentIndex++;
+    showQuestion();
+  });
+
+  answerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (!checkBtn.disabled) {
+        checkAnswer();
+      } else if (!nextBtn.disabled && nextBtn.style.display !== 'none') {
+        nextBtn.click();
+      }
+    }
+  });
+
+  // ====== KHỞI ĐỘNG ======
+  (function init() {
+    bank = parseBank(RAW_DATA);
+    if (!bank.length) {
+      vnTextEl.textContent = 'Không có dữ liệu trong RAW_DATA.';
+      return;
+    }
+    shuffle(bank);
+    startTimer();
+    showQuestion();
+  })();
+  
+document.getElementById('title').textContent = TEST_ID;
+
+// ====== GHI LOG KHI HỌC SINH THOÁT GIỮA CHỪNG ======
+window.addEventListener('beforeunload', (event) => {
+  // Nếu đã finishQuiz() thì không log nữa
+  if (hasLogged) return;
+
+  // Nếu chưa làm gì (chưa trả lời câu nào) thì khỏi log
+  if (totalDone === 0) return;
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  const timestamp = new Date().toLocaleString();
+
+  // hh:mm:ss
+  const hh = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationHMS + '\tThoát giữa chừng';
+
+  const payload = {
+    attemptId: ATTEMPT_ID,   // dùng cùng attemptId -> ghi đè đúng dòng
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'aborted'
+  };
+
+  hasLogged = true;
+
+  // Gửi log bằng sendBeacon (useBeacon = true)
+  sendLog(payload, true);
+});
+
+
+
+  
+</script>
+</body>
+</html>
