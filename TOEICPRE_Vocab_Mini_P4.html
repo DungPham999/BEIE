@@ -340,13 +340,15 @@ const TEST_ID = location.pathname.split('/').pop().replace('.html','') || 'Defau
   // ========= CODE CHUNG =========
 
   function normalize(str) {
-    return (str || '')
-      .toLowerCase()
-         // Chuẩn hoá tất cả dạng dấu nháy về 1 kiểu
-    .replace(/[’‘`]/g, "'")         // ’ ‘ `  -> '
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+  return (str || '')
+    .normalize('NFC')                 // chuẩn hoá Unicode
+    .replace(/[\u200B-\u200D\uFEFF]/g, '') // xoá ký tự zero-width
+    .toLowerCase()
+    .replace(/[’‘`]/g, "'")          // ’ ‘ `  -> '
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 
   function parseBank(raw) {
     const lines = raw.trim().split('\n').filter(l => l.trim() !== '');
