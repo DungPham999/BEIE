@@ -174,10 +174,22 @@
   <div class="result" id="resultBox" style="display:none;"></div>
 
 <script>
-  // ====== CẤU HÌNH CHO GIÁO VIÊN ======
-  const DURATION_MINUTES = 40;
-  const TEST_ID = 'BEIE_HW_U7';   // thầy đổi tên tuỳ từng đề
-  // URL CSV chứa thông tin meta (TestID, Title, ...)
+// ====== CẤU HÌNH CHO GIÁO VIÊN ======
+const DURATION_MINUTES = 40;
+
+// Lấy TEST_ID từ tên file hiện tại, ví dụ "BEIE_HW_U6.html"
+const fileSegment = location.pathname.split('/').pop() || '';
+const TEST_ID = decodeURIComponent(
+  fileSegment.replace(/\.[^/.]+$/, '')   // bỏ đuôi .html, .htm...
+) || 'PracticeTest';
+
+// Cập nhật tiêu đề trang và H1 ngay khi tải
+document.title = TEST_ID;
+const pageTitleEl = document.getElementById('pageTitle');
+if (pageTitleEl) {
+  pageTitleEl.textContent = TEST_ID;
+}
+
   
   const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
 // ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
@@ -715,20 +727,24 @@ function normalizeText(str) {
   }
 
   const box = document.getElementById('resultBox');
-  box.style.display = 'block';
-  box.innerHTML = `
-    <div style="font-size:18px; margin-bottom:8px;">
-      <strong>Kết quả:</strong> đúng ${correct}/${total} câu
-    </div>
-    <div style="
-      font-size:28px;
-      font-weight:bold;
-      color:#007acc;
-      padding:10px 0;
-    ">
-      ${percent}%
-    </div>
-  `;
+box.style.display = 'block';
+box.innerHTML = `
+  <div style="font-size:16px; margin-bottom:4px;">
+    <strong>Bài test:</strong> ${TEST_ID}
+  </div>
+  <div style="font-size:18px; margin-bottom:8px;">
+    <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+  </div>
+  <div style="
+    font-size:28px;
+    font-weight:bold;
+    color:#007acc;
+    padding:10px 0;
+  ">
+    ${percent}%
+  </div>
+`;
+
 }
 
 
