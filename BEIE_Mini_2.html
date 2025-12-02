@@ -248,42 +248,47 @@ async function loadTestTitle() {
     // 2) Cmd + C
     // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
     const RAW_DATA = `
-280	listening	Mini 2	1	short	[IMG:https://drive.google.com/file/d/1wodgn0uJ91xysxt0PnvoZOQ85vRrHBbS/view?usp=drive_link] // https://drive.google.com/file/d/1FwZ4s2MHplCoX1SyEud4J2mSbCStapzF/view?usp=drive_link  // Questions 1-6. Don is checking messages on his voicemail. Listen and write the date and time of each event. You can listen TWICE. (Cú pháp: đáp án 1 - đáp án 2)	1					August 3rd - 9:30 a.m.
-281	listening	Mini 2	1	short		2					July 28th - 8 p.m.|July 28th - 8 pm|July 28th - 8 pm|July 28th - 8:00 p.m.|July 28th - 8:00 pm
-282	listening	Mini 2	1	short		3					August 10th - 11:15 a.m.| August 10th - 11:15 am|August 10th - 11:15
-283	listening	Mini 2	1	short		4					July 26th - 3 p.m.|July 26th - 3 pm| July 26th - 3:00 p.m.|July 26th - 3:00 pm
-284	listening	Mini 2	1	short		5					September 22nd - 6:00 p.m.|September 22nd - 6:00 pm|September 22nd - 6 p.m.|September 22nd - 6 pm
-285	listening	Mini 2	1	short		6					August 2nd - 2 p.m.|August 2nd - 2 pm|August 2nd - 2:00 p.m.|August 2nd - 2:00 pm
-286	reading	Mini 2	2	short	Question 7-12. Translate these sentences into English.	Tôi ngủ dậy lúc 6 giờ sáng.					I get up at 6 a.m.|I get up at 6 am.| I wake up at 6 a.m.| I wake up at 6 am.|I get up at 6 a.m..|I wake up at 6 a.m..|I get up at 6 o'clock.
-287	reading	Mini 2	2	short		Tôi không ăn sáng ở nhà.					I do not have breakfast at home. | I don’t have breakfast at home.
-288	reading	Mini 2	2	short		Chị gái tôi thường đi ngủ sớm.					My sister often goes to bed early.
-289	reading	Mini 2	2	short		Mẹ tôi chuẩn bị bữa ăn.					My mother prepares meals.
-290	reading	Mini 2	2	short		Anh trai tôi rất lười. Anh ấy không bao giờ dọn dẹp.					My brother is very lazy. He never tidies up. | My older brother is very lazy. He never tidies up. 
-291	reading	Mini 2	2	short		Bố tôi xem TV sau bữa tối. 					My father watches TV after dinner.| My father watches TV after supper.
-292	reading	Mini 2	3a	short	[IMG: https://drive.google.com/file/d/1PvbxqggotaWRMYWOL_YEYM6k3a0uF_im/view?usp=drive_link] // Questions 13-17. Match the job to its description.	Nurse					d
-293	reading	Mini 2	3a	short		Scientist					e
-294	reading	Mini 2	3a	short		Musician					a
-295	reading	Mini 2	3a	short		Teacher					c
-296	reading	Mini 2	3a	short		Flight attendant					b
-297	reading	Mini 2	3b	short	Question 18-21. Answer the questions. Write **ONE WORD** only.	Where do nurses work?					hospital|hospitals
-298	reading	Mini 2	3b	short		Where do scientists work?					lab|labs|laboratory|laboratories
-299	reading	Mini 2	3b	short		Where do teachers work?					school|schools
-300	reading	Mini 2	3b	short		Where do flight attendants work?					airplane| airplanes|airport| airports
-301	reading	Mini 2	3b	short	Questions 22-26. Use appropriate prepositions (in/on/at) to complete the sentences below.	I have breakfast ________________7 a.m. every morning.					at
-302	reading	Mini 2	3b	short		I usually go shopping ________________Saturdays.					on
-303	reading	Mini 2	3b	short		I'll go on vacation ________________July.					in
-304	reading	Mini 2	3b	short		She starts her new job ________________September.					in
-305	reading	Mini 2	3b	short		Our class starts ________________9:30 a.m.					at
-306	reading	Mini 2	4	short	Questions 27-31. Fill in the gaps with the correct form of the verbs in brackets. Use present simple tense.	She __________ (work) as a teacher at a primary school.					works
-307	reading	Mini 2	4	short		They __________ (enjoy) watching movies on weekends.					enjoy
-308	reading	Mini 2	4	short		He __________ (cook) dinner for his family every evening.					cooks
-309	reading	Mini 2	4	short		I __________ (study) English at the language school.					study
-310	reading	Mini 2	4	short		My dad __________ (drive) to work every day.					drives
-311	reading	Mini 2	5	short	Questions 32-36. Fill in the gaps with "a", "an”, or “x” if no article is needed. Cú pháp: đáp án 1 - đáp án 2	She wants to be __________ nurse and work at __________ hospital.					a - a
-312	reading	Mini 2	5	short		 He dreams of becoming __________ astronaut and traveling to __________ space.					an - x
-313	reading	Mini 2	5	short		 I need __________ job, so I'm looking for __________ employment opportunity.					a - an
-314	reading	Mini 2	5	short		Being __________ architect requires __________ creativity and passion.					an - x
-315	reading	Mini 2	5	short		My father is __________ scientist. He works in __________ lab.					a - a    
+
+282	listening	Mini 2	1	short	[IMG:https://drive.google.com/file/d/1wodgn0uJ91xysxt0PnvoZOQ85vRrHBbS/view?usp=drive_link] // https://drive.google.com/file/d/1FwZ4s2MHplCoX1SyEud4J2mSbCStapzF/view?usp=drive_link  // Questions 1-6. Don is checking messages on his voicemail. Listen and write the date and time of each event. You can listen TWICE. (Cú pháp: đáp án 1 - đáp án 2)	1					August 3rd - 9:30 a.m. | August 3rd - 9:30| August 3rd - 9:30 am 
+283	listening	Mini 2	1	short		2					July 28th - 8 p.m.|July 28th - 8 pm|July 28th - 8 pm|July 28th - 8:00 p.m.|July 28th - 8:00 pm
+284	listening	Mini 2	1	short		3					August 10th - 11:15 a.m.| August 10th - 11:15 am|August 10th - 11:15
+285	listening	Mini 2	1	short		4					July 26th - 3 p.m.|July 26th - 3 pm| July 26th - 3:00 p.m.|July 26th - 3:00 pm
+286	listening	Mini 2	1	short		5					September 22nd - 6:00 p.m.|September 22nd - 6:00 pm|September 22nd - 6 p.m.|September 22nd - 6 pm
+287	listening	Mini 2	1	short		6					August 2nd - 2 p.m.|August 2nd - 2 pm|August 2nd - 2:00 p.m.|August 2nd - 2:00 pm
+288	reading	Mini 2	1	short	Question 7-12. Translate these sentences into English.	Tôi ngủ dậy lúc 6 giờ sáng.					I get up at 6 a.m.|I get up at 6 am.| I wake up at 6 a.m.| I wake up at 6 am.|I get up at 6 a.m..|I wake up at 6 a.m..|I get up at 6 o'clock.
+289	reading	Mini 2	2	short		Tôi không ăn sáng ở nhà.					I do not have breakfast at home. | I don’t have breakfast at home.
+290	reading	Mini 2	2	short		Chị gái tôi thường đi ngủ sớm.					My sister often goes to bed early.
+291	reading	Mini 2	2	short		Mẹ tôi chuẩn bị bữa ăn.					My mother prepares meals.
+292	reading	Mini 2	2	short		Anh trai tôi rất lười. Anh ấy không bao giờ dọn dẹp.					My brother is very lazy. He never tidies up. | My older brother is very lazy. He never tidies up. 
+293	reading	Mini 2	2	short		Bố tôi xem TV sau bữa tối. 					My father watches TV after dinner.| My father watches TV after supper.
+294	reading	Mini 2	2	short	[IMG: https://drive.google.com/file/d/1PvbxqggotaWRMYWOL_YEYM6k3a0uF_im/view?usp=drive_link] // Questions 13-17. Match the job to its description.	Nurse					d
+295	reading	Mini 2	3a	short		Scientist					e
+296	reading	Mini 2	3a	short		Musician					a
+297	reading	Mini 2	3a	short		Teacher					c
+298	reading	Mini 2	3a	short		Flight attendant					b
+299	reading	Mini 2	3a	short	Question 18-21. Answer the questions. Write **ONE WORD** only.	Where do nurses work?					hospital|hospitals
+300	reading	Mini 2	3b	short		Where do scientists work?					lab|labs|laboratory|laboratories
+301	reading	Mini 2	3b	short		Where do teachers work?					school|schools
+302	reading	Mini 2	3b	short		Where do flight attendants work?					airplane| airplanes|airport| airports
+303	reading	Mini 2	3b	short	Questions 22-26. Use appropriate prepositions (in/on/at) to complete the sentences below.	I have breakfast ________________7 a.m. every morning.					at
+304	reading	Mini 2	3b	short		I usually go shopping ________________Saturdays.					on
+305	reading	Mini 2	3b	short		I'll go on vacation ________________July.					in
+306	reading	Mini 2	3b	short		She starts her new job ________________September.					in
+307	reading	Mini 2	3b	short		Our class starts ________________9:30 a.m.					at
+308	reading	Mini 2	3b	short	Questions 27-31. Fill in the gaps with the correct form of the verbs in brackets. Use present simple tense.	She __________ (work) as a teacher at a primary school.					works
+309	reading	Mini 2	4	short		They __________ (enjoy) watching movies on weekends.					enjoy
+310	reading	Mini 2	4	short		He __________ (cook) dinner for his family every evening.					cooks
+311	reading	Mini 2	4	short		I __________ (study) English at the language school.					study
+312	reading	Mini 2	4	short		My dad __________ (drive) to work every day.					drives
+313	reading	Mini 2	4	short	Questions 32-36. Fill in the gaps with "a", "an”, or “x” if no article is needed. Cú pháp: đáp án 1 - đáp án 2	She wants to be __________ nurse and work at __________ hospital.					a - a
+314	reading	Mini 2	5	short		 He dreams of becoming __________ astronaut and traveling to __________ space.					an - x
+315	reading	Mini 2	5	short		 I need __________ job, so I'm looking for __________ employment opportunity.					a - an
+316	reading	Mini 2	5	short		Being __________ architect requires __________ creativity and passion.					an - x
+317	reading	Mini 2	5	short		My father is __________ scientist. He works in __________ lab.					a - a
+318	listening	Mini 2	6	short	https://drive.google.com/file/d/1BJFEoyiFl3WJIbNL519vSsaI3itrJcOP/view?usp=drive_link // Find all the words containing /ɔː/ among these words. (**đáp án 1 - đáp án 2 - đáp án 3 - ..**) 	August, work, girl, short, glass, four, floor, talk, nurse					august - short  - four  - floor  - talk
+319	listening	Mini 2	7		https://drive.google.com/file/d/1xSklLDMy8S5V9r-pnDTV_n-RpwfbQDaM/view?usp=drive_link // Find all the words containing /ʌ/ among these words. (**đáp án 1 - đáp án 2 - đáp án 3 - ..**) 	run, sad, does, brother, match, comb, copy, come, hot					run - does - brother - come
+320	listening	Mini 2	8		https://drive.google.com/file/d/1-Xf0oxTcZOzVXTxSDs6-jlAu8_-QP7HB/view?usp=drive_link // Find all the words containing /ɜː/ among these words (**đáp án 1 - đáp án 2 - đáp án 3 - ..**) 	bed, work, rude, turn, early, board, person, journey, shot					work - turn - early - person - journey
+321	listening	Mini 2	9		https://drive.google.com/file/d/1xuCA-xFN1y_98NXzRVPA0JJ4qLOz85NH/view?usp=drive_link // Find all the words containing /ɑː/ among these words (**đáp án 1 - đáp án 2 - đáp án 3 - ..**) 	artist, have, am, star, cut, home, are, can, calm					artist - star - are - calm
 
 `; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
 
