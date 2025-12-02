@@ -572,17 +572,17 @@ function getDrivePreviewUrl(url) {
       .map(a => normalize(a))
       .filter(a => a);
    
-    // Đúng nếu:
-    // 1) Trùng hoàn toàn sau normalize()
-    // 2) Hoặc trùng sau khi coi a/an/the là cùng một nhóm ARTICLE
-const isCorrect = acceptable.some(ans =>
-  ans === user ||
-  normalizeArticles(ans) === normalizeArticles(user)
-);
+    // ĐÚNG nếu:
+  // 1) Trùng hoàn toàn sau normalize()
+  // 2) Hoặc trùng sau khi quy tất cả a/an/the -> ARTICLE
+  const isCorrect = acceptable.some(ans => (
+    ans === user ||
+    normalizeArticles(ans) === normalizeArticles(user)
+  ));
 
     totalDone++;
     
-    const isCorrect = acceptable.includes(user);
+   
 
     if (isCorrect) {
       correctCount++;
