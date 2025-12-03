@@ -1,0 +1,828 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IELTS Listening & Reading – Practice Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 15px;
+      line-height: 1.5;
+      background-color: #fff7e6;  /* vàng cam rất nhẹ */
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    h2 {
+      margin-top: 10px;
+      margin-bottom: 8px;
+      font-size: 18px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    .info {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background-color: #fafafa;
+    }
+    .group-block {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      background-color: #fafafa;
+    }
+    .passage {
+      margin: 8px 0 12px 0;
+      padding: 8px 10px;
+      border-left: 3px solid #007acc;
+      background-color: #ffffff;
+      font-size: 14px;
+    }
+    .question {
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #ddd;
+      background-color: #ffffff;
+    }
+    .question.correct {
+      background-color: #e6ffe6;
+    }
+    .question.incorrect {
+      background-color: #ffe6e6;
+    }
+    .question-number {
+      font-weight: bold;
+    }
+    .btn {
+      padding: 6px 12px;
+      margin-right: 8px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background-color: #e0e0e0;
+    }
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+    }
+    .result {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 12px;
+      background-color: #fff;
+    }
+    .short-answer-input {
+      width: 70%;
+      max-width: 350px;
+      padding: 4px;
+      font-size: 14px;
+    }
+    audio {
+      width: 100%;
+      margin: 8px 0 10px 0;
+    }
+    iframe.audio-frame {
+      width: 100%;
+      height: 80px;
+      border: 0;
+      margin: 8px 0 10px 0;
+    }
+    img.q-img {
+      max-width: 100%;
+      height: auto;
+      margin: 6px 0;
+      display: block;
+    }
+    .img-frame {
+      width: 100%;
+      max-width: 100%;
+      height: 260px;
+      border: 0;
+      margin: 6px 0;
+      display: block;
+    }
+    .btn-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;     /* khoảng cách giữa 2 nút */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px 0;
+  color: #444;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+
+    /* Layout hai cột cho Reading */
+    .reading-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .reading-left {
+      flex: 1.4;
+    }
+    .reading-right {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+ <h1 id="pageTitle">Đang tải tiêu đề...</h1>
+
+  <div class="info">
+    <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
+    <p>Làm xong hãy bấm <strong>Nộp bài</strong> để xem điểm. Có thể tải lại trang để làm lại.</p>
+ <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A">
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: 8A, TOEIC-Reading 1">
+      </label>
+    </p>
+  </div>
+
+  <div id="quiz"></div>
+
+ <div class="btn-row">
+  <button class="btn" id="submitBtn">Nộp bài & xem kết quả</button>
+  <button class="btn" id="retryBtn">Làm lại từ đầu</button>
+</div>
+
+  <div class="result" id="resultBox" style="display:none;"></div>
+
+<script>
+// ====== CẤU HÌNH CHO GIÁO VIÊN ======
+const DURATION_MINUTES = 40;
+
+// Lấy TEST_ID từ tên file hiện tại, ví dụ "BEIE_HW_U6.html"
+const fileSegment = location.pathname.split('/').pop() || '';
+const TEST_ID = decodeURIComponent(
+  fileSegment.replace(/\.[^/.]+$/, '')   // bỏ đuôi .html, .htm...
+) || 'PracticeTest';
+
+// Cập nhật tiêu đề trang và H1 ngay khi tải
+document.title = TEST_ID;
+const pageTitleEl = document.getElementById('pageTitle');
+if (pageTitleEl) {
+  pageTitleEl.textContent = TEST_ID;
+}
+
+  
+  const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv"; // dán URL CSV của anh vào đây
+// ===== ĐỌC CSV META ĐỂ LẤY TITLE =====
+
+
+  
+  
+  // Parse CSV rất đơn giản: tách dòng, tách cột theo dấu phẩy
+function parseMetaCSV(text) {
+  const lines = text.trim().split("\n");
+  if (lines.length < 2) return [];
+
+  const header = lines[0].split(",").map(h => h.trim());
+  const rows = lines.slice(1);
+
+  return rows.map(row => {
+    const cols = row.split(",");
+    const obj = {};
+    header.forEach((h, i) => {
+      obj[h] = (cols[i] || "").trim();
+    });
+    return obj;
+  });
+}
+
+// Tải CSV và cập nhật title theo cột "File"
+async function loadTestTitle() {
+  try {
+    const resp = await fetch(META_CSV_URL);
+    const text = await resp.text();
+    const data = parseMetaCSV(text);
+
+    // Lấy tên file hiện tại, ví dụ "BEIE_HW_U2.html"
+    const currentFile = location.pathname.split("/").pop();
+
+    // Tìm dòng trong CSV có cột File trùng với tên file
+    const meta = data.find(r =>
+      (r.File || "").toLowerCase() === (currentFile || "").toLowerCase()
+    );
+
+    if (meta && meta.Title) {
+      document.title = meta.Title;           // tiêu đề tab trình duyệt
+      const h1 = document.getElementById("pageTitle");
+      if (h1) h1.textContent = meta.Title;   // tiêu đề lớn trên trang
+    } else {
+      const h1 = document.getElementById("pageTitle");
+      if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+        h1.textContent = "Practice Test";
+      }
+    }
+  } catch (err) {
+    console.error("Không đọc được meta CSV:", err);
+    const h1 = document.getElementById("pageTitle");
+    if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+      h1.textContent = "Practice Test";
+    }
+  }
+}
+
+  
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec'; 
+
+
+
+
+    // DỮ LIỆU ĐỀ – GIÁO VIÊN DÁN TỪ EXCEL/GOOGLE SHEETS VÀO ĐÂY
+    // 1) Lọc & chọn các dòng câu hỏi (KHÔNG chọn dòng tiêu đề)
+    // 2) Cmd + C
+    // 3) Đặt con trỏ giữa hai dấu ` ... ` rồi Cmd + V
+    const RAW_DATA = `
+
+431	listening	8	1	short	https://drive.google.com/file/d/13_fHLiDqM7bwos1XgFzLPk9ngQQtxYUI/view?usp=drive_link // [IMG:https://drive.google.com/file/d/1_mIOYXX-osMziqdMODVSsPGkVwKGJ98e/view?usp=drive_link] // Exercise  1. Nhìn vào các hình đã cho, tìm 6 món đồ có chứa âm /eɪ/, 3 món có chứa âm /aɪ/ và 3 món có chứa âm /ɔɪ/. Sau đó nghe và check đáp án.	1					Radio 
+432	listening	8	1	short		2					Table 
+433	listening	8	1	short		3					Cake 
+434	listening	8	1	short		4					Train 
+435	listening	8	1	short		5					Plane  
+436	listening	8	1	short		6					Suitcase 
+437	listening	8	1	short		7					Light 
+438	listening	8	1	short		8					Wine 
+439	listening	8	1	short		9					Ice  
+440	listening	8	1	short		10					Boy  
+441	listening	8	1	short		11					Coins  
+442	listening	8	1	short		12					Toys 
+443	reading	8	2	mcq	[IMG:https://drive.google.com/file/d/11hX1YhIJUH6-21KvzhDKt7t7-hf0pVSN/view?usp=drive_link] // Exercise 2. Đọc kiến thức về lượng từ (Quantifiers) và làm bài tập sau	Can you give me ……. tomato juice?	a few	many	some	any	C
+444	reading	8	2	mcq		How ……… carrots do you need?	much	many	a few	a little	B
+445	reading	8	2	mcq		You should eat ……… orange every day.	a	an	any	a few	B
+446	reading	8	2	mcq		There is ……… cheese on the plate.	some	many	any	a few	A
+447	reading	8	2	mcq		There is ……… honey in the pot.	any	many	a lot of	a few	C
+448	reading	8	2	mcq		Please give me ……… onions.	a lot	a few	too much	a little	B
+449	reading	8	2	mcq		There is ……… milk in the baby bottle.	many	a lot of	a few	any	B
+450	reading	8	2	mcq		We have ……… strawberries here.	a little	a lot of	any	too much	B 
+451	reading	8	2	mcq		Don't put ……… salt in the soup.	a few	many	too much	too many	C
+452	reading	8	2	mcq		I'll make ……… lemonade to drink.	a few	many	any	some	D
+453	reading	8	3	short	[IMG: https://drive.google.com/file/d/18seIV5CkpbLbh2KoXIk-iKYZD_Hz1AbF/view?usp=drive_link] // https://drive.google.com/file/d/18XYXkN_NME8QyBBxEiD3DeqJoELfsXW_/view?usp=drive_link // Exercise 3. Listen and fill in the missing word. Write NO MORE THAN TWO WORDS or A NUMBER.	1					vegetables
+454	reading	8	3	short		2					chicken
+455	reading	8	3	short		3					wine
+456	reading	8	3	short		4					cheese
+457	reading	8	3	short		5					smoothie
+458	reading	8	3	short		6					pie
+459	reading	8	3	short		7					ice cream
+460	reading	8	3	short		8					14.95
+461	reading	8	4	mcq	Exercise 4. Odd one out	1	Take	Name	Eight	Back	d
+462	reading	8	4	mcq		2	Table	Cat	Apple	Map	a
+463	reading	8	4	mcq		3	Great	Beat	Steal	Seat	a
+464	reading	8	4	mcq		4	Today	Stay	Lazy	Alive	d
+465	reading	8	4	mcq		5	Mine	Mind	Mint	Might	c
+466	reading	8	4	mcq		6	Fine	Time	Miss	Mine	c
+467	reading	8	5	short	[IMG:https://drive.google.com/file/d/1aj8K8rkGECeps-tKN8SVNkfUQsJU8ieG/view?usp=drive_link] // Viết ra từ đúng cho từng vị trí	1					steaks
+468	reading	8	5	short		2					potatoes
+469	reading	8	5	short		3					potatoes
+470	reading	8	5	short		4					some bread and cheese
+471	reading	8	5	short		5					a nice juicy melon
+472	reading	8	5	short		6					oil
+
+`; // <--- KHI DÁN THẬT, XOÁ DÒNG TIÊU ĐỀ NÀY ĐI
+
+    // ====== CODE CHUNG – KHÔNG CẦN SỬA BÊN DƯỚI ======
+
+    let timerInterval = null;
+    let timeLeft = 0;
+
+    function startTimer(totalSeconds) {
+      timeLeft = totalSeconds;
+      const timerEl = document.getElementById('timer');
+      if (timerInterval) clearInterval(timerInterval);
+
+      function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent =
+          String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+      }
+
+      updateDisplay();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timeLeft = 0;
+          updateDisplay();
+          alert('Hết thời gian! Hệ thống sẽ tự chấm điểm.');
+          gradeQuiz();
+        } else {
+          updateDisplay();
+        }
+      }, 1000);
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+        // Hiển thị token [IMG:...] – nếu là Google Drive thì dùng iframe preview
+    function renderImgToken(urlRaw) {
+      const url = urlRaw.trim();
+
+      // Trường hợp Google Drive
+      if (/drive\.google\.com/i.test(url)) {
+        let id = '';
+        const m1 = url.match(/\/d\/([^\/]+)/);
+        const m2 = url.match(/[?&]id=([^&]+)/);
+        if (m1 && m1[1]) id = m1[1];
+        else if (m2 && m2[1]) id = m2[1];
+
+        if (id) {
+          const preview = 'https://drive.google.com/file/d/' + id + '/preview';
+          return '<br><iframe class="img-frame" src="' + preview + '" allow="autoplay"></iframe>';
+        }
+      }
+
+      // Link không phải Google Drive -> hiển thị ảnh trực tiếp
+      return '<br><img class="q-img" src="' + url + '" alt="image">';
+    }
+
+
+    // Phân tích dữ liệu từ RAW_DATA (tab-separated)
+    function parseSheet(rawText) {
+      if (!rawText.trim()) return [];
+      const lines = rawText.trim().split('\n').filter(l => l.trim() !== '');
+      const questions = [];
+
+      lines.forEach((line, index) => {
+        const cols = line.split('\t');
+
+        const q = {
+          id: cols[0] || String(index + 1),
+          skill: (cols[1] || '').toLowerCase(),
+          part: cols[2] || '',
+          group: cols[3] || ('G' + (index + 1)),
+          type: (cols[4] || 'mcq').toLowerCase(),
+          passage: cols[5] || '',
+          question: cols[6] || '',
+          options: [
+            cols[7] || '',
+            cols[8] || '',
+            cols[9] || '',
+            cols[10] || ''
+          ],
+          answer: (cols[11] || '').trim()
+        };
+        questions.push(q);
+      });
+
+      return questions;
+    }
+// Passage có thể gồm nhiều phần, phân tách bằng " // ":
+//  - [IMG: url]  → ảnh (hoặc iframe Google Drive)
+//  - url audio   → audio (mp3, m4a, wav, ogg hoặc link Drive)
+//  - text        → hiển thị trong khung .passage
+function renderPassageWithMedia(passageText, containerEl, skill) {
+  if (!passageText) return;
+
+  const segments = passageText
+    .split(' // ')           // tách theo " // " để không làm vỡ https://
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  const textSegments = [];
+
+  segments.forEach(seg => {
+    // 1) ẢNH: dạng [IMG: ...]
+    if (/^\[IMG:/i.test(seg)) {
+      // giữ nguyên, lát nữa convert trong HTML
+      textSegments.push(seg);
+      return;
+    }
+
+    // 2) AUDIO: link Drive hoặc file .mp3/.wav/.m4a/.ogg...
+    const isHttp      = /^https?:\/\//i.test(seg);
+    const hasAudioExt = /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(seg);
+    const isDriveLink = /drive\.google\.com/i.test(seg);
+    const isAudioUrl  = isHttp && hasAudioExt;
+
+    // Cho phép audio cả trong reading & listening
+    if (isDriveLink || isAudioUrl) {
+      // 2a. Audio Google Drive → iframe preview
+      if (isDriveLink) {
+        let fileId = '';
+        const m1 = seg.match(/\/d\/([^\/]+)/);
+        const m2 = seg.match(/[?&]id=([^&]+)/);
+        if (m1 && m1[1]) fileId = m1[1];
+        else if (m2 && m2[1]) fileId = m2[1];
+
+        if (fileId) {
+          const iframe = document.createElement('iframe');
+          iframe.className = 'audio-frame';
+          iframe.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+          iframe.allow = 'autoplay';
+          containerEl.appendChild(iframe);
+        }
+      }
+      // 2b. Audio file thường
+      else if (isAudioUrl) {
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = seg;
+        containerEl.appendChild(audio);
+      }
+    } else {
+      // 3) Text còn lại
+      textSegments.push(seg);
+    }
+  });
+
+  // Nếu còn text/IMG thì gộp vào một khung passage
+  if (textSegments.length) {
+    const passageDiv = document.createElement('div');
+    passageDiv.className = 'passage';
+
+    // Ghép lại, dùng " // " rồi đổi thành xuống dòng
+    let html = escapeHtml(textSegments.join(' // '));
+
+    // Hỗ trợ **in đậm**
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // Xuống dòng khi gặp // (nếu còn)
+    html = html.replace(/\/\/\s*/g, '<br><br>');
+
+    // Đổi [IMG: url] thành iframe / img thực tế
+    html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+
+    passageDiv.innerHTML = html;
+    containerEl.appendChild(passageDiv);
+  }
+}
+
+  
+    function renderQuiz(questions) {
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.innerHTML = '';
+
+      const groups = {};
+      const groupOrder = [];
+
+      // gom theo group
+      questions.forEach((q, idx) => {
+        const key = (q.group && q.group.trim()) ? q.group.trim() : ('G' + q.id);
+        if (!groups[key]) {
+          groups[key] = {
+            skill: q.skill,
+            passage: q.passage,
+            questions: []
+          };
+          groupOrder.push(key);
+        }
+        groups[key].questions.push(q);
+      });
+
+      let questionCounter = 0;
+
+      groupOrder.forEach(key => {
+        const g = groups[key];
+        const pTrim = (g.passage || '').trim();
+
+        // ===== READING: layout 2 cột =====
+        if (g.skill === 'reading') {
+          const layout = document.createElement('div');
+          layout.className = 'reading-layout';
+
+          // Cột trái: passage
+          const left = document.createElement('div');
+          left.className = 'reading-left group-block';
+
+          const title = document.createElement('h2');
+          title.textContent = 'Reading ' + key;
+          left.appendChild(title);
+
+          if (pTrim) {
+  renderPassageWithMedia(pTrim, left, g.skill);
+}
+
+          // Cột phải: câu hỏi
+          const right = document.createElement('div');
+          right.className = 'reading-right';
+
+          g.questions.forEach(q => {
+            questionCounter++;
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.dataset.answer = (q.answer || '').trim();
+            qDiv.dataset.type = q.type || 'short';
+
+            const titleP = document.createElement('p');
+            let qHtml = escapeHtml(q.question || '');
+            qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+            qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => {
+              const src = convertDriveImageUrl(url.trim());
+              return '<br><img class="q-img" src="' + src + '" alt="image">';
+            });
+            qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            titleP.innerHTML =
+              '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+            qDiv.appendChild(titleP);
+
+            if (q.type === 'mcq') {
+              ['A','B','C','D'].forEach((labelOpt, i) => {
+                if (!q.options[i]) return;
+                const optLabel = document.createElement('label');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'q' + questionCounter;
+                radio.value = labelOpt;
+                optLabel.appendChild(radio);
+                optLabel.appendChild(
+                  document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+                );
+                qDiv.appendChild(optLabel);
+                qDiv.appendChild(document.createElement('br'));
+              });
+            } else {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.name = 'q' + questionCounter;
+              input.className = 'short-answer-input';
+              qDiv.appendChild(input);
+            }
+
+            right.appendChild(qDiv);
+          });
+
+          layout.appendChild(left);
+          layout.appendChild(right);
+          quizDiv.appendChild(layout);
+
+        // ===== LISTENING & KHÁC: layout dọc =====
+        } else {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'group-block';
+
+          const title = document.createElement('h2');
+          title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
+          groupDiv.appendChild(title);
+
+         if (pTrim) {
+  renderPassageWithMedia(pTrim, groupDiv, g.skill);
+}
+
+
+          g.questions.forEach(q => {
+            questionCounter++;
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            qDiv.dataset.answer = (q.answer || '').trim();
+            qDiv.dataset.type = q.type || 'short';
+
+            const titleP = document.createElement('p');
+            let qHtml = escapeHtml(q.question || '');
+            qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+            qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+            qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+
+            titleP.innerHTML =
+              '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+            qDiv.appendChild(titleP);
+
+            if (q.type === 'mcq') {
+              ['A','B','C','D'].forEach((labelOpt, i) => {
+                if (!q.options[i]) return;
+                const optLabel = document.createElement('label');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'q' + questionCounter;
+                radio.value = labelOpt;
+                optLabel.appendChild(radio);
+                optLabel.appendChild(
+                  document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+                );
+                qDiv.appendChild(optLabel);
+                qDiv.appendChild(document.createElement('br'));
+              });
+            } else {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.name = 'q' + questionCounter;
+              input.className = 'short-answer-input';
+              qDiv.appendChild(input);
+            }
+
+            groupDiv.appendChild(qDiv);
+          });
+
+          quizDiv.appendChild(groupDiv);
+        }
+      });
+    }
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")  // ‘ và ’  -> '
+    .replace(/\s+/g, ' ')            // gộp nhiều khoảng trắng
+    .trim();
+}
+
+ function gradeQuiz() {
+  const quizDiv = document.getElementById('quiz');
+  const questionDivs = quizDiv.querySelectorAll('.question');
+  let correct = 0;
+  const total = questionDivs.length;
+
+  questionDivs.forEach(div => {
+    const type = div.dataset.type || 'short';
+
+    // Lấy đáp án gốc (giữ nguyên để hiển thị nếu cần)
+    const answerRawDisplay = (div.dataset.answer || '').trim();
+
+    // Tạo danh sách đáp án đúng, cho phép nhiều đáp án ngăn cách bởi |
+    const answerList = answerRawDisplay
+      .split('|')
+      .map(normalizeText)   // dùng hàm chuẩn hóa ở trên
+      .filter(s => s);
+
+    let userAnswer = '';
+
+    if (type === 'mcq') {
+      const checked = div.querySelector('input[type="radio"]:checked');
+      if (checked) {
+        userAnswer = normalizeText(checked.value);
+      }
+    } else {
+      const input = div.querySelector('input[type="text"]');
+      if (input) {
+        userAnswer = normalizeText(input.value);
+      }
+    }
+
+    let isCorrect = false;
+    if (answerList.length && userAnswer) {
+      // Đúng nếu userAnswer trùng BẤT KỲ phần tử nào
+      if (answerList.includes(userAnswer)) {
+        isCorrect = true;
+      }
+    }
+
+    if (isCorrect) {
+      div.classList.add('correct');
+      div.classList.remove('incorrect');
+      correct++;
+    } else {
+      div.classList.add('incorrect');
+      div.classList.remove('correct');
+    }
+  });
+
+  const percent = Math.round(correct * 100 / Math.max(total, 1));
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+  const now  = new Date();
+  const timestamp = now.toLocaleString();
+
+  const logLine =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correct + '\t' +
+    total + '\t' +
+    percent;
+
+  if (typeof LOG_ENDPOINT !== 'undefined' && LOG_ENDPOINT) {
+    const payload = {
+      testId:   TEST_ID,
+      name:     name,
+      className: cls,
+      correct:  correct,
+      total:    total,
+      percent:  percent,
+      rawLog:   logLine
+    };
+
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => {
+      console.error('Error sending result to Sheet:', err);
+    });
+  }
+
+  const box = document.getElementById('resultBox');
+box.style.display = 'block';
+box.innerHTML = `
+  <div style="font-size:16px; margin-bottom:4px;">
+    <strong>Bài test:</strong> ${TEST_ID}
+  </div>
+  <div style="font-size:18px; margin-bottom:8px;">
+    <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+  </div>
+  <div style="
+    font-size:28px;
+    font-weight:bold;
+    color:#007acc;
+    padding:10px 0;
+  ">
+    ${percent}%
+  </div>
+`;
+
+}
+
+
+    function copyLogLine() {
+      const ta = document.getElementById('logLine');
+      if (!ta) return;
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        alert('Đã copy. Hãy dán vào Zalo hoặc Google Sheet gửi cho giáo viên.');
+      } catch (e) {
+        alert('Trình duyệt không cho copy tự động. Hãy tự bôi đen và copy dòng trong ô.');
+      }
+    }
+
+// Bắt buộc nhập Họ tên và Lớp/Nhóm trước khi nộp bài
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('studentName');
+  const classInput = document.getElementById('studentClass');
+
+  const name = (nameInput.value || '').trim();
+  const cls  = (classInput.value || '').trim();
+
+  if (!name || !cls) {
+    alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi nộp bài.');
+    
+    // Đưa con trỏ vào ô còn thiếu
+    if (!name) {
+      nameInput.focus();
+    } else if (!cls) {
+      classInput.focus();
+    }
+    return; // Không gọi gradeQuiz nếu thiếu thông tin
+  }
+
+  // Đủ thông tin thì mới chấm điểm
+  gradeQuiz();
+});
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  location.reload();
+});
+
+
+    // Khởi động
+    (function initExam() {
+      const qs = parseSheet(RAW_DATA);
+      if (!qs.length) {
+        document.getElementById('quiz').innerHTML =
+          '<p style="color:red;">Giáo viên chưa dán dữ liệu đề vào biến RAW_DATA.</p>';
+        return;
+      }
+      renderQuiz(qs);
+      startTimer(DURATION_MINUTES * 60);
+    })();
+  
+  // Sau khi trang tải, lấy Title từ Google Sheet
+loadTestTitle();
+  </script>
+  
+  <footer class="footer">
+  <p>© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
