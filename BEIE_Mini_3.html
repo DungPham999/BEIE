@@ -647,6 +647,10 @@
     const box = document.getElementById('resultBox');
     box.style.display = 'block';
     box.innerHTML = `
+      
+       <div style="font-size:16px; margin-bottom:4px;">
+    <strong>Bài test:</strong> ${TEST_ID}
+  </div>
       <div style="font-size:18px; margin-bottom:8px;">
         <strong>Kết quả:</strong> đúng ${correct}/${total} câu
       </div>
@@ -659,6 +663,8 @@
         ${percent}%
       </div>
     `;
+
+    
   }
 
   // BẮT BUỘC NHẬP TÊN/LỚP TRƯỚC KHI NỘP
