@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- THÊM VIEWPORT ĐỂ HIỂN THỊ ĐẸP TRÊN ĐIỆN THOẠI -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IELTS Listening & Reading – Practice Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 15px;
+      line-height: 1.5;
+      background-color: #fff7e6;
+      font-size: 16px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+    h2 {
+      margin-top: 10px;
+      margin-bottom: 8px;
+      font-size: 18px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    .info {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background-color: #fafafa;
+      font-size: 15px;
+    }
+    .info input {
+      padding: 6px 8px;
+      font-size: 15px;
+    }
+    .group-block {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      background-color: #fafafa;
+    }
+    .passage {
+      margin: 8px 0 12px 0;
+      padding: 8px 10px;
+      border-left: 3px solid #007acc;
+      background-color: #ffffff;
+      font-size: 14px;
+    }
+    .question {
+      margin-bottom: 12px;
+      padding: 8px 8px 10px 8px;
+      border-bottom: 1px dashed #ddd;
+      background-color: #ffffff;
+      font-size: 15px;
+    }
+    .question.correct {
+      background-color: #e6ffe6;
+    }
+    .question.incorrect {
+      background-color: #ffe6e6;
+    }
+    .question-number {
+      font-weight: bold;
+    }
+    .btn {
+      padding: 8px 14px;
+      margin-right: 8px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .btn:hover {
+      background-color: #e0e0e0;
+    }
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+    }
+    .result {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 12px;
+      background-color: #fff;
+      font-size: 15px;
+    }
+    .short-answer-input {
+      width: 80%;
+      max-width: 400px;
+      padding: 6px 8px;
+      font-size: 15px;
+    }
+    audio {
+      width: 100%;
+      margin: 8px 0 10px 0;
+    }
+    iframe.audio-frame {
+      width: 100%;
+      height: 80px;
+      border: 0;
+      margin: 8px 0 10px 0;
+    }
+    img.q-img {
+      max-width: 100%;
+      height: auto;
+      margin: 6px 0;
+      display: block;
+    }
+    .img-frame {
+      width: 100%;
+      max-width: 100%;
+      height: 260px;
+      border: 0;
+      margin: 6px 0;
+      display: block;
+    }
+    .btn-row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 0;
+      color: #444;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    /* Layout hai cột cho Reading */
+    .reading-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .reading-left {
+      flex: 1.4;
+    }
+    .reading-right {
+      flex: 1;
+    }
+
+    .correct-answer-text {
+      margin-top: 4px;
+      font-size: 13px;
+      font-style: italic;
+      color: #555;
+    }
+
+    /* ========= TỐI ƯU CHO ĐIỆN THOẠI ========= */
+    @media (max-width: 768px) {
+      body {
+        max-width: 100%;
+        margin: 0;
+        padding: 10px 8px 30px 8px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: 22px;
+        margin-top: 10px;
+      }
+      .info {
+        padding: 10px;
+      }
+      .info label {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .info input {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 4px;
+      }
+      .reading-layout {
+        flex-direction: column;       /* passage trên, câu hỏi dưới */
+      }
+      .reading-left,
+      .reading-right {
+        width: 100%;
+      }
+      .group-block {
+        padding: 10px 10px;
+      }
+      .passage {
+        font-size: 15px;
+      }
+      .question {
+        font-size: 15px;
+      }
+      .short-answer-input {
+        width: 100%;
+        max-width: 100%;
+      }
+      .btn-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .btn-row .btn {
+        width: 100%;                 /* nút rộng cả dòng cho dễ bấm */
+        font-size: 16px;
+        padding: 10px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 id="pageTitle">Đang tải tiêu đề...</h1>
+
+  <div class="info">
+    <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
+    <p>Làm xong từng phần hãy bấm <strong>Phần tiếp theo</strong>. Khi hoàn thành hết các phần, bấm <strong>Nộp bài</strong> để xem điểm.</p>
+    <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A">
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: 8A, TOEIC-Reading 1">
+      </label>
+    </p>
+    <p style="text-align:center; margin-top:10px;">
+      <button class="btn" id="startBtn">Bắt đầu làm bài</button>
+    </p>
+  </div>
+
+  <div id="quiz" style="display:none;"></div>
+
+  <!-- HÀNG NÚT ĐIỀU HƯỚNG THEO PHẦN -->
+  <div class="btn-row" id="navRow" style="display:none;">
+    <button class="btn" id="prevPartBtn">Phần trước</button>
+    <button class="btn" id="nextPartBtn">Phần tiếp theo</button>
+    <button class="btn" id="submitBtn" style="display:none;">Nộp bài & xem kết quả</button>
+    <button class="btn" id="retryBtn">Làm lại từ đầu</button>
+  </div>
+
+  <div class="result" id="resultBox" style="display:none;"></div>
+
+<script>
+  const DURATION_MINUTES = 15;
+  const TEST_ID = 'BEIE_Mini_3';
+  const META_CSV_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
+
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+
+  const RAW_DATA = `
+
+514	reading	Mini 3	1	short	[IMG: https://drive.google.com/file/d/1FzCy8ol8VawELDd_U9x6E-CzMsDcHwzg/view?usp=drive_link] // Questions 1-8. Complete the puzzle by writing correct vocabularies based on their meaning in Vietnamese.	1. đồng hồ đeo tay					watch
+515	reading	Mini 3	1	short		2. quần dài					trousers
+516	reading	Mini 3	1	short		3. găng tay					glove
+517	reading	Mini 3	1	short		4. kính râm					sunglasses
+518	reading	Mini 3	1	short		5. áo sơ mi					shirt
+519	reading	Mini 3	1	short		6. tất					sock
+520	reading	Mini 3	1	short		7. áo len (across)					sweater
+521	reading	Mini 3	1	short		7. khăn quàng cổ (down)					scarf
+522	reading	Mini 3	1	short		8. áo khoác					coat
+523	reading	Mini 3	2	short	[IMG:https://drive.google.com/file/d/1ySf3fYDoDTDeAYbJaO1gLt21GPLmbhdf/view?usp=drive_link] // Questions 9-14. Look at the picture and write correct words	9					Seafood 
+524	reading	Mini 3	2	short		10					Spaghetti
+525	reading	Mini 3	2	short		11					Bread
+526	reading	Mini 3	2	short		12					Cheese 
+527	reading	Mini 3	2	short		13					Yogurt|yoghurt
+528	reading	Mini 3	2	short		14					Hamburger 
+529	reading	Mini 3	3	short	Questions 21-25. Change the nouns below into plural form	21.  sock					socks
+530	reading	Mini 3	3	short		22.  glove					gloves
+531	reading	Mini 3	3	short		23.  scarf					scarves
+532	reading	Mini 3	3	short		24.  person					people
+533	reading	Mini 3	3	short		25. sheep					sheep
+534	reading	Mini 3	4	short	Questions 26-30. These sentences include some  mistakes.  Write the correct sentences.	26.  I have a little sausages.					I have a few sausages.|I have some sausages.| I have  sausages.| 
+535	reading	Mini 3	4	short		27.  Can I have a milk in my coffee?					Can I have some milk in my coffee?|Can I have milk in my coffee?
+536	reading	Mini 3	4	short		28.  Coffee are bitter.					Coffee is bitter.
+537	reading	Mini 3	4	short		29.  I have many breads for breakfast today.					I have much bread for breakfast today.|I have bread for breakfast today.|I have some bread for breakfast today.|I have a little bread for breakfast today.|I have a lot of bread for breakfast today.
+538	reading	Mini 3	4	short		30.  There is many oranges in the fridge. 					There are many oranges in the fridge.
+539	reading	Mini 3	5	short	Questions 31-35. Translate the sentences below into English.	31.  Kia là quyển sách của chị gái tôi.					That's my sister's book.|That is my sister's book.|That's my older sister's book.|That is my older sister's book.
+540	reading	Mini 3	5	short		32.	Đây là con chó của anh ấy. Tên nó là Max.					This is his dog. His name is Max.|This is his dog. His name's Max.|This is his dog. Its name is Max.|This is his dog. Its name's Max.
+541	reading	Mini 3	5	short		33.  Kia có phải nhà của bà bạn không?					Is that your grandmother's house?|Is that your grandma's house?|Is that your grandmother's home?|Is that your grandma's home?
+542	reading	Mini 3	5	short		34.  Đây là các anh chị em họ của tôi đến từ Pháp.					These are my cousins ​​from France.|They are my cousins ​​from France.
+543	reading	Mini 3	5	short		35.  Nó là chiếc xe ô tô của bố tôi.					This is my father's car.| It is my father's car.| It's my father's car.|It is my dad's car.|It's my dad's car.
+544	reading	Mini 3	6	short	"Questions 36-40. Find words that have /ɪə/,/eə/, /ɔɪ/, /ai/, /əʊ/ sounds: 
+brown - tie - old - oil -  hear - heir - 	 October - chair -	  annoy - May -	 style - tomato -	 pear -	 cold -	 spear. Cú pháp: **đáp án 1 - đáp ấn 2 - …**
+	36. Find words that have /ɪə/ sound					hear - spear
+545	reading	Mini 3	6	short		37. Find words that have /eə/ sound					heir - chair - pear
+546	reading	Mini 3	6	short		38.  Find words that have /ɔɪ/ so
