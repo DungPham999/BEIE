@@ -304,12 +304,12 @@ const RAW_DATA = `
 549	reading	9	1	short	[IMG:https://drive.google.com/file/d/1fKildqQYyROiFlbVcnQK9pnju7-NVbUR/view?usp=drive_link]  // Exercise 1. **My name is Matt.** Nhìn vào cây phả hệ dưới đây và xác định mối quan hệ giữa "tôi" từng người trong đó. (Nếu có nhiều đáp án thì viết theo cú pháp: **đáp án 1 - đáp án 2 - ..**)	1. Martin is my ……………………					Grandpa|grandfather
 550	reading	9	1	short		2. I am Mike’s ……………………					Nephew
 551	reading	9	1	short		3. Lily is my ……………………					Grandma| grandmothe
-552	reading	9	1	short		4. Leo and Mia are my …………………… I am their ……………………					parents - son
+552	reading	9	1	short		4. Leo and Mia are my …………………… I am their ……………………					parents - son|father and mother - son
 553	reading	9	1	short		5. I am Poppy’s ……………………					Brother
 554	reading	9	1	short		6. Emily is my …………………… Mike is my ……………………					Aunt - uncle
 555	reading	9	1	short		7. Becky and Connor are my ……………………					cousins
 556	reading	9	1	short		8. Becky is my mother’s ……………………					Niece
-557	reading	9	2	short	Exercise 2. Điền tính từ sở hữu phù hợp vào chỗ trống.	I don’t know the time because I can’t find ……………. watch.					my
+557	reading	9	2	short	Exercise 2. Điền tính từ sở hữu (my, your, his, her, its, our, their) phù hợp vào chỗ trống.	1. I don’t know the time because I can’t find ……………. watch.					my
 558	reading	9	2	short		What’s the boy’s name? ……………. name is Ben Scott.					his
 559	reading	9	2	short		Rosie has a cat. ……………. cat is very lively.					her
 560	reading	9	2	short		The dog is very cute. ……………. name is Ben.					its
@@ -325,12 +325,12 @@ const RAW_DATA = `
 570	reading	9	3	short		Andy has a beautiful doll.					Andy’s doll is beautiful.
 571	reading	9	3	short		The children have a great English teacher.					The children’s English teacher is great.
 572	reading	9	3	short		Josh has a new car.					Josh’s car is new.
-573	reading	9	4	short		My father has a blue shirt.					My father’s shirt is blue.
-574	reading	9	4	short	Exercise 4. Điền dạng sở hữu cách phù hợp.	A friend wants to ride …………………… (Tom/ bike).					Tom’s bike
+573	reading	9	3	short		My father has a blue shirt.					My father’s shirt is blue.
+574	reading	9	4	short	Exercise 4. Điền dạng sở hữu cách phù hợp. Ví dụ: books/boy -> the boy's books	A friend wants to ride …………………… (Tom/ bike).					Tom’s bike
 575	reading	9	4	short		Her father is Chandler and her …………………… (mother/ name) is Monica.					Mother’s name
 576	reading	9	4	short		These cakes belong to the boys. The …………………… (cakes/ girls) are over there.					Girls’ cakes
 577	reading	9	4	short		The car belongs to Minh, so it is …………………… (car/ Minh).					Minh’s car
-578	reading	9	4	short		Mark and Mary sleep in the same room. Jack points to a bed: ‘This is my …………………… (sister/bed).					Sister’s bed
+578	reading	9	4	short		Mark and Mary sleep in the same room. Jack points to a bed: ‘This is my …………………… (bed/sister).					Sister’s bed
 579	reading	9	4	short		My mother and father sleep here. This is my …………………… (parents/ room)					Parents’ room
 580	reading	9	5	mcq	Exercise 5. Chọn từ có chữ cái được gạch chân có cách phát âm khác với từ còn lại.	1	town	cow	how	know	d
 581	reading	9	5	mcq		2	ago	potato	mother	so	c
@@ -340,11 +340,11 @@ const RAW_DATA = `
 585	reading	9	5	mcq		6	so	cost	model	lot	a 
 586	reading	9	5	mcq		7	post	cost	lost	bottle	a
 587	reading	9	5	mcq		8	low	narrow	tower	glow	c
-588	listening	9	6	short	Exercise 6. Tự dịch các câu sau sang tiếng Anh (không viết tắt). Sau đó nghe để check đáp án.// https://drive.google.com/file/d/1KReNPk88o4D34VWLp16jwxw42eMoj94s/view?usp=drive_link	Mẹ tôi rất trẻ và đẹp. Mẹ tôi có mái tóc màu nâu dài.					My mother is very young and beautiful. She has long brown hair.|My mother is very young and beautiful. My mother has long brown hair.
+588	listening	9	6	short	Exercise 6. Tự dịch các câu sau sang tiếng Anh (không viết tắt). Sau đó nghe để check đáp án. // https://drive.google.com/file/d/1KReNPk88o4D34VWLp16jwxw42eMoj94s/view?usp=drive_link	Mẹ tôi rất trẻ và đẹp. Mẹ tôi có mái tóc màu nâu dài.					My mother is very young and beautiful. She has long brown hair.|My mother is very young and beautiful. My mother has long brown hair.
 589	listening	9	7	short	https://drive.google.com/file/d/1s67mBaB7Iu-6OHSclXSTFqG-MFXJ3VkY/view?usp=drive_link	Bà nội tôi thì già nhưng vẫn rất xinh đẹp. Bà thích nấu ăn.					My grandmother is old but very beautiful. She likes cooking.|My grandma is old but very beautiful. She likes cooking.|My grandmother is old but very beautiful. My grandmother likes cooking.|My grandma is old but very beautiful. My grandma likes cooking.
 590	listening	9	8	short	https://drive.google.com/file/d/1G5Nl_2Jcj96QY7d96s3Ks4Pm2iWok1hJ/view?usp=drive_link	Em trai tôi đẹp trai, cao và gầy. Nó thích chơi bóng chuyền.					My younger brother is handsome, tall and thin. He likes playing volleyball.|My younger brother is handsome, tall, and thin. He likes playing volleyball.|My younger brother is handsome, tall and thin. My younger brother likes playing volleyball.|My younger brother is handsome, tall, and thin. My younger brother likes playing volleyball.
 591	listening	9	9	short	https://drive.google.com/file/d/1TQPhLrM88YzWv7RsZzyI0DF0ILGSiPPL/view?usp=drive_link	Chú tôi thì trung tuổi. Chú ấy làm việc ở trường học.					My uncle is middle-aged. He works in a school.|My uncle is middle-aged. He works at school.
-592	listening	9	10	short	https://drive.google.com/file/d/1JKeVj0cgoweGV7-JbwUw9GPBU45XFt5C/view?usp=drive_link	Dì tôi có tóc ngắn màu vàng hoe. Dì cao và xinh.					My aunt has blonde hair. She is tall and beautiful.|My aunt has blond hair. She is tall and beautiful.|My aunt has blonde hair. My aunt is tall and beautiful.|My aunt has blond hair. My aunt is tall and beautiful.
+592	listening	9	10	short	https://drive.google.com/file/d/1JKeVj0cgoweGV7-JbwUw9GPBU45XFt5C/view?usp=drive_link	Dì tôi có tóc ngắn màu vàng hoe. Dì cao và xinh.					My aunt has short blonde hair. She is tall and beautiful.|My aunt has short blond hair. She is tall and beautiful.|My aunt has short blonde hair. My aunt is tall and beautiful.|My aunt has short blond hair. My aunt is tall and beautiful.
 
 `;
 
