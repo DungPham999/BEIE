@@ -296,4 +296,640 @@
 brown - tie - old - oil -  hear - heir - 	 October - chair -	  annoy - May -	 style - tomato -	 pear -	 cold -	 spear. Cú pháp: **đáp án 1 - đáp ấn 2 - …**
 	36. Find words that have /ɪə/ sound					hear - spear
 545	reading	Mini 3	6	short		37. Find words that have /eə/ sound					heir - chair - pear
-546	reading	Mini 3	6	short		38.  Find words that have /ɔɪ/ so
+546	reading	Mini 3	6	short		38.  Find words that have /ɔɪ/ sound					oil - annoy
+547	reading	Mini 3	6	short		39. Find words that have /ai/ sound					tie - style
+548	reading	Mini 3	6	short		40.  Find words that have /əʊ/ sound					old  - October - tomato  - cold
+
+`; // HẾT RAW_DATA
+
+  // ===== BIẾN TRẠNG THÁI TOÀN BÀI =====
+  let timerInterval = null;
+  let timeLeft = 0;
+  let groupContainers = [];
+  let currentGroupIndex = 0;
+  let isFinalized = false;
+
+  // ===== PARSE META CSV =====
+  function parseMetaCSV(text) {
+    const lines = text.trim().split("\n");
+    if (lines.length < 2) return [];
+    const header = lines[0].split(",").map(h => h.trim());
+    const rows = lines.slice(1);
+    return rows.map(row => {
+      const cols = row.split(",");
+      const obj = {};
+      header.forEach((h, i) => { obj[h] = (cols[i] || "").trim(); });
+      return obj;
+    });
+  }
+
+  async function loadTestTitle() {
+    try {
+      const resp = await fetch(META_CSV_URL);
+      const text = await resp.text();
+      const data = parseMetaCSV(text);
+      const currentFile = location.pathname.split("/").pop();
+      const meta = data.find(r =>
+        (r.File || "").toLowerCase() === (currentFile || "").toLowerCase()
+      );
+      const h1 = document.getElementById("pageTitle");
+      if (meta && meta.Title) {
+        document.title = meta.Title;
+        if (h1) h1.textContent = meta.Title;
+      } else if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+        h1.textContent = "Practice Test";
+      }
+    } catch (err) {
+      console.error("Không đọc được meta CSV:", err);
+      const h1 = document.getElementById("pageTitle");
+      if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+        h1.textContent = "Practice Test";
+      }
+    }
+  }
+
+  // ===== TIMER =====
+  function startTimer(totalSeconds) {
+    timeLeft = totalSeconds;
+    const timerEl = document.getElementById('timer');
+    if (timerInterval) clearInterval(timerInterval);
+
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerEl.textContent =
+        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+    updateDisplay();
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timeLeft = 0;
+        updateDisplay();
+        alert('Hết thời gian! Hệ thống sẽ tự chấm điểm.');
+        gradeQuiz(); // chấm và khóa bài
+      } else {
+        updateDisplay();
+      }
+    }, 1000);
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function renderImgToken(urlRaw) {
+    const url = urlRaw.trim();
+    if (/drive\.google\.com/i.test(url)) {
+      let id = '';
+      const m1 = url.match(/\/d\/([^\/]+)/);
+      const m2 = url.match(/[?&]id=([^&]+)/);
+      if (m1 && m1[1]) id = m1[1];
+      else if (m2 && m2[1]) id = m2[1];
+      if (id) {
+        const preview = 'https://drive.google.com/file/d/' + id + '/preview';
+        return '<br><iframe class="img-frame" src="' + preview + '" allow="autoplay"></iframe>';
+      }
+    }
+    return '<br><img class="q-img" src="' + url + '" alt="image">';
+  }
+
+  function parseSheet(rawText) {
+    if (!rawText.trim()) return [];
+    const lines = rawText.trim().split('\n').filter(l => l.trim() !== '');
+    const questions = [];
+    lines.forEach((line, index) => {
+      const cols = line.split('\t');
+      const q = {
+        id: cols[0] || String(index + 1),
+        skill: (cols[1] || '').toLowerCase(),
+        part: cols[2] || '',
+        group: cols[3] || ('G' + (index + 1)),
+        type: (cols[4] || 'mcq').toLowerCase(),
+        passage: cols[5] || '',
+        question: cols[6] || '',
+        options: [cols[7] || '', cols[8] || '', cols[9] || '', cols[10] || ''],
+        answer: (cols[11] || '').trim()
+      };
+      questions.push(q);
+    });
+    return questions;
+  }
+
+  function renderQuiz(questions) {
+    const quizDiv = document.getElementById('quiz');
+    quizDiv.innerHTML = '';
+    const groups = {};
+    const groupOrder = [];
+
+    questions.forEach((q, idx) => {
+      const key = (q.group && q.group.trim()) ? q.group.trim() : ('G' + q.id);
+      if (!groups[key]) {
+        groups[key] = { skill: q.skill, passage: q.passage, questions: [] };
+        groupOrder.push(key);
+      }
+      groups[key].questions.push(q);
+    });
+
+    let questionCounter = 0;
+
+    groupOrder.forEach(key => {
+      const g = groups[key];
+      const pTrim = (g.passage || '').trim();
+
+      if (g.skill === 'reading') {
+        const layout = document.createElement('div');
+        layout.className = 'reading-layout group-container';
+        layout.dataset.groupKey = key;
+
+        const left = document.createElement('div');
+        left.className = 'reading-left group-block';
+        const title = document.createElement('h2');
+        title.textContent = 'Reading ' + key;
+        left.appendChild(title);
+
+        if (pTrim) {
+          const passageDiv = document.createElement('div');
+          passageDiv.className = 'passage';
+          let html = escapeHtml(pTrim);
+          html = html.replace(/\/\/\s*/g, '<br><br>');
+          html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+          passageDiv.innerHTML = html;
+          left.appendChild(passageDiv);
+        }
+
+        const right = document.createElement('div');
+        right.className = 'reading-right';
+
+        g.questions.forEach(q => {
+          questionCounter++;
+          const qDiv = document.createElement('div');
+          qDiv.className = 'question';
+          qDiv.dataset.answer = (q.answer || '').trim();
+          qDiv.dataset.type = q.type || 'short';
+
+          const titleP = document.createElement('p');
+          let qHtml = escapeHtml(q.question || '');
+          qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+          qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+          qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          titleP.innerHTML =
+            '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+          qDiv.appendChild(titleP);
+
+          if (q.type === 'mcq') {
+            ['A','B','C','D'].forEach((labelOpt, i) => {
+              if (!q.options[i]) return;
+              const optLabel = document.createElement('label');
+              const radio = document.createElement('input');
+              radio.type = 'radio';
+              radio.name = 'q' + questionCounter;
+              radio.value = labelOpt;
+              optLabel.appendChild(radio);
+              optLabel.appendChild(
+                document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+              );
+              qDiv.appendChild(optLabel);
+              qDiv.appendChild(document.createElement('br'));
+            });
+          } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'q' + questionCounter;
+            input.className = 'short-answer-input';
+            qDiv.appendChild(input);
+          }
+
+          right.appendChild(qDiv);
+        });
+
+        layout.appendChild(left);
+        layout.appendChild(right);
+        quizDiv.appendChild(layout);
+      } else {
+        // LISTENING / khác: layout dọc
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'group-block group-container';
+        groupDiv.dataset.groupKey = key;
+
+        const title = document.createElement('h2');
+        title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
+        groupDiv.appendChild(title);
+
+        if (pTrim) {
+          const segments = pTrim
+            .split(' // ')
+            .map(s => s.trim())
+            .filter(s => s);
+
+          const textSegments = [];
+          segments.forEach(seg => {
+            if (/^\[IMG:/i.test(seg)) {
+              textSegments.push(seg);
+              return;
+            }
+            const isHttp = /^https?:\/\//i.test(seg);
+            const hasAudioExt = /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(seg);
+            const isDriveLink = /drive\.google\.com/i.test(seg);
+            const isAudioUrl = isHttp && hasAudioExt;
+
+            if (g.skill === 'listening' && (isDriveLink || isAudioUrl)) {
+              if (isDriveLink) {
+                let fileId = '';
+                const m1 = seg.match(/\/d\/([^\/]+)/);
+                const m2 = seg.match(/[?&]id=([^&]+)/);
+                if (m1 && m1[1]) fileId = m1[1];
+                else if (m2 && m2[1]) fileId = m2[1];
+                if (fileId) {
+                  const iframe = document.createElement('iframe');
+                  iframe.className = 'audio-frame';
+                  iframe.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+                  iframe.allow = 'autoplay';
+                  groupDiv.appendChild(iframe);
+                }
+              } else if (isAudioUrl) {
+                const audio = document.createElement('audio');
+                audio.controls = true;
+                audio.src = seg;
+                groupDiv.appendChild(audio);
+              }
+            } else {
+              textSegments.push(seg);
+            }
+          });
+
+          if (textSegments.length) {
+            const passageDiv = document.createElement('div');
+            passageDiv.className = 'passage';
+            let html = escapeHtml(textSegments.join(' '));
+            html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+            passageDiv.innerHTML = html;
+            groupDiv.appendChild(passageDiv);
+          }
+        }
+
+        g.questions.forEach(q => {
+          questionCounter++;
+          const qDiv = document.createElement('div');
+          qDiv.className = 'question';
+          qDiv.dataset.answer = (q.answer || '').trim();
+          qDiv.dataset.type = q.type || 'short';
+
+          const titleP = document.createElement('p');
+          let qHtml = escapeHtml(q.question || '');
+          qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+          qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+          qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          titleP.innerHTML =
+            '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+          qDiv.appendChild(titleP);
+
+          if (q.type === 'mcq') {
+            ['A','B','C','D'].forEach((labelOpt, i) => {
+              if (!q.options[i]) return;
+              const optLabel = document.createElement('label');
+              const radio = document.createElement('input');
+              radio.type = 'radio';
+              radio.name = 'q' + questionCounter;
+              radio.value = labelOpt;
+              optLabel.appendChild(radio);
+              optLabel.appendChild(
+                document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+              );
+              qDiv.appendChild(optLabel);
+              qDiv.appendChild(document.createElement('br'));
+            });
+          } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'q' + questionCounter;
+            input.className = 'short-answer-input';
+            qDiv.appendChild(input);
+          }
+
+          groupDiv.appendChild(qDiv);
+        });
+
+        quizDiv.appendChild(groupDiv);
+      }
+    });
+
+    // Sau khi render xong, thu thập các container phần
+    groupContainers = Array.from(document.querySelectorAll('.group-container'));
+    groupContainers.forEach(c => {
+      c.style.display = 'none';
+    });
+  }
+
+  function normalizeText(str) {
+    return (str || '')
+      .toLowerCase()
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  // TÍNH ĐIỂM NHƯNG KHÔNG ĐỔI GIAO DIỆN – dùng cho log khi bấm Next
+  function computeScore() {
+    const quizDiv = document.getElementById('quiz');
+    const questionDivs = quizDiv.querySelectorAll('.question');
+    let correct = 0;
+    const total = questionDivs.length;
+
+    questionDivs.forEach(div => {
+      const type = div.dataset.type || 'short';
+      const answerRawDisplay = (div.dataset.answer || '').trim();
+      const answerList = answerRawDisplay
+        .split('|')
+        .map(normalizeText)
+        .filter(s => s);
+
+      let userAnswer = '';
+      if (type === 'mcq') {
+        const checked = div.querySelector('input[type="radio"]:checked');
+        if (checked) userAnswer = normalizeText(checked.value);
+      } else {
+        const input = div.querySelector('input[type="text"]');
+        if (input) userAnswer = normalizeText(input.value);
+      }
+
+      if (answerList.length && userAnswer && answerList.includes(userAnswer)) {
+        correct++;
+      }
+    });
+
+    const percent = Math.round(correct * 100 / Math.max(total, 1));
+    return { correct, total, percent };
+  }
+
+  // GỬI LOG MỖI KHI BẤM NEXT / FINAL
+  function logCurrentProgress(stageLabel) {
+    if (!LOG_ENDPOINT) return;
+    const score = computeScore();
+
+    const nameEl = document.getElementById('studentName');
+    const classEl = document.getElementById('studentClass');
+    const name = (nameEl.value || '').trim() || 'NoName';
+    const cls  = (classEl.value || '').trim();
+
+    const now  = new Date();
+    const timestamp = now.toLocaleString();
+
+    const logLine =
+      name + '\t' + cls + '\t' + TEST_ID + '\t' +
+      timestamp + '\t' + score.correct + '\t' + score.total + '\t' + score.percent +
+      '\t' + (stageLabel || '');
+
+    const payload = {
+      testId: TEST_ID,
+      name: name,
+      className: cls,
+      correct: score.correct,
+      total: score.total,
+      percent: score.percent,
+      stage: stageLabel || '',
+      rawLog: logLine
+    };
+
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.error('Error sending result:', err));
+  }
+
+  // CHẤM VÀ KHÓA BÀI, HIỆN ĐÁP ÁN – chỉ gọi khi nộp bài / hết giờ
+  function gradeQuiz() {
+    if (isFinalized) return; // tránh chấm lại nhiều lần
+    isFinalized = true;
+
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    const quizDiv = document.getElementById('quiz');
+    const questionDivs = quizDiv.querySelectorAll('.question');
+    let correct = 0;
+    const total = questionDivs.length;
+
+    questionDivs.forEach(div => {
+      const type = div.dataset.type || 'short';
+      const answerRawDisplay = (div.dataset.answer || '').trim();
+      const answerListRaw = answerRawDisplay
+        .split('|')
+        .map(s => s.trim())
+        .filter(s => s);
+      const answerListNorm = answerListRaw.map(normalizeText);
+
+      let userAnswerRaw = '';
+      let userAnswerNorm = '';
+
+      if (type === 'mcq') {
+        const checked = div.querySelector('input[type="radio"]:checked');
+        if (checked) {
+          userAnswerRaw = checked.value;
+          userAnswerNorm = normalizeText(checked.value);
+        }
+      } else {
+        const input = div.querySelector('input[type="text"]');
+        if (input) {
+          userAnswerRaw = input.value;
+          userAnswerNorm = normalizeText(input.value);
+        }
+      }
+
+      let isCorrect = false;
+      if (answerListNorm.length && userAnswerNorm) {
+        if (answerListNorm.includes(userAnswerNorm)) {
+          isCorrect = true;
+        }
+      }
+
+      if (isCorrect) {
+        div.classList.add('correct');
+        div.classList.remove('incorrect');
+        correct++;
+      } else {
+        div.classList.add('incorrect');
+        div.classList.remove('correct');
+      }
+
+      // Hiện đáp án đúng (tất cả phương án được chấp nhận)
+      if (answerListRaw.length) {
+        let caDiv = div.querySelector('.correct-answer-text');
+        if (!caDiv) {
+          caDiv = document.createElement('div');
+          caDiv.className = 'correct-answer-text';
+          div.appendChild(caDiv);
+        }
+        caDiv.textContent = 'Đáp án đúng: ' + answerListRaw.join(' | ');
+      }
+    });
+
+    const percent = Math.round(correct * 100 / Math.max(total, 1));
+
+    // Khóa tất cả input sau khi chấm
+    const allInputs = quizDiv.querySelectorAll('input[type="text"], input[type="radio"]');
+    allInputs.forEach(inp => {
+      inp.disabled = true;
+    });
+
+    // Gửi log cuối cùng
+    logCurrentProgress('FINAL_SUBMIT');
+
+    const box = document.getElementById('resultBox');
+    box.style.display = 'block';
+    box.innerHTML = `
+       <div style="font-size:16px; margin-bottom:4px;">
+         <strong>Bài test:</strong> ${TEST_ID}
+       </div>
+       <div style="font-size:18px; margin-bottom:8px;">
+         <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+       </div>
+       <div style="
+         font-size:28px;
+         font-weight:bold;
+         color:#007acc;
+         padding:10px 0;
+       ">
+         ${percent}%
+       </div>
+       <div style="margin-top:6px; font-size:14px;">
+         Bài đã nộp, bạn không thể sửa đáp án nữa. Các đáp án đúng đã được hiển thị bên dưới mỗi câu.
+       </div>
+    `;
+  }
+
+  function showGroup(index) {
+    if (!groupContainers.length) return;
+    groupContainers.forEach((c, i) => {
+      c.style.display = (i === index) ? '' : 'none';
+    });
+    currentGroupIndex = index;
+    updateNavButtons();
+  }
+
+  function updateNavButtons() {
+    const prevBtn = document.getElementById('prevPartBtn');
+    const nextBtn = document.getElementById('nextPartBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!prevBtn || !nextBtn || !submitBtn) return;
+
+    const lastIndex = groupContainers.length - 1;
+
+    // Prev
+    prevBtn.style.display = (currentGroupIndex > 0) ? 'inline-block' : 'none';
+
+    // Nếu đang chưa đến phần cuối: hiện Next, ẩn Submit
+    if (currentGroupIndex < lastIndex) {
+      nextBtn.style.display = 'inline-block';
+      submitBtn.style.display = 'none';
+    } else {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'inline-block';
+    }
+  }
+
+  // BẮT ĐẦU LÀM BÀI: NHẬP TÊN + LỚP XONG MỚI CHO HIỆN PART 1
+  document.getElementById('startBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('studentName');
+    const classInput = document.getElementById('studentClass');
+    const name = (nameInput.value || '').trim();
+    const cls  = (classInput.value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi bắt đầu làm bài.');
+      if (!name) nameInput.focus();
+      else if (!cls) classInput.focus();
+      return;
+    }
+
+    // Khóa thông tin thí sinh để khỏi đổi giữa chừng
+    nameInput.disabled = true;
+    classInput.disabled = true;
+    document.getElementById('startBtn').style.display = 'none';
+
+    // Hiện quiz + thanh điều hướng, hiển thị Part 1
+    document.getElementById('quiz').style.display = 'block';
+    document.getElementById('navRow').style.display = 'flex';
+    showGroup(0);
+
+    // Bắt đầu đếm giờ
+    startTimer(DURATION_MINUTES * 60);
+  });
+
+  // NÚT NEXT – ghi log (silent) rồi sang phần tiếp theo
+  document.getElementById('nextPartBtn').addEventListener('click', () => {
+    if (isFinalized) {
+      // Sau khi nộp bài, cho phép xem lại các phần nhưng không log nữa
+      const lastIndex = groupContainers.length - 1;
+      if (currentGroupIndex < lastIndex) {
+        showGroup(currentGroupIndex + 1);
+      }
+      return;
+    }
+    // Log tiến độ trước khi sang phần tiếp theo
+    logCurrentProgress('NEXT_PART_' + (currentGroupIndex + 1));
+
+    const lastIndex = groupContainers.length - 1;
+    if (currentGroupIndex < lastIndex) {
+      showGroup(currentGroupIndex + 1);
+    }
+  });
+
+  // NÚT PREV – cho phép quay lại phần trước để sửa khi chưa nộp
+  document.getElementById('prevPartBtn').addEventListener('click', () => {
+    if (currentGroupIndex > 0) {
+      showGroup(currentGroupIndex - 1);
+    }
+  });
+
+  // NÚT NỘP BÀI – chấm, log, khóa bài
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    if (isFinalized) return;
+    const nameInput = document.getElementById('studentName');
+    const classInput = document.getElementById('studentClass');
+    const name = (nameInput.value || '').trim();
+    const cls  = (classInput.value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi nộp bài.');
+      return;
+    }
+    gradeQuiz();
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', () => {
+    location.reload();
+  });
+
+  // KHỞI TẠO ĐỀ: chỉ render, chưa cho hiện – chờ bấm Bắt đầu
+  (function initExam() {
+    const qs = parseSheet(RAW_DATA);
+    if (!qs.length) {
+      document.getElementById('quiz').innerHTML =
+        '<p style="color:red;">Giáo viên chưa dán dữ liệu đề vào biến RAW_DATA.</p>';
+      return;
+    }
+    renderQuiz(qs);
+  })();
+
+  loadTestTitle();
+</script>
+
+<footer class="footer">
+  <p>© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
