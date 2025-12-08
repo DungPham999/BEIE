@@ -642,12 +642,14 @@ updateProgress();
   }
 
   function normalizeText(str) {
-    return (str || '')
-      .toLowerCase()
-      .replace(/[\u2018\u2019]/g, "'")
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+  return (str || '')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")          // ‘ ’ -> '
+    .replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ') // xoá khoảng trắng & ký tự ẩn
+    .replace(/\s+/g, ' ')                    // gộp nhiều khoảng trắng
+    .trim();
+}
+
 let totalQuestions = 0;
 
 function updateProgress() {
