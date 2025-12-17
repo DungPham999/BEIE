@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -204,7 +206,7 @@
   </style>
 </head>
 <body>
-  <h1 id="title"></h1>
+ <h1 id="title"></h1>
 
 
   <div class="info">
@@ -270,13 +272,8 @@
 
 <script>
   // ========= CẤU HÌNH =========
-// Tự lấy tên file hiện tại làm TestID (đã giải mã %20 -> khoảng trắng)
-const fileSegment = location.pathname.split('/').pop() || '';
-const TEST_ID = decodeURIComponent(
-  fileSegment.replace(/\.[^/.]+$/, '')   // bỏ .html, .htm...
-) || 'DefaultTest';
-
-
+  // Tự lấy tên file hiện tại làm TestID
+const TEST_ID = location.pathname.split('/').pop().replace('.html','') || 'DefaultTest';
 
   const TARGET_CORRECT = 30;          // số câu cần đúng để kết thúc
   const TIME_LIMIT_MINUTES = 20;      // thời gian tối đa (phút)
@@ -342,19 +339,30 @@ const TEST_ID = decodeURIComponent(
 310	cần hỗ trợ thêm	need further assistance	https://drive.google.com/file/d/1OcKmUhylCDy1_oRhtvV4p3tYUiZaCSHV/view?usp=drivesdk
 311	hãy ghé qua quầy dịch vụ	stop by the service desk	https://drive.google.com/file/d/1c5u6TtffXVjpRNPxljMjeJfxGYRdL_2V/view?usp=drivesdk
 
+
 `; // <-- THAY BẰNG DỮ LIỆU THẬT CỦA THẦY
 
   // ========= CODE CHUNG =========
 
- function normalize(str) {
+function normalize(str) {
   return (str || '')
-    .normalize('NFC')                 // chuẩn hoá Unicode
+    .normalize('NFC')                       // chuẩn hoá Unicode
     .replace(/[\u200B-\u200D\uFEFF]/g, '') // xoá ký tự zero-width
     .toLowerCase()
-    .replace(/[’‘`]/g, "'")          // ’ ‘ `  -> '
+    .replace(/[’‘`]/g, "'")                // ’ ‘ `  -> '
+    .replace(/[.,!?;:]+$/g, '')            // xoá . , ? ! ; : ở CUỐI chuỗi
     .replace(/\s+/g, ' ')
     .trim();
 }
+// Chuẩn hoá chuỗi sao cho a / an / the được coi là cùng một "loại" ARTICLE
+function normalizeArticles(str) {
+  const tokens = (str || '').split(' ').filter(Boolean);
+  const mapped = tokens.map(t => {
+    return (t === 'a' || t === 'an' || t === 'the') ? 'ARTICLE' : t;
+  });
+  return mapped.join(' ');
+}
+
 
 
   function parseBank(raw) {
@@ -540,9 +548,18 @@ function getDrivePreviewUrl(url) {
       .split('|')
       .map(a => normalize(a))
       .filter(a => a);
+   
+    // ĐÚNG nếu:
+  // 1) Trùng hoàn toàn sau normalize()
+  // 2) Hoặc trùng sau khi quy tất cả a/an/the -> ARTICLE
+  const isCorrect = acceptable.some(ans => (
+    ans === user ||
+    normalizeArticles(ans) === normalizeArticles(user)
+  ));
 
     totalDone++;
-    const isCorrect = acceptable.includes(user);
+    
+   
 
     if (isCorrect) {
       correctCount++;
@@ -716,6 +733,7 @@ function logProgress() {
   })();
 document.getElementById('title').textContent = TEST_ID;
 
+  
 // ====== GHI LOG KHI HỌC SINH THOÁT GIỮA CHỪNG ======
 window.addEventListener('beforeunload', (event) => {
   // Nếu đã finishQuiz() thì không log nữa
