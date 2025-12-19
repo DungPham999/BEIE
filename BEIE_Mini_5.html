@@ -257,8 +257,7 @@
 
 <script>
   const DURATION_MINUTES = 15;
-
-const TEST_ID = document.title || (window.location.pathname.split('/').pop().split('.')[0]);
+ const TEST_ID = document.title || (window.location.pathname.split('/').pop().split('.')[0]);
 
   const META_CSV_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
@@ -266,7 +265,6 @@ const TEST_ID = document.title || (window.location.pathname.split('/').pop().spl
   const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
 
   const RAW_DATA = `
-
 933	reading	Mini 5	1	short	Questions 1-11. Fill in the gaps	I want to watch a movie. I go to the _______.					cinema
 934	reading	Mini 5	1	short		When I travel by plane, I usually go to the _______.					airport
 935	reading	Mini 5	1	short		 If you need to send a letter, you should visit the _______.					post office
@@ -297,17 +295,16 @@ const TEST_ID = document.title || (window.location.pathname.split('/').pop().spl
 960	reading	Mini 5	4	short		Our school _______ closed for summer break in July.					was
 961	reading	Mini 5	4	short		There _______ a lot of students at the park yesterday.					were
 962	reading	Mini 5	4	short		The park near my house _______ crowded on the weekend.					was
-963	listening	Mini 5	5	mcq	https://drive.google.com/file/d/15cEJ1o5RYq5SLEFS6X1_Y6hFLTUL9X5h/view?usp=drive_link // Question 31-35. Tick the words a) or b) that you hear in the sentences	writing	riding				b
-964	listening	Mini 5	5	mcq		bat	bad				a
-965	listening	Mini 5	5	mcq		price	prize				a
-966	listening	Mini 5	5	mcq		Sue's	shoes				a
-967	listening	Mini 5	5	mcq		night	light				a
+963	listening	Mini 5	5	mcq	https://drive.google.com/file/d/15cEJ1o5RYq5SLEFS6X1_Y6hFLTUL9X5h/view?usp=drive_link // Question 31-35. Tick the words a) or b) that you hear in the sentences	Tick the words a) or b) that you hear in the sentences	writing	riding			b
+964	listening	Mini 5	5	mcq		Tick the words a) or b) that you hear in the sentences	bat	bad			a
+965	listening	Mini 5	5	mcq		Tick the words a) or b) that you hear in the sentences	price	prize			a
+966	listening	Mini 5	5	mcq		Tick the words a) or b) that you hear in the sentences	Sue's	shoes			a
+967	listening	Mini 5	5	mcq		Tick the words a) or b) that you hear in the sentences	night	light			a
 968	reading	Mini 5	6	short	Question 36-40. Write 5 sentences using the adjectives below to describe your last vacation. You can talk about weather, food, people, or landscape of the places you went to. (Không có đáp án sẵn, làm xong thì chụp hình gửi cô)	wonderful					abc
 969	reading	Mini 5	6	short		fantastic					abc
 970	reading	Mini 5	6	short		great					abc
 971	reading	Mini 5	6	short		very disappointing					abc
 972	reading	Mini 5	6	short		terrible					abc
-
 `; // HẾT RAW_DATA
 
   // ===== BIẾN TRẠNG THÁI TOÀN BÀI =====
@@ -649,12 +646,14 @@ updateProgress();
   }
 
   function normalizeText(str) {
-    return (str || '')
-      .toLowerCase()
-      .replace(/[\u2018\u2019]/g, "'")
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+  return (str || '')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")          // ‘ ’ -> '
+    .replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ') // xoá khoảng trắng & ký tự ẩn
+    .replace(/\s+/g, ' ')                    // gộp nhiều khoảng trắng
+    .trim();
+}
+
 let totalQuestions = 0;
 
 function updateProgress() {
