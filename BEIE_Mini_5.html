@@ -155,6 +155,13 @@
       flex: 1;
     }
 
+    .correct-answer-text {
+      margin-top: 4px;
+      font-size: 13px;
+      font-style: italic;
+      color: #555;
+    }
+
     /* ========= TỐI ƯU CHO ĐIỆN THOẠI ========= */
     @media (max-width: 768px) {
       body {
@@ -217,7 +224,10 @@
 
   <div class="info">
     <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
-    <p>Làm xong hãy bấm <strong>Nộp bài</strong> để xem điểm. Có thể tải lại trang để làm lại.</p>
+	  <!-- THÊM DÒNG NÀY -->
+  <p><strong>Tiến độ:</strong> <span id="progressText">0/0 câu (còn 0)</span></p>
+  <!-- HẾT DÒNG MỚI -->
+    <p>Làm xong từng phần hãy bấm <strong>Phần tiếp theo</strong>. Khi hoàn thành hết các phần, bấm <strong>Nộp bài</strong> để xem điểm.</p>
     <p>
       <label>Họ tên học viên:
         <input type="text" id="studentName" placeholder="Nguyễn Văn A">
@@ -228,28 +238,35 @@
         <input type="text" id="studentClass" placeholder="VD: 8A, TOEIC-Reading 1">
       </label>
     </p>
+    <p style="text-align:center; margin-top:10px;">
+      <button class="btn" id="startBtn">Bắt đầu làm bài</button>
+    </p>
   </div>
 
-  <div id="quiz"></div>
+  <div id="quiz" style="display:none;"></div>
 
-  <div class="btn-row">
-    <button class="btn" id="submitBtn">Nộp bài & xem kết quả</button>
-    <button class="btn" id="retryBtn">Làm lại từ đầu</button>
+  <!-- HÀNG NÚT ĐIỀU HƯỚNG THEO PHẦN -->
+  <div class="btn-row" id="navRow" style="display:none;">
+    <button class="btn" id="prevPartBtn">Phần trước</button>
+    <button class="btn" id="nextPartBtn">Phần tiếp theo</button>
+    <button class="btn" id="submitBtn" style="display:none;">Nộp bài & xem kết quả</button>
+     <button class="btn" id="retryBtn" style="display:none;">Làm lại từ đầu</button>
   </div>
 
   <div class="result" id="resultBox" style="display:none;"></div>
 
 <script>
   const DURATION_MINUTES = 15;
- const TEST_ID = document.title || (window.location.pathname.split('/').pop().split('.')[0]);
+
+const TEST_ID = document.title || (window.location.pathname.split('/').pop().split('.')[0]);
 
   const META_CSV_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
 
   const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
 
-  // ===== RAW_DATA – BỌC TRONG BACKTICK =====
   const RAW_DATA = `
+
 933	reading	Mini 5	1	short	Questions 1-11. Fill in the gaps	I want to watch a movie. I go to the _______.					cinema
 934	reading	Mini 5	1	short		When I travel by plane, I usually go to the _______.					airport
 935	reading	Mini 5	1	short		 If you need to send a letter, you should visit the _______.					post office
@@ -293,6 +310,13 @@
 
 `; // HẾT RAW_DATA
 
+  // ===== BIẾN TRẠNG THÁI TOÀN BÀI =====
+  let timerInterval = null;
+  let timeLeft = 0;
+  let groupContainers = [];
+  let currentGroupIndex = 0;
+  let isFinalized = false;
+
   // ===== PARSE META CSV =====
   function parseMetaCSV(text) {
     const lines = text.trim().split("\n");
@@ -333,8 +357,6 @@
   }
 
   // ===== TIMER =====
-  let timerInterval = null;
-  let timeLeft = 0;
   function startTimer(totalSeconds) {
     timeLeft = totalSeconds;
     const timerEl = document.getElementById('timer');
@@ -355,7 +377,7 @@
         timeLeft = 0;
         updateDisplay();
         alert('Hết thời gian! Hệ thống sẽ tự chấm điểm.');
-        gradeQuiz();
+        gradeQuiz(); // chấm và khóa bài
       } else {
         updateDisplay();
       }
@@ -428,10 +450,10 @@
       const g = groups[key];
       const pTrim = (g.passage || '').trim();
 
-      // READING: 2 cột
       if (g.skill === 'reading') {
         const layout = document.createElement('div');
-        layout.className = 'reading-layout';
+        layout.className = 'reading-layout group-container';
+        layout.dataset.groupKey = key;
 
         const left = document.createElement('div');
         left.className = 'reading-left group-block';
@@ -500,7 +522,9 @@
       } else {
         // LISTENING / khác: layout dọc
         const groupDiv = document.createElement('div');
-        groupDiv.className = 'group-block';
+        groupDiv.className = 'group-block group-container';
+        groupDiv.dataset.groupKey = key;
+
         const title = document.createElement('h2');
         title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
         groupDiv.appendChild(title);
@@ -602,6 +626,26 @@
         quizDiv.appendChild(groupDiv);
       }
     });
+
+    // Sau khi render xong, thu thập các container phần
+    groupContainers = Array.from(document.querySelectorAll('.group-container'));
+    groupContainers.forEach(c => {
+      c.style.display = 'none';
+    });
+	 
+	  // TÍNH TỔNG SỐ CÂU VÀ GẮN LISTENER ĐỂ CẬP NHẬT TIẾN ĐỘ
+
+totalQuestions = quizDiv.querySelectorAll('.question').length;
+
+const inputs = quizDiv.querySelectorAll('input[type="text"], input[type="radio"]');
+inputs.forEach(inp => {
+  const evt = (inp.type === 'text') ? 'input' : 'change';
+  inp.addEventListener(evt, updateProgress);
+});
+
+// Khởi tạo hiển thị tiến độ = 0/x
+updateProgress();
+
   }
 
   function normalizeText(str) {
@@ -611,8 +655,38 @@
       .replace(/\s+/g, ' ')
       .trim();
   }
+let totalQuestions = 0;
 
-  function gradeQuiz() {
+function updateProgress() {
+  const quizDiv = document.getElementById('quiz');
+  if (!quizDiv) return;
+
+  const questionDivs = quizDiv.querySelectorAll('.question');
+  if (!totalQuestions) totalQuestions = questionDivs.length;
+
+  let answered = 0;
+
+  questionDivs.forEach(div => {
+    const type = div.dataset.type || 'short';
+    if (type === 'mcq') {
+      const checked = div.querySelector('input[type="radio"]:checked');
+      if (checked) answered++;
+    } else {
+      const input = div.querySelector('input[type="text"]');
+      if (input && input.value.trim() !== '') answered++;
+    }
+  });
+
+  const remaining = Math.max(totalQuestions - answered, 0);
+  const progressEl = document.getElementById('progressText');
+  if (progressEl) {
+    progressEl.textContent = `${answered}/${totalQuestions} câu (còn ${remaining})`;
+  }
+}
+
+	
+  // TÍNH ĐIỂM NHƯNG KHÔNG ĐỔI GIAO DIỆN – dùng cho log khi bấm Next
+  function computeScore() {
     const quizDiv = document.getElementById('quiz');
     const questionDivs = quizDiv.querySelectorAll('.question');
     let correct = 0;
@@ -635,9 +709,98 @@
         if (input) userAnswer = normalizeText(input.value);
       }
 
+      if (answerList.length && userAnswer && answerList.includes(userAnswer)) {
+        correct++;
+      }
+    });
+
+    const percent = Math.round(correct * 100 / Math.max(total, 1));
+    return { correct, total, percent };
+  }
+
+  // GỬI LOG MỖI KHI BẤM NEXT / FINAL
+  function logCurrentProgress(stageLabel) {
+    if (!LOG_ENDPOINT) return;
+    const score = computeScore();
+
+    const nameEl = document.getElementById('studentName');
+    const classEl = document.getElementById('studentClass');
+    const name = (nameEl.value || '').trim() || 'NoName';
+    const cls  = (classEl.value || '').trim();
+
+    const now  = new Date();
+    const timestamp = now.toLocaleString();
+
+    const logLine =
+      name + '\t' + cls + '\t' + TEST_ID + '\t' +
+      timestamp + '\t' + score.correct + '\t' + score.total + '\t' + score.percent +
+      '\t' + (stageLabel || '');
+
+    const payload = {
+      testId: TEST_ID,
+      name: name,
+      className: cls,
+      correct: score.correct,
+      total: score.total,
+      percent: score.percent,
+      stage: stageLabel || '',
+      rawLog: logLine
+    };
+
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.error('Error sending result:', err));
+  }
+
+  // CHẤM VÀ KHÓA BÀI, HIỆN ĐÁP ÁN – chỉ gọi khi nộp bài / hết giờ
+  function gradeQuiz() {
+    if (isFinalized) return; // tránh chấm lại nhiều lần
+    isFinalized = true;
+
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    const quizDiv = document.getElementById('quiz');
+    const questionDivs = quizDiv.querySelectorAll('.question');
+    let correct = 0;
+    const total = questionDivs.length;
+
+    questionDivs.forEach(div => {
+      const type = div.dataset.type || 'short';
+      const answerRawDisplay = (div.dataset.answer || '').trim();
+      const answerListRaw = answerRawDisplay
+        .split('|')
+        .map(s => s.trim())
+        .filter(s => s);
+      const answerListNorm = answerListRaw.map(normalizeText);
+
+      let userAnswerRaw = '';
+      let userAnswerNorm = '';
+
+      if (type === 'mcq') {
+        const checked = div.querySelector('input[type="radio"]:checked');
+        if (checked) {
+          userAnswerRaw = checked.value;
+          userAnswerNorm = normalizeText(checked.value);
+        }
+      } else {
+        const input = div.querySelector('input[type="text"]');
+        if (input) {
+          userAnswerRaw = input.value;
+          userAnswerNorm = normalizeText(input.value);
+        }
+      }
+
       let isCorrect = false;
-      if (answerList.length && userAnswer) {
-        if (answerList.includes(userAnswer)) isCorrect = true;
+      if (answerListNorm.length && userAnswerNorm) {
+        if (answerListNorm.includes(userAnswerNorm)) {
+          isCorrect = true;
+        }
       }
 
       if (isCorrect) {
@@ -648,69 +811,151 @@
         div.classList.add('incorrect');
         div.classList.remove('correct');
       }
+
+      // Hiện đáp án đúng (tất cả phương án được chấp nhận)
+      if (answerListRaw.length) {
+        let caDiv = div.querySelector('.correct-answer-text');
+        if (!caDiv) {
+          caDiv = document.createElement('div');
+          caDiv.className = 'correct-answer-text';
+          div.appendChild(caDiv);
+        }
+        caDiv.textContent = 'Đáp án đúng: ' + answerListRaw.join(' | ');
+      }
     });
 
     const percent = Math.round(correct * 100 / Math.max(total, 1));
-    const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
-    const cls  = (document.getElementById('studentClass').value || '').trim();
-    const now  = new Date();
-    const timestamp = now.toLocaleString();
 
-    const logLine =
-      name + '\t' + cls + '\t' + TEST_ID + '\t' +
-      timestamp + '\t' + correct + '\t' + total + '\t' + percent;
+    // Khóa tất cả input sau khi chấm
+    const allInputs = quizDiv.querySelectorAll('input[type="text"], input[type="radio"]');
+    allInputs.forEach(inp => {
+      inp.disabled = true;
+    });
 
-    if (LOG_ENDPOINT) {
-      const payload = {
-        testId: TEST_ID,
-        name: name,
-        className: cls,
-        correct: correct,
-        total: total,
-        percent: percent,
-        rawLog: logLine
-      };
-      fetch(LOG_ENDPOINT, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(err => console.error('Error sending result:', err));
-    }
+    // Gửi log cuối cùng
+    logCurrentProgress('FINAL_SUBMIT');
+
+	  // CHO HIỆN NÚT LÀM LẠI
+  const retryBtn = document.getElementById('retryBtn');
+  if (retryBtn) retryBtn.style.display = 'inline-block';
 
     const box = document.getElementById('resultBox');
     box.style.display = 'block';
     box.innerHTML = `
-      
        <div style="font-size:16px; margin-bottom:4px;">
-    <strong>Bài test:</strong> ${TEST_ID}
-  </div>
-      <div style="font-size:18px; margin-bottom:8px;">
-        <strong>Kết quả:</strong> đúng ${correct}/${total} câu
-      </div>
-      <div style="
-        font-size:28px;
-        font-weight:bold;
-        color:#007acc;
-        padding:10px 0;
-      ">
-        ${percent}%
-      </div>
+         <strong>Bài test:</strong> ${TEST_ID}
+       </div>
+       <div style="font-size:18px; margin-bottom:8px;">
+         <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+       </div>
+       <div style="
+         font-size:28px;
+         font-weight:bold;
+         color:#007acc;
+         padding:10px 0;
+       ">
+         ${percent}%
+       </div>
+       <div style="margin-top:6px; font-size:14px;">
+         Bài đã nộp, bạn không thể sửa đáp án nữa. Các đáp án đúng đã được hiển thị bên dưới mỗi câu.
+       </div>
     `;
-
-    
   }
 
-  // BẮT BUỘC NHẬP TÊN/LỚP TRƯỚC KHI NỘP
+  function showGroup(index) {
+    if (!groupContainers.length) return;
+    groupContainers.forEach((c, i) => {
+      c.style.display = (i === index) ? '' : 'none';
+    });
+    currentGroupIndex = index;
+    updateNavButtons();
+	    updateProgress(); // THÊM DÒNG NÀY (để refresh progress text)
+  }
+
+  function updateNavButtons() {
+    const prevBtn = document.getElementById('prevPartBtn');
+    const nextBtn = document.getElementById('nextPartBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!prevBtn || !nextBtn || !submitBtn) return;
+
+    const lastIndex = groupContainers.length - 1;
+
+    // Prev
+    prevBtn.style.display = (currentGroupIndex > 0) ? 'inline-block' : 'none';
+
+    // Nếu đang chưa đến phần cuối: hiện Next, ẩn Submit
+    if (currentGroupIndex < lastIndex) {
+      nextBtn.style.display = 'inline-block';
+      submitBtn.style.display = 'none';
+    } else {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'inline-block';
+    }
+  }
+
+  // BẮT ĐẦU LÀM BÀI: NHẬP TÊN + LỚP XONG MỚI CHO HIỆN PART 1
+  document.getElementById('startBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('studentName');
+    const classInput = document.getElementById('studentClass');
+    const name = (nameInput.value || '').trim();
+    const cls  = (classInput.value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi bắt đầu làm bài.');
+      if (!name) nameInput.focus();
+      else if (!cls) classInput.focus();
+      return;
+    }
+
+    // Khóa thông tin thí sinh để khỏi đổi giữa chừng
+    nameInput.disabled = true;
+    classInput.disabled = true;
+    document.getElementById('startBtn').style.display = 'none';
+
+    // Hiện quiz + thanh điều hướng, hiển thị Part 1
+    document.getElementById('quiz').style.display = 'block';
+    document.getElementById('navRow').style.display = 'flex';
+    showGroup(0);
+
+    // Bắt đầu đếm giờ
+    startTimer(DURATION_MINUTES * 60);
+  });
+
+  // NÚT NEXT – ghi log (silent) rồi sang phần tiếp theo
+  document.getElementById('nextPartBtn').addEventListener('click', () => {
+    if (isFinalized) {
+      // Sau khi nộp bài, cho phép xem lại các phần nhưng không log nữa
+      const lastIndex = groupContainers.length - 1;
+      if (currentGroupIndex < lastIndex) {
+        showGroup(currentGroupIndex + 1);
+      }
+      return;
+    }
+    // Log tiến độ trước khi sang phần tiếp theo
+    logCurrentProgress('NEXT_PART_' + (currentGroupIndex + 1));
+
+    const lastIndex = groupContainers.length - 1;
+    if (currentGroupIndex < lastIndex) {
+      showGroup(currentGroupIndex + 1);
+    }
+  });
+
+  // NÚT PREV – cho phép quay lại phần trước để sửa khi chưa nộp
+  document.getElementById('prevPartBtn').addEventListener('click', () => {
+    if (currentGroupIndex > 0) {
+      showGroup(currentGroupIndex - 1);
+    }
+  });
+
+  // NÚT NỘP BÀI – chấm, log, khóa bài
   document.getElementById('submitBtn').addEventListener('click', () => {
+    if (isFinalized) return;
     const nameInput = document.getElementById('studentName');
     const classInput = document.getElementById('studentClass');
     const name = (nameInput.value || '').trim();
     const cls  = (classInput.value || '').trim();
     if (!name || !cls) {
       alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi nộp bài.');
-      if (!name) nameInput.focus();
-      else if (!cls) classInput.focus();
       return;
     }
     gradeQuiz();
@@ -720,6 +965,7 @@
     location.reload();
   });
 
+  // KHỞI TẠO ĐỀ: chỉ render, chưa cho hiện – chờ bấm Bắt đầu
   (function initExam() {
     const qs = parseSheet(RAW_DATA);
     if (!qs.length) {
@@ -728,7 +974,6 @@
       return;
     }
     renderQuiz(qs);
-    startTimer(DURATION_MINUTES * 60);
   })();
 
   loadTestTitle();
