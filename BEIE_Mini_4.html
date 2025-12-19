@@ -257,7 +257,8 @@
 
 <script>
   const DURATION_MINUTES = 15;
-  const TEST_ID = 'BEIE_Mini_3';
+ const TEST_ID = document.title || (window.location.pathname.split('/').pop().split('.')[0]);
+
   const META_CSV_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
 
