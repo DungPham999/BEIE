@@ -94,6 +94,13 @@
       margin: 4px 0 10px;
     }
 
+    <div>
+  <label for="accessCodeInput">Nhập mã code bài test:</label>
+  <input type="text" id="accessCodeInput" placeholder="Nhập mã code">
+  <button id="accessCodeBtn">Kiểm tra</button>
+    </div>
+
+
     /* LIST TESTS TRONG MỖI LEVEL */
     .test-list {
       margin: 0;
@@ -178,7 +185,32 @@
   </div>
 
   <script>
-    // ==== URL CSV từ Google Sheet của thầy ====
+   
+    
+    // Hàm kiểm tra mã code và trạng thái bài test
+function checkAccessCode(inputCode) {
+  const testData = [
+    { code: "exam123", name: "Unit 1 – Names", status: "Mở" },
+    { code: "exam124", name: "Mini Test 1", status: "Đóng" },
+  ];
+
+  // Kiểm tra mã code và trạng thái
+  const isValid = testData.some(test => test.code === inputCode && test.status === "Mở");
+  return isValid;
+}
+
+    document.getElementById("accessCodeBtn").addEventListener("click", function() {
+  const inputCode = document.getElementById("accessCodeInput").value;
+  if (checkAccessCode(inputCode)) {
+    // Cho phép học sinh vào bài kiểm tra
+    alert("Mã code hợp lệ! Bạn có thể vào làm bài.");
+    window.location.href = "your-test-url.html"; // Dẫn đến bài test
+  } else {
+    alert("Mã code không hợp lệ hoặc bài kiểm tra đã đóng.");
+  }
+});
+
+     // ==== URL CSV từ Google Sheet của thầy ====
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
 
     // Parse CSV thành array object
@@ -298,3 +330,4 @@
   </script>
 </body>
 </html>
+
