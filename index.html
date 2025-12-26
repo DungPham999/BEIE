@@ -94,13 +94,6 @@
       margin: 4px 0 10px;
     }
 
-    <div>
-  <label for="accessCodeInput">Nhập mã code bài test:</label>
-  <input type="text" id="accessCodeInput" placeholder="Nhập mã code">
-  <button id="accessCodeBtn">Kiểm tra</button>
-    </div>
-
-
     /* LIST TESTS TRONG MỖI LEVEL */
     .test-list {
       margin: 0;
@@ -170,34 +163,22 @@
       Chọn level &amp; bài test tương ứng để luyện tập. Khi bấm nộp bài, hệ thống sẽ tự chấm điểm và ghi nhận điểm vào file thống kê của giáo viên.
     </p>
 
-    
     <div class="card-main">
       <div class="notice">
         <strong>Hướng dẫn:</strong> Nên làm bài trên trình duyệt Chrome. Nếu bấm vào mà không xuất hiện đề, tức là đề chưa được upload.
       </div>
 
-  <!-- Nhập mã code -->
-      <div>
-        <label for="accessCodeInput">Nhập mã code bài test:</label>
-        <input type="text" id="accessCodeInput" placeholder="Nhập mã code">
-        <button id="accessCodeBtn">Kiểm tra</button>
-      </div>
-      
-      
       <!-- Nơi JS sẽ vẽ các box level + test -->
       <div id="levelsGrid" class="levels-grid"></div>
     </div>
 
     <footer>
-      &copy; <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.
+      &copy; <span id="year"></span> Online Practice by Teacher. All rights reserved.
     </footer>
   </div>
 
   <script>
-   
-    
-   
-     // ==== URL CSV từ Google Sheet của thầy ====
+    // ==== URL CSV từ Google Sheet của thầy ====
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
 
     // Parse CSV thành array object
@@ -215,27 +196,6 @@
       });
     }
 
-
-    
-// Hàm kiểm tra mã code
-function checkAccessCode(inputCode, testData) {
-  // Tìm kiếm bài test hợp lệ với mã code và trạng thái "Mở"
-  const test = testData.find(test => test.Code === inputCode && test.Status === "Mở");
-  return test ? test.File : null;  // Nếu hợp lệ trả về URL bài test
-}
-
-
-
-    
-// Tải dữ liệu từ Google Sheets (CSV)
-async function loadTestData() {
-  const response = await fetch(CSV_URL);
-  const csvText = await response.text();
-  const testData = parseCSV(csvText);  // Parse CSV thành mảng testData
-  return testData;
-}
-
-    
     // Nhóm theo Level
     function groupByLevel(data) {
       const levels = {};
@@ -270,11 +230,24 @@ async function loadTestData() {
         titleEl.className = "level-title";
         titleEl.textContent = levelName;
 
+        if (levelTag) {
+          const badgeEl = document.createElement("span");
+          badgeEl.className = "level-tag";
+          badgeEl.textContent = levelTag;
+          headRow.appendChild(titleEl);
+          headRow.appendChild(badgeEl);
+        } else {
+          headRow.appendChild(titleEl);
+        }
 
-
-        headRow.appendChild(titleEl);
         card.appendChild(headRow);
 
+        if (desc) {
+          const descEl = document.createElement("p");
+          descEl.className = "level-desc";
+          descEl.textContent = desc;
+          card.appendChild(descEl);
+        }
 
         // Danh sách test
         const ul = document.createElement("ul");
@@ -290,8 +263,12 @@ async function loadTestData() {
           titleSpan.className = "test-title";
           titleSpan.textContent = item.Title;
 
-         
+          const tagSpan = document.createElement("span");
+          tagSpan.className = "test-badge";
+          tagSpan.textContent = item.Tag || "";
+
           a.appendChild(titleSpan);
+          a.appendChild(tagSpan);
           ul.appendChild(a);
         });
 
@@ -316,28 +293,8 @@ async function loadTestData() {
 
     initMenu();
 
-
-   // Kiểm tra mã code và chuyển hướng đến bài kiểm tra 
-loadTestData().then(testData => {
-  document.getElementById("accessCodeBtn").addEventListener("click", function() {
-    const inputCode = document.getElementById("accessCodeInput").value;
-    const testUrl = checkAccessCode(inputCode, testData);  // Kiểm tra mã code
-
-    if (testUrl) {
-      // Nếu mã code hợp lệ, chuyển hướng người dùng đến bài test
-      alert("Mã code hợp lệ! Bạn có thể vào làm bài.");
-      window.location.href = testUrl;  // Dẫn đến URL bài test
-    } else {
-      // Nếu mã code không hợp lệ hoặc bài test đã đóng
-      alert("Mã code không hợp lệ hoặc bài kiểm tra đã đóng.");
-    }
-  });
-});
-
-    
     // Footer năm hiện tại
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
-
