@@ -187,29 +187,7 @@
   <script>
    
     
-    // Hàm kiểm tra mã code và trạng thái bài test
-function checkAccessCode(inputCode) {
-  const testData = [
-    { code: "exam123", name: "Unit 1 – Names", status: "Mở" },
-    { code: "exam124", name: "Mini Test 1", status: "Đóng" },
-  ];
-
-  // Kiểm tra mã code và trạng thái
-  const isValid = testData.some(test => test.code === inputCode && test.status === "Mở");
-  return isValid;
-}
-
-    document.getElementById("accessCodeBtn").addEventListener("click", function() {
-  const inputCode = document.getElementById("accessCodeInput").value;
-  if (checkAccessCode(inputCode)) {
-    // Cho phép học sinh vào bài kiểm tra
-    alert("Mã code hợp lệ! Bạn có thể vào làm bài.");
-    window.location.href = "your-test-url.html"; // Dẫn đến bài test
-  } else {
-    alert("Mã code không hợp lệ hoặc bài kiểm tra đã đóng.");
-  }
-});
-
+   
      // ==== URL CSV từ Google Sheet của thầy ====
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
 
@@ -228,6 +206,25 @@ function checkAccessCode(inputCode) {
       });
     }
 
+    
+// Tải dữ liệu từ Google Sheets (CSV)
+async function loadTestData() {
+  const response = await fetch(CSV_URL);
+  const csvText = await response.text();
+  const testData = parseCSV(csvText);  // Parse CSV thành mảng testData
+  return testData;
+}
+
+// Hàm kiểm tra mã code
+function checkAccessCode(inputCode, testData) {
+  // Tìm kiếm bài test hợp lệ với mã code và trạng thái "Mở"
+  const test = testData.find(test => test.Code === inputCode && test.Status === "Mở");
+  return test ? test.File : null;  // Nếu hợp lệ trả về URL bài test
+}
+
+
+
+    
     // Nhóm theo Level
     function groupByLevel(data) {
       const levels = {};
@@ -325,6 +322,27 @@ function checkAccessCode(inputCode) {
 
     initMenu();
 
+
+    
+loadTestData().then(testData => {
+  document.getElementById("accessCodeBtn").addEventListener("click", function() {
+    const inputCode = document.getElementById("accessCodeInput").value;
+    const testUrl = checkAccessCode(inputCode, testData);  // Kiểm tra mã code
+
+    if (testUrl) {
+      // Nếu mã code hợp lệ, chuyển hướng người dùng đến bài test
+      alert("Mã code hợp lệ! Bạn có thể vào làm bài.");
+      window.location.href = testUrl;  // Dẫn đến URL bài test
+    } else {
+      // Nếu mã code không hợp lệ hoặc bài test đã đóng
+      alert("Mã code không hợp lệ hoặc bài kiểm tra đã đóng.");
+    }
+  });
+});
+
+
+
+    
     // Footer năm hiện tại
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
