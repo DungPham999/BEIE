@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Vocabulary Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 16px;
+      background-color: #fff7e6;
+      line-height: 1.5;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .info {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background-color: #fafafa;
+    }
+    .info p { margin: 4px 0; }
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+    }
+    .quiz-box {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 14px 16px;
+      background: #ffffff;
+      margin-bottom: 16px;
+    }
+    .vn-text {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .audio-wrapper {
+      margin: 8px 0 12px 0;
+    }
+    audio {
+      width: 100%;
+    }
+  
+    .audio-frame {
+  width: 100%;
+  height: 80px;        /* có thể tăng/giảm */
+  border: 0;
+  margin: 8px 0 10px 0;
+}
+
+    
+    .answer-wrapper {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    #answerInput {
+      flex: 1;
+      min-width: 180px;
+      padding: 6px 8px;
+      font-size: 16px;
+    }
+    .btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover { background-color: #e0e0e0; }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    #feedback {
+      margin-top: 10px;
+      font-size: 15px;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+    #feedback.ok {
+      background-color: #e6ffe6;
+      color: #155724;
+      border: 1px solid #b7e0b7;
+    }
+    #feedback.ng {
+      background-color: #ffe6e6;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .status-line {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    .result-box {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px 14px;
+      background: #fff;
+      display: none;
+    }
+    .result-main {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007acc;
+      margin: 6px 0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 16px 0;
+      color: #444;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* ===== TỐI ƯU CHO MÀN HÌNH NHỎ (ĐIỆN THOẠI) ===== */
+@media (max-width: 600px) {
+  body {
+    max-width: 100%;
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 16px;         /* chữ to hơn một chút */
+  }
+
+  h1 {
+    font-size: 22px;
+    margin: 12px 0;
+    text-align: center;
+  }
+
+  .info {
+    padding: 10px;
+  }
+
+  .info label {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .info input {
+    width: 100%;             /* ô nhập Họ tên / Lớp full chiều ngang */
+    box-sizing: border-box;
+    margin-top: 3px;
+    padding: 8px 10px;
+    font-size: 16px;
+  }
+
+  .quiz-box {
+    padding: 10px 10px;
+  }
+
+  .vn-text {
+    font-size: 18px;
+  }
+
+  .audio-frame {
+    height: 100px;           /* to hơn chút cho dễ bấm nút play */
+  }
+
+  .answer-wrapper {
+    flex-direction: column;  /* input và nút xếp theo cột */
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  #answerInput {
+    font-size: 18px;
+    padding: 10px 12px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 10px 14px;
+    width: 100%;             /* nút rộng cả dòng, dễ bấm */
+    text-align: center;
+  }
+
+  .status-line {
+    font-size: 14px;
+  }
+
+  #feedback {
+    font-size: 14px;
+  }
+
+  .result-main {
+    font-size: 20px;
+  }
+}
+
+    
+  </style>
+</head>
+<body>
+ <h1 id="title"></h1>
+
+
+  <div class="info">
+    <p><strong>Thời gian làm bài:</strong> <span id="timer">00:00</span></p>
+
+    <p><strong>Mục tiêu:</strong> làm đúng <span id="targetCorrectText">--</span> câu để hoàn thành.</p>
+    <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A" />
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: TOEIC Reading 1" />
+      </label>
+    </p>
+  </div>
+
+  <div class="quiz-box" id="quizBox">
+    <div class="status-line">
+      Câu đúng: <span id="correctCount">0</span> /
+      Câu đã làm: <span id="totalDone">0</span>
+    </div>
+    <hr />
+
+    <div class="vn-text" id="vnText">Đang tải câu hỏi...</div>
+
+    <div class="audio-wrapper">
+     
+      <!-- Dùng iframe giống IELTS -->
+<iframe
+  id="audioFrame"
+  class="audio-frame"
+  allow="autoplay">
+</iframe>
+
+      
+    </div>
+
+    <div class="answer-wrapper">
+      <input
+        type="text"
+        id="answerInput"
+        placeholder="Gõ đáp án tiếng Anh..."
+        autocomplete="off"
+      />
+      <button class="btn" id="checkBtn">Check</button>
+      <button class="btn" id="nextBtn" style="display:none;">Câu tiếp</button>
+    </div>
+
+    <div id="feedback"></div>
+  </div>
+
+  <div class="result-box" id="resultBox">
+    <div><strong>Kết quả bài làm:</strong></div>
+    <div class="result-main" id="resultScore"></div>
+    <div id="resultDetail"></div>
+  </div>
+
+  <div class="footer">
+    © <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.
+  </div>
+
+<script>
+  // ========= CẤU HÌNH =========
+  // Tự lấy tên file hiện tại làm TestID
+const TEST_ID = location.pathname.split('/').pop().replace('.html','') || 'DefaultTest';
+
+  const TARGET_CORRECT = 30;          // số câu cần đúng để kết thúc
+  const TIME_LIMIT_MINUTES = 20;      // thời gian tối đa (phút)
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+    // Mỗi lần mở trang -> 1 attemptId riêng
+  const ATTEMPT_ID = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+
+  // ========= NGÂN HÀNG CÂU HỎI =========
+  // Copy 4 cột: ID | VN | Answer | Audio (KHÔNG lấy dòng tiêu đề)
+  // từ Google Sheets và dán vào giữa cặp ` ... ` dưới đây.
+  const RAW_DATA = `
+
+281	di chuyển đồ nội thất	to move the furniture	https://drive.google.com/file/d/1Xr_fx2BM5yH-8icgEI6fEdeLBW2f_nnD/view?usp=drivesdk
+282	xem lại báo cáo	to review a report	https://drive.google.com/file/d/1vpXRSwVNE8EoXeF7Tbyt7cxwh-t8YH-f/view?usp=drivesdk
+283	sắp xếp, cắm hoa	to arrange flowers	https://drive.google.com/file/d/1LtSi_U4m5pOee7YlX3p_bJcYYIqyCkQy/view?usp=drivesdk
+284	gõ bàn phím	to type on a keyboard	https://drive.google.com/file/d/1YmYxN0jVHUUyOYe5iTX_DJH27-2o84ze/view?usp=drivesdk
+285	đẩy xe đẩy	to push a cart	https://drive.google.com/file/d/1pLp8uAaIIyn_t5tPL8i8oIuGNP-UPbTV/view?usp=drivesdk
+286	kéo ngăn kéo	to pull the drawer	https://drive.google.com/file/d/1e4RvRAxklguFgXIzpj1YEcfxOVQfWSsB/view?usp=drivesdk
+287	cầm micro	to hold a microphone	https://drive.google.com/file/d/1YiXxn5c1zmmSeWmvB0I8iGJzl9NWw8_B/view?usp=drivesdk
+288	ký tài liệu	to sign a document	https://drive.google.com/file/d/1EX-8mYL71zAg_NV_Ow0WNPbL6GnKwmuj/view?usp=drivesdk
+289	đi bộ đường mòn	to hike a trail	https://drive.google.com/file/d/1Mc26Zp23l2uc4GZJ_mqpca-QNhFRl9oG/view?usp=drivesdk
+290	đi xe đạp	to ride a bicycle	https://drive.google.com/file/d/10tnAv9L1OhsPQDnP32YI-8JfXQ-SblOq/view?usp=drivesdk
+291	quét nhà	to sweep the floor	https://drive.google.com/file/d/1FkPG-4n7RTcwg5R0KtyXgouKVAAQvDg1/view?usp=drivesdk
+292	lau nhà	to mop the floor	https://drive.google.com/file/d/1ZJYo7a2afNza1vgLE1i_SXzhzEoDeVTr/view?usp=drivesdk
+293	đánh bóng cái bàn	to polish the table	https://drive.google.com/file/d/13ed-blRy2Nkus5S7R1jGyN3A2tbr4y1G/view?usp=drivesdk
+294	trưng bày sản phẩm	to display products	https://drive.google.com/file/d/1C4y5lnCbKdFFuYLYbBbUoKHbBiKdpem_/view?usp=drivesdk
+295	chất hàng lên xe tải	to load a truck	https://drive.google.com/file/d/131KEgtbfJmZLOUP_YvDwznjxs_wWIa6T/view?usp=drivesdk
+296	mặc tạp dề	to wear an apron	https://drive.google.com/file/d/1EzHbPnqnTb3moXLdTCRGw4c6-5DOMQzQ/view?usp=drivesdk
+297	sử dụng bếp	to use the stove	https://drive.google.com/file/d/1kfWzi0ONmbcw7E4gfhciFHfXzoUpLmAS/view?usp=drivesdk
+298	chờ ở sân ga tàu điện ngầm	to wait on the subway platform	https://drive.google.com/file/d/1FGst95Oyn3J5WWEJiDRiRcqMP4-T-biK/view?usp=drivesdk
+299	điều chỉnh màn hình	to adjust a screen	https://drive.google.com/file/d/1FN7Bglj9ZKMYWcJ-m2z1e734mHLGTLDy/view?usp=drivesdk
+300	phát một bộ phim	to play a film	https://drive.google.com/file/d/1jPWaaZWKQd52WIBOnLRHT1eMsl_FDDbO/view?usp=drivesdk
+301	cầm những cái hộp	to carry boxes	https://drive.google.com/file/d/1W78QnteWn1K0cbkasuYx_H62Gg6SdA3k/view?usp=drivesdk
+302	thay quần áo	to change clothes	https://drive.google.com/file/d/1asimcMCOv8BHxw_nBInoyWKUBs6nTRv8/view?usp=drivesdk
+303	đi xuống cầu thang	to descend stairs	https://drive.google.com/file/d/1fKr11_xrXso0mBDKDzhRzRsULjImNHkO/view?usp=drivesdk
+304	kiểm tra tài liệu	to examine a document	https://drive.google.com/file/d/1jt_G04VM2YT_nc25UBkp3G6xciXRdr_6/view?usp=drivesdk
+305	đối mặt nhau	to face each other	https://drive.google.com/file/d/1DCPUI4Zui6n-uYroZQe-bZwXZI3cA1f_/view?usp=drivesdk
+306	phát biểu	to give a speech	https://drive.google.com/file/d/1We_3uTqqplNsh72bmt14PhjlSIO3CTy2/view?usp=drivesdk
+307	treo tranh	to hang a picture	https://drive.google.com/file/d/1ZUmYjqFzXOXr7j2SrcFEpSMRSnlNoitx/view?usp=drivesdk
+308	ăn món tráng miệng	to have dessert	https://drive.google.com/file/d/1d-IBRCqMqEKRFqkinJIbI6UKt6Wjzl_r/view?usp=drivesdk
+309	cầm báo	to hold a newspaper	https://drive.google.com/file/d/1yMma1Bdiu9ym13Mu7TrQvD0VWN1yeWJG/view?usp=drivesdk
+310	cầm bút	to hold a pen	https://drive.google.com/file/d/1lQB5eD_M_M4AWe39d5iDOiKBUmW4pDw8/view?usp=drivesdk
+311	lắp giá sách	to install a bookshelf	https://drive.google.com/file/d/1AyQd6X8pg14Fgl-ahCtyKti_o7Dw_wuB/view?usp=drivesdk
+312	rời công viên	to leave the park	https://drive.google.com/file/d/1opzGyagP4kpyOweTFCcq3fbjb6D37zDw/view?usp=drivesdk
+313	nằm trên bãi cỏ	to lie on the lawn	https://drive.google.com/file/d/1lmfe8blA_qkQSw4zibiOrJ0BSBkdE3Xr/view?usp=drivesdk
+314	gửi thư	to mail letters	https://drive.google.com/file/d/1UBoL5tzx5mwuMdRZEX2DLol10ZYxx2q5/view?usp=drivesdk
+315	di chuyển cây	to move plants	https://drive.google.com/file/d/1b6eelSXhhF6QuSWwVLVFzATDs2HJhl1M/view?usp=drivesdk
+316	xén bãi cỏ	to mow the lawn	https://drive.google.com/file/d/13YS4qgklBiLVGUXvBiH-TdFkHZq511HI/view?usp=drivesdk
+317	mở tủ hồ sơ	to open a file cabinet	https://drive.google.com/file/d/12Oryz5vbvVx0AxzFJF6-Mj-uIbqD7C0J/view?usp=drivesdk
+318	sắp xếp bàn làm việc	to organize the desk	https://drive.google.com/file/d/1B_uzRkGxvH0d2eS3wZ_lMxrvlacuYa42/view?usp=drivesdk
+319	đóng gói va li	to pack a suitcase	https://drive.google.com/file/d/1FJXIovagBv7wb67hl32uzvEtyiE5prB-/view?usp=drivesdk
+320	biểu diễn trong nhà	to perform indoors	https://drive.google.com/file/d/1g6Wlp0_tRxo9ndGVLkRMDUXbWiuscGcn/view?usp=drivesdk
+321	chỉ vào màn hình	to point at the screen	https://drive.google.com/file/d/1wmSPYvPhxsjl7mNFmnKSfBOO5S18JTyh/view?usp=drivesdk
+322	chuẩn bị bữa ăn	to prepare a meal	https://drive.google.com/file/d/1hnnpVCjITobn4aD4cX42is5HSR4KtQP1/view?usp=drivesdk
+323	hành động mặc đồ vest	to put on a suit	https://drive.google.com/file/d/1_b-JVzmWSVrw87fD7hw3Y-vCWeWgNc0W/view?usp=drivesdk
+324	hành động đội mũ	to put on a hat	https://drive.google.com/file/d/19EEYKGyqLWdKb84aCpiFTj7cAlc6H9ST/view?usp=drivesdk
+325	xem biểu đồ	to read a chart	https://drive.google.com/file/d/1XUP_U3CWTp8_EhyJloouC3J3Z5ktrX87/view?usp=drivesdk
+326	đọc tạp chí	to read a magazine	https://drive.google.com/file/d/1pFtGCrBDFnrr5GIfJ_mGWb8VxmORXQYX/view?usp=drivesdk
+327	ngồi tại bàn	to sit at the table	https://drive.google.com/file/d/10NqNiW0DcWO0Ed1Ruy3pQPQF1QxvPg3Y/view?usp=drivesdk
+328	bắt tay	to shake hands	https://drive.google.com/file/d/13RZVUeNeDr5n5DZ1KQihCP4KcqExEOcw/view?usp=drivesdk
+329	ngồi đối diện nhau	to sit across from each other	https://drive.google.com/file/d/1j97BTW2_Xfrih05g7zqXY3rhxhD-bVZi/view?usp=drivesdk
+330	ngồi trên ghế dài	to sit on a bench	https://drive.google.com/file/d/1Wd5CTDdhaRnsbUtVuOlv8u2V063gIsQG/view?usp=drivesdk
+331	ngồi trên ghế sô pha	to sit on the sofa	https://drive.google.com/file/d/1E_pt0aco3NBKJs-ayax8ghwokjvB6G0-/view?usp=drivesdk
+332	ngồi trên ghế	to sit in chairs	https://drive.google.com/file/d/113_V0Ow6funGiyVWst0Oi1xE8vpiwWyU/view?usp=drivesdk
+333	đứng cạnh bàn	to stand by the desk	https://drive.google.com/file/d/1jjRPzFE0NlOPIO4q6GbjlZ4J-oOVP7hP/view?usp=drivesdk
+334	lấy sách từ kệ	to take a book from the shelf	https://drive.google.com/file/d/1yNam6FsMHa2-O11UZN9aNhoSb7UoAMGO/view?usp=drivesdk
+335	chụp ảnh	to take a picture	https://drive.google.com/file/d/1Jb8RdS9aK5ZSQ-_J7uixF2zY1-G4RiLs/view?usp=drivesdk
+336	nói chuyện điện thoại	to talk on the phone	https://drive.google.com/file/d/19itsWcpCD0BfAF8MRfTIyO1a1UncSX66/view?usp=drivesdk
+337	lật trang	to turn pages	https://drive.google.com/file/d/1tgNZbgPW47R4PEZoow-m3bhodV2cvGVX/view?usp=drivesdk
+338	dùng chổi	to use a broom	https://drive.google.com/file/d/1l5tFjoSCCuNsJVLY98lDIFMHOXsLKZDm/view?usp=drivesdk
+339	đi bộ trên đường	to walk on the street	https://drive.google.com/file/d/1k03JHy8u3cXxrFNv2UWluV3i-Gdmh5Fg/view?usp=drivesdk
+340	đi lên cầu thang	to walk up the stairs	https://drive.google.com/file/d/1hloJrnElGjzRX9gcZJJxhZiC21HGdswH/view?usp=drivesdk
+341	đeo găng tay	to wear gloves	https://drive.google.com/file/d/1DSEHQFtjoJ59ihAYQRJ0X8batJo-eI7f/view?usp=drivesdk
+342	đội mũ bảo hiểm	to wear helmets	https://drive.google.com/file/d/1tgRDdWfhqtRamHrJ8w-a5sP0glOwrbf4/view?usp=drivesdk
+343	làm việc trong phòng thí nghiệm	to work in a laboratory	https://drive.google.com/file/d/1IZLfbgYwFQCcLkbaLbdGA5BZJ1sK3z_R/view?usp=drivesdk
+344	đóng gói hàng	to wrap packages	https://drive.google.com/file/d/12FaqHVp8WG43eUeAYcqhfaMTf2mwCgp8/view?usp=drivesdk
+345	viết lên bảng thông báo	to write on the bulletin board	https://drive.google.com/file/d/13LLcU2eEH8NbpKP9Fe8UqLRpPAHjvNYM/view?usp=drivesdk
+346	ở trên bậc cầu thang	to be on the stairway	https://drive.google.com/file/d/1srQ6Erqkdvs4Tp9wd-s-dKOjFByCvIrs/view?usp=drivesdk
+347	nhìn vào kính hiển vi	to look into a microscope	https://drive.google.com/file/d/1i5mpZ17fpTvbUDyOJyag97x4zodALjUh/view?usp=drivesdk
+348	trả tiền áo sơ mi	to pay for a shirt	https://drive.google.com/file/d/1RGuzL5UgNkfUKIiQ2Z1Ed930X0L9fX26/view?usp=drivesdk
+349	với tay lấy đèn	to reach for a lamp	https://drive.google.com/file/d/1DETXP0cfOZzd9Cg-eUZNs7Nhqynr41ky/view?usp=drivesdk
+350	thử một đôi giày	to try on a pair of shoes	https://drive.google.com/file/d/1gQC0jOEhp7oHx2uqsp6o_FyuDpQe0gvq/view?usp=drivesdk
+351	đánh bóng đôi bốt	to polish some boots	https://drive.google.com/file/d/1fmZrfwsSEm3KBw548CCVWg8PfCsw3vx9/view?usp=drivesdk
+352	bê các khay	to carry trays	https://drive.google.com/file/d/161YwQl60gCeVfC4AKPpBaCksFgaq9fmk/view?usp=drivesdk
+353	nhìn chằm chằm vào nhau	to stare at each other	https://drive.google.com/file/d/13h37UYL0C4ZyMuZ4mPuX6KmJpae-UyKd/view?usp=drivesdk
+354	xem một bài thuyết trình	to watch a presentation	https://drive.google.com/file/d/1lcpltefE1qEO3_Iovl0zZvgiyNeJsNzk/view?usp=drivesdk
+355	thái rau củ	to chop up vegetables	https://drive.google.com/file/d/1uxS4XzSu9xE4zARKsrqPR8jjoBB8cgSl/view?usp=drivesdk
+356	bám vào tay vịn	to hold on to the railing	https://drive.google.com/file/d/1wnAlJQ1Jg9WnDbkCaiJHziQ6VtMduStJ/view?usp=drivesdk
+357	nhìn qua ống nhòm	to look through binoculars	https://drive.google.com/file/d/1TV1eyBaHc442xxIdZZnElyV1QQWQBOTY/view?usp=drivesdk
+358	đưa tiền cho thu ngân	to hand money to a cashier	https://drive.google.com/file/d/1t5PCMFIzmJjFued6SQnSG_3qktZ2pY8y/view?usp=drivesdk
+359	xếp hàng	to stand in line	https://drive.google.com/file/d/1GTm3X7Eno3zszSP7TN4sQIonFGtNh8AG/view?usp=drivesdk
+360	cho thức ăn vào đĩa	to put food on her plate	https://drive.google.com/file/d/1MJfIz_xyxJjNcMGgSkEGV_q5psFY3rZD/view?usp=drivesdk
+361	xắn tay áo lên	to roll up sleeves	https://drive.google.com/file/d/1ZgHzgwImogvFOoAeIdmkgglmf_cEMaBJ/view?usp=drivesdk
+362	ra hiệu bằng tay	to gesture with hands	https://drive.google.com/file/d/1VdUGrBZP1I3ywy_UezQudgoPL9euHh1C/view?usp=drivesdk
+363	đặt hồ sơ lên kệ	to put files on a shelf	https://drive.google.com/file/d/1ju0GdkM40QqrtTVYGY7Ucaw44uJROWzP/view?usp=drivesdk
+364	đóng một cái đinh	to hammer a nail	https://drive.google.com/file/d/1FjWHphAspGr3tW6bCoZ6bdbAeCwJVyk5/view?usp=drivesdk
+365	sử dụng thiết bị văn phòng	to use some office equipment	https://drive.google.com/file/d/1xlZMbZzKOIJj4z7QMFJzUkf2lZJkplls/view?usp=drivesdk
+366	đội mũ bảo hộ	to put on a safety helmet	https://drive.google.com/file/d/1lcuuV1Mnjp-rtA8fFbjv8lpjozAg-k8u/view?usp=drivesdk
+367	thay thế một số đồ nội thất	to replace some furniture	https://drive.google.com/file/d/1Ttp_mF2r47ksKZD3NljYzdzsuCGbyBem/view?usp=drivesdk
+368	xuống tàu	to get off a train	https://drive.google.com/file/d/16ok1X0kGyPOTqueL-nYWfloTpcF3K7MI/view?usp=drivesdk
+369	kéo vali của họ	to pull their suitcases	https://drive.google.com/file/d/1KDZq6hKf0HbwMLyc_rA3MkaP8zz3lWEm/view?usp=drivesdk
+370	lên tàu	to board a train	https://drive.google.com/file/d/1K8w0fKn-V3I7RtMdJjtcfSDJNU9oS_cv/view?usp=drivesdk
+371	đưa giấy cho ai đó	to hand some paper	https://drive.google.com/file/d/1qkHC4e3T0ugG0Ehav_vL-KzmpphoDNPG/view?usp=drivesdk
+372	thuyết trình trong văn phòng	to present in the office	https://drive.google.com/file/d/1Wa21h9dYo8Sxb0smN_qY_hOoIB1ZIALs/view?usp=drivesdk
+373	viết trong sổ tay	to write in a notepad	https://drive.google.com/file/d/1g-y656PBiuEYVwq7rRnkhFwzc_iztJif/view?usp=drivesdk
+374	gọi món ăn	to order some food	https://drive.google.com/file/d/1Ezge_k_GGqLgA3T9nfYxSK0RHIBaWqsI/view?usp=drivesdk
+375	lau dọn trong giảng đường	to clean in the lecture hall	https://drive.google.com/file/d/1fA6dx2ah02N5eXFESfxDgyg71_UuVhE3/view?usp=drivesdk
+376	đầy người trong giảng đường	the lecture hall is occupied.	https://drive.google.com/file/d/1p9YtewhUHSJUfjgR2-HRkmIohRBWbzJG/view?usp=drivesdk
+377	ngồi trong giảng đường	to sit in the lecture hall	https://drive.google.com/file/d/1RxzJhDJBsW-XrsnZ5_3j_4reD5nBKXf5/view?usp=drivesdk
+378	cầm dù	to hold the umbrella	https://drive.google.com/file/d/1KLK1d1baTqx1JWVLFCuPYDYF6MN4tMZ6/view?usp=drivesdk
+379	đi tản bộ trên đường	to stroll along the path	https://drive.google.com/file/d/1Gk-Hv5M5Bldhy7dT3jy-z9bns3m1zBbI/view?usp=drivesdk
+380	lên tàu	to board the train	https://drive.google.com/file/d/1T04ZHQ8bo4gXUVPmQKW0JEdqGR0osC37/view?usp=drivesdk
+381	xếp hàng dựa vào tường	to line up against the wall	https://drive.google.com/file/d/1dCtAgctY1X0szXUJTbcR_ygcKr4r1mYd/view?usp=drivesdk
+382	đun nước trong nồi	to boil water in the pot	https://drive.google.com/file/d/1gwDfxn3b3zxbciVH0pc8oj469zxPR7i8/view?usp=drivesdk
+383	cho tiêu vào nồi	to put pepper into the pot	https://drive.google.com/file/d/19jo7ObQRFxvEVN8Ye3ng82fGNm9uUD66/view?usp=drivesdk
+384	đổ dầu vào chảo	to pour oil into the pan	https://drive.google.com/file/d/1JQ57gEJ9Q-sAdFC-RJoYorMp2Z7-xTjC/view?usp=drivesdk
+385	đội mũ đầu bếp	to wear a chef's hat	https://drive.google.com/file/d/1DGZuAOBeOr7HfuQW2QoFfx_1fIoNKGF4/view?usp=drivesdk
+386	ký hợp đồng	to sign a contract	https://drive.google.com/file/d/1Z9UR-3ChaNk5SgRLXWqyu4jDHuHYxG7a/view?usp=drivesdk
+387	bắt tay với nhau	to shake hands with each other	https://drive.google.com/file/d/1hI9a6J-P8wSu4FisHIGFTaAizM4CWL04/view?usp=drivesdk
+388	chia sẻ danh thiếp	to share business cards	https://drive.google.com/file/d/1doi3XKWVYhQaio-DXX8IYKsAhLq41ijG/view?usp=drivesdk
+
+`; // <-- THAY BẰNG DỮ LIỆU THẬT CỦA THẦY
+
+  // ========= CODE CHUNG =========
+
+function normalize(str) {
+  return (str || '')
+    .normalize('NFC')                       // chuẩn hoá Unicode
+    .replace(/[\u200B-\u200D\uFEFF]/g, '') // xoá ký tự zero-width
+    .toLowerCase()
+    .replace(/[’‘`]/g, "'")                // ’ ‘ `  -> '
+    .replace(/[.,!?;:]+$/g, '')            // xoá . , ? ! ; : ở CUỐI chuỗi
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+// Chuẩn hoá chuỗi sao cho a / an / the được coi là cùng một "loại" ARTICLE
+function normalizeArticles(str) {
+  const tokens = (str || '').split(' ').filter(Boolean);
+  const mapped = tokens.map(t => {
+    return (t === 'a' || t === 'an' || t === 'the') ? 'ARTICLE' : t;
+  });
+  return mapped.join(' ');
+}
+
+
+
+  function parseBank(raw) {
+    const lines = raw.trim().split('\n').filter(l => l.trim() !== '');
+    const items = [];
+    lines.forEach(line => {
+      const cols = line.split('\t');
+      if (cols.length < 4) return;
+      const id    = (cols[0] || '').trim();
+      const vn    = (cols[1] || '').trim();
+      const ans   = (cols[2] || '').trim();
+      const audio = (cols[3] || '').trim();
+      if (!vn || !ans) return;
+      items.push({ id, vn, answer: ans, audio });
+    });
+    return items;
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+ 
+function sendLog(payload, useBeacon = false) {
+  if (!LOG_ENDPOINT || !LOG_ENDPOINT.startsWith('http')) return;
+
+  const data = JSON.stringify(payload);
+
+  // Nếu dùng cho beforeunload thì ưu tiên sendBeacon
+  if (useBeacon && navigator.sendBeacon) {
+    navigator.sendBeacon(LOG_ENDPOINT, data);
+  } else {
+    // Còn lại dùng fetch bình thường
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: useBeacon,          // cho case beforeunload
+      headers: { 'Content-Type': 'application/json' },
+      body: data
+    }).catch(() => {});
+  }
+}
+
+
+ let bank = [];
+let currentIndex = 0;
+let correctCount = 0;
+let totalDone = 0;
+let quizFinished = false;
+
+// Timer đếm lên
+let startTime = null;
+let timerInterval = null;
+let elapsedSec = 0;        // số giây đã làm
+
+// Đánh dấu đã ghi log hay chưa (để tránh ghi 2 lần)
+let hasLogged = false;
+
+  const vnTextEl = document.getElementById('vnText');
+// LẤY IFRAME THAY VÌ AUDIO
+const audioFrame = document.getElementById('audioFrame');
+  const answerInput = document.getElementById('answerInput');
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedbackEl = document.getElementById('feedback');
+  const correctCountEl = document.getElementById('correctCount');
+  const totalDoneEl = document.getElementById('totalDone');
+  const timerEl = document.getElementById('timer');
+  const resultBox = document.getElementById('resultBox');
+  const resultScore = document.getElementById('resultScore');
+  const resultDetail = document.getElementById('resultDetail');
+
+  document.getElementById('targetCorrectText').textContent = TARGET_CORRECT;
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+function startTimer() {
+  startTime = new Date();
+  elapsedSec = 0;
+
+  function renderTime() {
+    const m = Math.floor(elapsedSec / 60);
+    const s = elapsedSec % 60;
+    timerEl.textContent =
+      String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  renderTime();
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    renderTime();
+  }, 1000);
+}
+
+  
+// Chuyển link Google Drive thành link preview cho iframe
+function getDrivePreviewUrl(url) {
+  if (!url) return '';
+  url = url.trim();
+
+  // Chỉ xử lý nếu là link Google Drive
+  if (/drive\.google\.com/.test(url)) {
+    let id = '';
+
+    // Trường hợp: .../file/d/FILE_ID/view?...
+    const m1 = url.match(/\/d\/([^\/]+)/);
+
+    // Trường hợp: ...open?id=FILE_ID...
+    const m2 = url.match(/[?&]id=([^&]+)/);
+
+    if (m1 && m1[1]) {
+      id = m1[1];
+    } else if (m2 && m2[1]) {
+      id = m2[1];
+    }
+
+    if (id) {
+      // Link /preview cho iframe
+      return 'https://drive.google.com/file/d/' + id + '/preview';
+    }
+  }
+
+  // Nếu không phải Drive thì trả lại nguyên link
+  return url;
+}
+
+  function showQuestion() {
+  if (quizFinished) return;
+
+  if (bank.length === 0) {
+    vnTextEl.textContent = 'Không có câu hỏi nào trong ngân hàng.';
+    return;
+  }
+
+  if (currentIndex >= bank.length) {
+    shuffle(bank);
+    currentIndex = 0;
+  }
+
+  const q = bank[currentIndex];
+  vnTextEl.textContent = q.vn;
+
+  // DÙNG LINK /preview CHO IFRAME
+  const previewUrl = getDrivePreviewUrl(q.audio);
+  audioFrame.src = previewUrl;
+
+  answerInput.value = '';
+  answerInput.disabled = false;
+  answerInput.focus();
+
+  feedbackEl.textContent = '';
+  feedbackEl.className = '';
+  checkBtn.disabled = false;
+  nextBtn.style.display = 'none';
+}
+
+
+
+  function checkAnswer() {
+    if (quizFinished) return;
+
+    const name = (document.getElementById('studentName').value || '').trim();
+    const cls  = (document.getElementById('studentClass').value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập HỌ TÊN và LỚP/NHÓM trước khi làm bài.');
+      return;
+    }
+
+    const q = bank[currentIndex];
+    const user = normalize(answerInput.value);
+    if (!user) {
+      alert('Hãy gõ đáp án trước khi bấm Check.');
+      return;
+    }
+
+    // danh sách đáp án chấp nhận, phân biệt số ít/số nhiều (không can thiệp)
+    const acceptable = q.answer
+      .split('|')
+      .map(a => normalize(a))
+      .filter(a => a);
+   
+    // ĐÚNG nếu:
+  // 1) Trùng hoàn toàn sau normalize()
+  // 2) Hoặc trùng sau khi quy tất cả a/an/the -> ARTICLE
+  const isCorrect = acceptable.some(ans => (
+    ans === user ||
+    normalizeArticles(ans) === normalizeArticles(user)
+  ));
+
+    totalDone++;
+    
+   
+
+    if (isCorrect) {
+      correctCount++;
+      feedbackEl.className = 'ok';
+      feedbackEl.textContent = 'Đúng. Đáp án: ' + q.answer;
+    } else {
+      feedbackEl.className = 'ng';
+      feedbackEl.textContent = 'Sai. Đáp án đúng: ' + q.answer;
+    }
+
+    correctCountEl.textContent = correctCount;
+    totalDoneEl.textContent = totalDone;
+
+    answerInput.disabled = true;
+    checkBtn.disabled = true;
+    nextBtn.style.display = 'inline-block';
+
+    // >>> GHI LOG TIẾN ĐỘ MỖI LẦN HỌC SINH NHẤN CHECK
+    logProgress();
+
+    if (correctCount >= TARGET_CORRECT) {
+      finishQuiz('Bạn đã hoàn thành đủ ' + TARGET_CORRECT + ' câu đúng.');
+    }
+  }
+
+  function finishQuiz(reasonText) {
+  if (quizFinished) return;
+  quizFinished = true;
+  hasLogged = true;   // đánh dấu đã ghi log để onbeforeunload không gửi nữa
+
+  if (timerInterval) clearInterval(timerInterval);
+  answerInput.disabled = true;
+  checkBtn.disabled = true;
+  nextBtn.disabled = true;
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  // Format thời gian: X phút YY giây (hiển thị cho học sinh)
+  const mm = Math.floor(durationSec / 60);
+  const ss = durationSec % 60;
+  const timeText = `${mm} phút ${String(ss).padStart(2, '0')} giây`;
+
+  resultBox.style.display = 'block';
+  resultScore.textContent = `${percent}% chính xác`;
+  resultDetail.innerHTML =
+    `Bài test: <strong>${TEST_ID}</strong><br>` +
+    `Đúng ${correctCount} / ${totalDone} câu.<br>` +
+    `Thời gian làm bài: ${timeText}.<br>` +
+    (reasonText ? `Kết thúc: ${reasonText}.` : '');
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+  const timestamp = new Date().toLocaleString();
+
+  // hh:mm:ss cho log
+  const hh = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationHMS;
+
+  const payload = {
+    attemptId: ATTEMPT_ID,   // rất quan trọng để ghi đè 1 dòng
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'finished'
+  };
+
+  // Gửi log dùng fetch thường
+  sendLog(payload, false);
+}
+
+// GHI LOG TIẾN ĐỘ MỖI LẦN NHẤN CHECK
+function logProgress() {
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  const timestamp = new Date().toLocaleString();
+
+  // Đổi duration sang hh:mm:ss để nhìn cho dễ trong RawLog
+  const hh  = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationHMS;
+
+  const payload = {
+    attemptId: ATTEMPT_ID,   // cùng AttemptId -> luôn ghi đè 1 dòng
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'progress'       // khác với finished / aborted
+  };
+
+  // Gửi log bình thường
+  sendLog(payload, false);
+}
+
+
+  // ====== GẮN SỰ KIỆN ======
+  checkBtn.addEventListener('click', checkAnswer);
+  nextBtn.addEventListener('click', () => {
+    if (quizFinished) return;
+    currentIndex++;
+    showQuestion();
+  });
+
+  answerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (!checkBtn.disabled) {
+        checkAnswer();
+      } else if (!nextBtn.disabled && nextBtn.style.display !== 'none') {
+        nextBtn.click();
+      }
+    }
+  });
+
+  // ====== KHỞI ĐỘNG ======
+  (function init() {
+    bank = parseBank(RAW_DATA);
+    if (!bank.length) {
+      vnTextEl.textContent = 'Không có dữ liệu trong RAW_DATA.';
+      return;
+    }
+    shuffle(bank);
+    startTimer();
+    showQuestion();
+  })();
+document.getElementById('title').textContent = TEST_ID;
+
+  
+// ====== GHI LOG KHI HỌC SINH THOÁT GIỮA CHỪNG ======
+window.addEventListener('beforeunload', (event) => {
+  // Nếu đã finishQuiz() thì không log nữa
+  if (hasLogged) return;
+
+  // Nếu chưa làm gì (chưa trả lời câu nào) thì khỏi log
+  if (totalDone === 0) return;
+
+  const name = (document.getElementById('studentName').value || '').trim() || 'NoName';
+  const cls  = (document.getElementById('studentClass').value || '').trim();
+
+  const durationSec = elapsedSec;
+  const percent = totalDone > 0
+    ? Math.round((correctCount * 100) / totalDone)
+    : 0;
+
+  const timestamp = new Date().toLocaleString();
+
+  // hh:mm:ss
+  const hh = Math.floor(durationSec / 3600);
+  const mm2 = Math.floor((durationSec % 3600) / 60);
+  const ss2 = durationSec % 60;
+  const durationHMS =
+    String(hh).padStart(2, '0') + ':' +
+    String(mm2).padStart(2, '0') + ':' +
+    String(ss2).padStart(2, '0');
+
+  const rawLog =
+    name + '\t' +
+    cls + '\t' +
+    TEST_ID + '\t' +
+    timestamp + '\t' +
+    correctCount + '\t' +
+    totalDone + '\t' +
+    percent + '\t' +
+    durationHMS + '\tThoát giữa chừng';
+
+  const payload = {
+    attemptId: ATTEMPT_ID,   // dùng cùng attemptId -> ghi đè đúng dòng
+    testId: TEST_ID,
+    name: name,
+    className: cls,
+    correct: correctCount,
+    total: totalDone,
+    percent: percent,
+    duration: durationSec,
+    rawLog: rawLog,
+    status: 'aborted'
+  };
+
+  hasLogged = true;
+
+  // Gửi log bằng sendBeacon (useBeacon = true)
+  sendLog(payload, true);
+});
+
+
+
+  
+</script>
+</body>
+</html>
