@@ -238,6 +238,11 @@
 <script>
 // ====== CẤU HÌNH CHO GIÁO VIÊN ======
 const DURATION_MINUTES = 35
+// ====== CẤU HÌNH THỨ TỰ CÂU HỎI ======
+const ORDER_MODE = 'random'; 
+// 'normal'  = giữ nguyên
+// 'reverse' = đảo ngược
+// 'random'  = trộn ngẫu nhiên
 
 // Lấy TEST_ID từ tên file hiện tại, ví dụ "BEIE_HW_U6.html"
 const fileSegment = location.pathname.split('/').pop() || '';
@@ -296,9 +301,28 @@ const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7Z
 
 // ----- DỮ LIỆU ĐỀ -----
 const RAW_DATA = `
-67	math	DSAT_Geometry_3	67	mcq	[img:https://drive.google.com/file/d/19-fuTCfgGgtSsBwLz6oGnWSFmPKXCZbz/view?usp=drive_link]		A	B	C	D	B
-68	math	DSAT_150_HardMath_1	1	mcq	[img:https://drive.google.com/file/d/16-GmJzV2COpwg80ZCHaTUXk7FBLfi_Zu/view?usp=drive_link]		A	B	C	D	
-
+68	math	DSAT_150_HardMath_1	1	short	[img:https://drive.google.com/file/d/1q4ziBki7h8qi1NB1L4euJKHbGuVkwuID/view?usp=drive_link]						22.75|91/4
+69	math	DSAT_150_HardMath_1	2	short	[img:https://drive.google.com/file/d/1tD_jnvToXdwVqx8hmTpaMTA9W1VkAZdf/view?usp=drive_link]						2
+70	math	DSAT_150_HardMath_1	3	mcq	[img:https://drive.google.com/file/d/1haUFUd5LUijyxPrnkrCIxEYvN27EijQQ/view?usp=drive_link]		A	B	C	D	c
+71	math	DSAT_150_HardMath_1	4	mcq	[img:https://drive.google.com/file/d/14vp5C74V4XNAsw9eXO8hA-Ruo8Efi2MQ/view?usp=drive_link]		A	B	C	D	a
+72	math	DSAT_150_HardMath_1	5	mcq	[img:https://drive.google.com/file/d/1GJe_RF4DO5PxQ320DI5pU9DmVOk7n9Ne/view?usp=drive_link]		A	B	C	D	d
+73	math	DSAT_150_HardMath_1	6	mcq	[img:https://drive.google.com/file/d/1P5XmiYBKzzFh3DZaovlkAb6PqVNCAXKy/view?usp=drive_link]		A	B	C	D	d
+74	math	DSAT_150_HardMath_1	7	mcq	[img:https://drive.google.com/file/d/1gT4JfEZFZkB9hSmUz730Br-TNmMRJniT/view?usp=drive_link]		A	B	C	D	11
+75	math	DSAT_150_HardMath_1	8	short	[img:https://drive.google.com/file/d/1FJuH6KIpetoMitBbmEwprve4sHgC8gT8/view?usp=drive_link]						10800
+76	math	DSAT_150_HardMath_1	9	mcq	[img:https://drive.google.com/file/d/1cfKQZQdq46fJPoDtHskh_07KhGQEBIHQ/view?usp=drive_link]		A	B	C	D	b
+77	math	DSAT_150_HardMath_1	10	short	[img:https://drive.google.com/file/d/1JLNzfqKZaoCSFH45v8up7NjyXpDu7-mt/view?usp=drive_link]						10000
+78	math	DSAT_150_HardMath_1	11	short	[img:https://drive.google.com/file/d/1P-sQADCniOgLOYoN0wErYf2M29B2pFPK/view?usp=drive_link]						95/97|0.979|.9794
+79	math	DSAT_150_HardMath_1	12	mcq	[img:https://drive.google.com/file/d/1mMm9BWT3bdvEtKIPW-RPmowEbGqFw-J_/view?usp=drive_link]		A	B	C	D	d
+80	math	DSAT_150_HardMath_1	13	mcq	[img:https://drive.google.com/file/d/1ubOYDOd5ABqtMo6ujZxfBU3Nv4Dg8bkQ/view?usp=drive_link]		A	B	C	D	a
+81	math	DSAT_150_HardMath_1	14	mcq	[img:https://drive.google.com/file/d/1e_xtdf9-VXL97zuasM0CK6tWvvs7aJMn/view?usp=drive_link]		A	B	C	D	a
+82	math	DSAT_150_HardMath_1	15	mcq	[img:https://drive.google.com/file/d/11Qo4JxraWVkusQhK2Gb0b_Zfe4X5dqo_/view?usp=drive_link]		A	B	C	D	d
+83	math	DSAT_150_HardMath_1	16	short	[img:https://drive.google.com/file/d/1gNZlWeqzfYpkS9yuGAspdeLuw1f7yEM9/view?usp=drive_link]						-28/3|-9.333
+84	math	DSAT_150_HardMath_1	17	mcq	[img:https://drive.google.com/file/d/14wsXEFW2rGihTHUkduVlegqcnpQLmZg5/view?usp=drive_link]		A	B	C	D	d
+85	math	DSAT_150_HardMath_1	18	mcq	[img:https://drive.google.com/file/d/1CESC-rWRaISMscnOfGRmGPtVn5b3j14c/view?usp=drive_link]		A	B	C	D	d
+86	math	DSAT_150_HardMath_1	19	short	[img:https://drive.google.com/file/d/1F5M__rwS1oB0RMqjUI7XkgZa4UwDBrEL/view?usp=drive_link]						-86
+87	math	DSAT_150_HardMath_1	20	short	[img:https://drive.google.com/file/d/1z8HyWx3GK8sb5c6pzP23gl_bQkT5JXeQ/view?usp=drive_link]						2197
+88	math	DSAT_150_HardMath_1	21	mcq	[img:https://drive.google.com/file/d/13bLOGpGk7epKpaC1yl8xjOPBw7vKC5xi/view?usp=drive_link]		A	B	C	D	c
+89	math	DSAT_150_HardMath_1	22	mcq	[img:https://drive.google.com/file/d/1knu7R2mKjzEF4Fzr7vcfWvB6cUD5nG0j/view?usp=drive_link]		A	B	C	D	c
 `;
 
 // ====== CODE CHUNG ======
@@ -437,12 +461,25 @@ function renderPassageWithMedia(passageText, containerEl, skill) {
 const WIDE_LAYOUT_SKILLS = new Set(['reading', 'math']);
 
 function renderQuiz(questions) {
+
+  // ===== XỬ LÝ THỨ TỰ =====
+  let ordered = [...questions];
+
+  if (ORDER_MODE === 'reverse') {
+    ordered.reverse();
+  }
+
+  if (ORDER_MODE === 'random') {
+    ordered.sort(() => Math.random() - 0.5);
+  }
+
   const quizDiv = document.getElementById('quiz');
   quizDiv.innerHTML = '';
   const groups = {};
   const groupOrder = [];
 
-  questions.forEach((q, idx) => {
+  ordered.forEach((q, idx) => {
+
     const key = (q.group && q.group.trim()) ? q.group.trim() : ('G' + q.id);
     if (!groups[key]) {
       groups[key] = { skill: q.skill, passage: q.passage, questions: [] };
