@@ -211,6 +211,77 @@
       }
     }
   </style>
+  <style>
+  /* ====== TỐI ƯU KHUNG TỔNG THỂ (DESKTOP) ====== */
+  body{
+    max-width: 1400px;       /* rộng hơn so với 1100px */
+    margin: 16px auto;
+    padding: 0 16px;
+  }
+
+  /* ====== LAYOUT 2 CỘT: TRÁI RỘNG – PHẢI HẸP ====== */
+  .reading-layout{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 320px);
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 15px;
+  }
+
+  /* bỏ flex cũ nếu đang dùng */
+  .reading-left, .reading-right{
+    min-width: 0;
+  }
+
+  /* Khung trắc nghiệm hẹp + gọn */
+  .reading-right{
+    position: sticky;   /* cuộn vẫn thấy đáp án (desktop/tablet) */
+    top: 12px;
+  }
+
+  /* Nếu phần lựa chọn A/B/C/D đang là các label/radio,
+     gợi ý làm gọn spacing (không phá layout) */
+  .reading-right label{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+  .reading-right input[type="radio"]{
+    transform: scale(1.05);
+  }
+
+  /* Khung đề (iframe/ảnh) cao hơn chút để nhìn “đã” hơn */
+  .img-frame{
+    height: 420px; /* trước là 260px */
+  }
+
+  /* ====== MOBILE: passage trên, câu hỏi dưới (như bạn đang làm) ====== */
+  @media (max-width: 768px){
+    body{
+      max-width: 100%;
+      margin: 0;
+      padding: 10px 8px 30px 8px;
+    }
+
+    .reading-layout{
+      grid-template-columns: 1fr;  /* xếp dọc */
+      gap: 12px;
+    }
+
+    .reading-right{
+      position: static;  /* tránh sticky gây khó chịu trên mobile */
+      top: auto;
+    }
+
+    .img-frame{
+      height: 300px; /* vừa màn hình điện thoại */
+    }
+  }
+</style>
+
 </head>
 <body>
  <h1 id="pageTitle">Đang tải tiêu đề...</h1>
