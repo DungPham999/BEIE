@@ -452,6 +452,9 @@ function renderPassageWithMedia(passageText, containerEl, skill) {
     containerEl.appendChild(passageDiv);
   }
 }
+  
+// Các skill dùng layout 2 cột (trái: đề/ảnh, phải: câu hỏi)
+const WIDE_LAYOUT_SKILLS = new Set(['reading', 'math']);
 
 function renderQuiz(questions) {
   const quizDiv = document.getElementById('quiz');
@@ -474,15 +477,19 @@ function renderQuiz(questions) {
     const g = groups[key];
     const pTrim = (g.passage || '').trim();
 
-    // READING: 2 cột
-    if (g.skill === 'reading') {
+
+    // READING / MATH: 2 cột (cùng định dạng)
+if (WIDE_LAYOUT_SKILLS.has(g.skill)) {
+
       const layout = document.createElement('div');
       layout.className = 'reading-layout';
 
       const left = document.createElement('div');
       left.className = 'reading-left group-block';
       const title = document.createElement('h2');
-      title.textContent = 'Reading ' + key;
+  
+     title.textContent = (g.skill === 'math' ? 'Math ' : 'Reading ') + key;
+
       left.appendChild(title);
       if (pTrim) renderPassageWithMedia(pTrim, left, g.skill);
 
