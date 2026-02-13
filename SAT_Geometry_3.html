@@ -5,242 +5,149 @@
   <!-- TỐI ƯU CHO ĐIỆN THOẠI -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IELTS Listening & Reading – Practice Test</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 1100px;
-      margin: 20px auto;
-      padding: 0 15px;
-      line-height: 1.5;
-      background-color: #fff7e6;
-      font-size: 16px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-      font-size: 26px;
-    }
-    h2 {
-      margin-top: 10px;
-      margin-bottom: 8px;
-      font-size: 18px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 4px;
-    }
-    .info {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 10px 12px;
-      margin-bottom: 12px;
-      background-color: #fafafa;
-      font-size: 15px;
-    }
-    .info input {
-      padding: 6px 8px;
-      font-size: 15px;
-    }
-    .group-block {
-      border: 1px solid #eee;
-      border-radius: 6px;
-      padding: 10px 12px;
-      margin-bottom: 15px;
-      background-color: #fafafa;
-    }
-    .passage {
-      margin: 8px 0 12px 0;
-      padding: 8px 10px;
-      border-left: 3px solid #007acc;
-      background-color: #ffffff;
-      font-size: 14px;
-    }
-    .question {
-      margin-bottom: 12px;
-      padding: 8px 8px 10px 8px;
-      border-bottom: 1px dashed #ddd;
-      background-color: #ffffff;
-      font-size: 15px;
-    }
-    .question.correct {
-      background-color: #e6ffe6;
-    }
-    .question.incorrect {
-      background-color: #ffe6e6;
-    }
-    .question-number {
-      font-weight: bold;
-    }
-    .btn {
-      padding: 8px 14px;
-      margin-right: 8px;
-      border-radius: 4px;
-      border: 1px solid #888;
-      background-color: #f5f5f5;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    .btn:hover {
-      background-color: #e0e0e0;
-    }
-    #timer {
-      font-weight: bold;
-      color: #d9534f;
-    }
-    .result {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 10px 12px;
-      margin-top: 12px;
-      background-color: #fff;
-      font-size: 15px;
-    }
-    .short-answer-input {
-      width: 80%;
-      max-width: 400px;
-      padding: 6px 8px;
-      font-size: 15px;
-    }
-    audio {
-      width: 100%;
-      margin: 8px 0 10px 0;
-    }
-    iframe.audio-frame {
-      width: 100%;
-      height: 80px;
-      border: 0;
-      margin: 8px 0 10px 0;
-    }
-    img.q-img {
-      max-width: 100%;
-      height: auto;
-      margin: 6px 0;
-      display: block;
-    }
-    .img-frame {
-      width: 100%;
-      max-width: 100%;
-      height: 260px;
-      border: 0;
-      margin: 6px 0;
-      display: block;
-    }
-    .btn-row {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 40px;
-      padding: 20px 0;
-      color: #444;
-      font-size: 14px;
-      opacity: 0.85;
-    }
-
-    /* Layout hai cột cho Reading (màn hình lớn) */
-    .reading-layout {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-      margin-bottom: 15px;
-    }
-    .reading-left {
-      flex: 1.4;
-    }
-    .reading-right {
-      flex: 1;
-    }
-
-    /* ====== TỐI ƯU CHO MOBILE ====== */
-    @media (max-width: 768px) {
-      body {
-        max-width: 100%;
-        margin: 0;
-        padding: 10px 8px 30px 8px;
-        font-size: 16px;
-      }
-      h1 {
-        font-size: 22px;
-        margin-top: 10px;
-      }
-      .info {
-        padding: 10px;
-      }
-      .info label {
-        display: block;
-        margin-bottom: 6px;
-      }
-      .info input {
-        width: 100%;
-        box-sizing: border-box;
-        margin-top: 4px;
-      }
-      .reading-layout {
-        flex-direction: column; /* passage trên – câu hỏi dưới */
-      }
-      .reading-left,
-      .reading-right {
-        width: 100%;
-      }
-      .group-block {
-        padding: 10px 10px;
-      }
-      .passage {
-        font-size: 15px;
-      }
-      .question {
-        font-size: 15px;
-      }
-      .short-answer-input {
-        width: 100%;
-        max-width: 100%;
-      }
-      .btn-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-      }
-      .btn-row .btn {
-        width: 100%;
-        font-size: 16px;
-        padding: 10px 0;
-      }
-    }
-  </style>
-  <style>
-  /* ====== TỐI ƯU KHUNG TỔNG THỂ (DESKTOP) ====== */
-  body{
-    max-width: 1400px;       /* rộng hơn so với 1100px */
-    margin: 16px auto;
-    padding: 0 16px;
+<style>
+  :root{
+    --page-max: 1400px;
+    --gap: 16px;
+    --bg: #fff7e6;
+    --card: #fafafa;
+    --white: #fff;
+    --line: #ddd;
+    --accent: #007acc;
   }
 
-  /* ====== LAYOUT 2 CỘT: TRÁI RỘNG – PHẢI HẸP ====== */
+  body{
+    font-family: Arial, sans-serif;
+    max-width: var(--page-max);
+    margin: 16px auto;
+    padding: 0 16px;
+    line-height: 1.5;
+    background: var(--bg);
+    font-size: 16px;
+  }
+
+  h1{
+    text-align: center;
+    margin: 10px 0;
+    font-size: 26px;
+  }
+
+  h2{
+    margin: 10px 0 8px;
+    font-size: 18px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+  }
+
+  .info, .group-block, .result{
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px 12px;
+    background: var(--card);
+  }
+  .info{ margin-bottom: 12px; font-size: 15px; }
+  .group-block{ margin-bottom: 15px; border-color: #eee; }
+  .result{ margin-top: 12px; background: var(--white); font-size: 15px; }
+
+  .info input{
+    padding: 6px 8px;
+    font-size: 15px;
+  }
+
+  .passage{
+    margin: 8px 0 12px;
+    padding: 8px 10px;
+    border-left: 3px solid var(--accent);
+    background: var(--white);
+    font-size: 14px;
+  }
+
+  .question{
+    margin-bottom: 12px;
+    padding: 8px 8px 10px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--white);
+    font-size: 15px;
+  }
+  .question.correct{ background: #e6ffe6; }
+  .question.incorrect{ background: #ffe6e6; }
+  .question-number{ font-weight: bold; }
+
+  #timer{ font-weight: bold; color: #d9534f; }
+
+  .short-answer-input{
+    width: 80%;
+    max-width: 400px;
+    padding: 6px 8px;
+    font-size: 15px;
+  }
+
+  audio{ width: 100%; margin: 8px 0 10px; }
+
+  iframe.audio-frame{
+    width: 100%;
+    height: 80px;
+    border: 0;
+    margin: 8px 0 10px;
+  }
+
+  img.q-img{
+    max-width: 100%;
+    height: auto;
+    margin: 6px 0;
+    display: block;
+  }
+
+  .img-frame{
+    width: 100%;
+    height: 420px; /* đề lớn hơn trên desktop */
+    border: 0;
+    margin: 6px 0;
+    display: block;
+  }
+
+  .btn{
+    padding: 8px 14px;
+    border-radius: 4px;
+    border: 1px solid #888;
+    background: #f5f5f5;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .btn:hover{ background: #e0e0e0; }
+
+  .btn-row{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .footer{
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
+    color: #444;
+    font-size: 14px;
+    opacity: 0.85;
+  }
+
+  /* ===== Reading: trái rộng – phải hẹp ===== */
   .reading-layout{
     display: grid;
     grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 320px);
-    gap: 16px;
+    gap: var(--gap);
     align-items: start;
     margin-bottom: 15px;
   }
+  .reading-left, .reading-right{ min-width: 0; }
 
-  /* bỏ flex cũ nếu đang dùng */
-  .reading-left, .reading-right{
-    min-width: 0;
-  }
-
-  /* Khung trắc nghiệm hẹp + gọn */
   .reading-right{
-    position: sticky;   /* cuộn vẫn thấy đáp án (desktop/tablet) */
+    position: sticky;
     top: 12px;
   }
 
-  /* Nếu phần lựa chọn A/B/C/D đang là các label/radio,
-     gợi ý làm gọn spacing (không phá layout) */
   .reading-right label{
     display: flex;
     align-items: center;
@@ -249,39 +156,57 @@
     font-size: 15px;
     line-height: 1.25;
   }
+
   .reading-right input[type="radio"]{
     transform: scale(1.05);
   }
 
-  /* Khung đề (iframe/ảnh) cao hơn chút để nhìn “đã” hơn */
-  .img-frame{
-    height: 420px; /* trước là 260px */
-  }
-
-  /* ====== MOBILE: passage trên, câu hỏi dưới (như bạn đang làm) ====== */
+  /* ===== Mobile ===== */
   @media (max-width: 768px){
     body{
       max-width: 100%;
       margin: 0;
-      padding: 10px 8px 30px 8px;
+      padding: 10px 8px 30px;
+    }
+
+    h1{ font-size: 22px; }
+
+    .info label{ display: block; margin-bottom: 6px; }
+    .info input{
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4px;
     }
 
     .reading-layout{
-      grid-template-columns: 1fr;  /* xếp dọc */
+      grid-template-columns: 1fr; /* xếp dọc */
       gap: 12px;
     }
 
-    .reading-right{
-      position: static;  /* tránh sticky gây khó chịu trên mobile */
-      top: auto;
+    .reading-right{ position: static; top: auto; }
+
+    .img-frame{ height: 300px; }
+
+    .short-answer-input{
+      width: 100%;
+      max-width: 100%;
     }
 
-    .img-frame{
-      height: 300px; /* vừa màn hình điện thoại */
+    .btn-row{
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .btn-row .btn{
+      width: 100%;
+      font-size: 16px;
+      padding: 10px 0;
     }
   }
 </style>
 
+  
 </head>
 <body>
  <h1 id="pageTitle">Đang tải tiêu đề...</h1>
@@ -312,7 +237,7 @@
 
 <script>
 // ====== CẤU HÌNH CHO GIÁO VIÊN ======
-const DURATION_MINUTES = 35;
+const DURATION_MINUTES = 35
 
 // Lấy TEST_ID từ tên file hiện tại, ví dụ "BEIE_HW_U6.html"
 const fileSegment = location.pathname.split('/').pop() || '';
@@ -372,28 +297,28 @@ const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7Z
 // ----- DỮ LIỆU ĐỀ -----
 const RAW_DATA = `
 
-46	reading	DSAT_Geometry_3	46	mcq	[img:https://drive.google.com/file/d/1nHwyG28koaBco8PB-oIw3k5rfyEclNGS/view?usp=drive_link]	1	A	B	C	D	A
-47	reading	DSAT_Geometry_3	47	mcq	[img:https://drive.google.com/file/d/1k-yQ6sV1_03IqPGrRjp9b2YOXchhcVRF/view?usp=drive_link]	2	A	B	C	D	B
-48	reading	DSAT_Geometry_3	48	mcq	[img:https://drive.google.com/file/d/1NnkHrpUA-j4mr-fBIHQct-GXLUw0ZpuH/view?usp=drive_link]	3	A	B	C	D	B
-49	reading	DSAT_Geometry_3	49	mcq	[img:https://drive.google.com/file/d/1NAAuvXQ-DmA-UXh6Nxpq2-srYIPiygJt/view?usp=drive_link]	4	A	B	C	D	B
-50	reading	DSAT_Geometry_3	50	mcq	[img:https://drive.google.com/file/d/1ws3yme5k2F3hob0BrEHTp4w_rvM9HZN3/view?usp=drive_link]	5	A	B	C	D	C
-51	reading	DSAT_Geometry_3	51	mcq	[img:https://drive.google.com/file/d/1ZhEZuD4uNjrnrppOBg2mPIjeqU1LWfRt/view?usp=drive_link]	6	A	B	C	D	C
-52	reading	DSAT_Geometry_3	52	mcq	[img:https://drive.google.com/file/d/1KsxzoimXJLeft5jlkpARXGa1qoP_ymr2/view?usp=drive_link]	7	A	B	C	D	D
-53	reading	DSAT_Geometry_3	53	short	[img:https://drive.google.com/file/d/1leg2yKs1DyWu31Hk6cMwb25MudGTZLh9/view?usp=drive_link]	8					39
-54	reading	DSAT_Geometry_3	54	mcq	[img:https://drive.google.com/file/d/1AXfvgGsCd4Pa8YV5-Du6JF6m2Zyc_dX4/view?usp=drive_link]	9	A	B	C	D	B
-55	reading	DSAT_Geometry_3	55	short	[img: https://drive.google.com/file/d/1JgQ0JIulbpnDlfzVFHrkYdIcwmUBlVxg/view?usp=drive_link]	10					-1534
-56	reading	DSAT_Geometry_3	56	short	[img: https://drive.google.com/file/d/1gcxKcpst9muKzBgnElpfl_e8zhFUw98l/view?usp=drive_link]	11					9600
-57	reading	DSAT_Geometry_3	57	mcq	[img: https://drive.google.com/file/d/1tskRNvGEK4oZBFVMt0XkHfldmbp7qM3n/view?usp=drive_link]	12	A	B	C	D	D
-58	reading	DSAT_Geometry_3	58	short	[img:https://drive.google.com/file/d/1WHy50-iDnr0sN4LzOGEe5sHUhazS_KDO/view?usp=drive_link]	13					9216
-59	reading	DSAT_Geometry_3	59	mcq	[img:https://drive.google.com/file/d/1Fl5hCEDFVxAkCMAQlHQmJgPiDLvIfNB9/view?usp=drive_link]	14	A	B	C	D	A
-60	reading	DSAT_Geometry_3	60	mcq	[img:https://drive.google.com/file/d/1uQ6xocu42650zYCKwjEqm-k9WWhkdMa-/view?usp=drive_link]	15	A	B	C	D	B
-61	reading	DSAT_Geometry_3	61	short	[img:https://drive.google.com/file/d/11HYITSTeT6kRse2TYYx8kdlUIWj8ZfWV/view?usp=drive_link]	16					100
-62	reading	DSAT_Geometry_3	62	mcq	[img:https://drive.google.com/file/d/1wwXvRasQy3--tCzHdaR2nGlSY18yQccI/view?usp=drive_link]	17	A	B	C	D	B
-63	reading	DSAT_Geometry_3	63	mcq	[img: https://drive.google.com/file/d/19bah81hPwJB3e1D7qdlwYXT5Jc33FRwq/view?usp=drive_link]	18	A	B	C	D	C
-64	reading	DSAT_Geometry_3	64	mcq	[img:https://drive.google.com/file/d/13JQ0VyaD13t0vY_GaGL9zO7-CCOQCV0D/view?usp=drive_link]	19	A	B	C	D	B
-65	reading	DSAT_Geometry_3	65	mcq	[img:https://drive.google.com/file/d/1HI96M9gXt9u2Yb8s3KGcesPahLxOJFgs/view?usp=sharing]	20	A	B	C	D	D
-66	reading	DSAT_Geometry_3	66	short	[img:https://drive.google.com/file/d/1CEAubpJGWPxGLvvQnHz5ntvvuXql2iVI/view?usp=drive_link]	21					990
-67	reading	DSAT_Geometry_3	67	mcq	[img:https://drive.google.com/file/d/19-fuTCfgGgtSsBwLz6oGnWSFmPKXCZbz/view?usp=drive_link]	22	A	B	C	D	B
+46	math	DSAT_Geometry_3	46	mcq	[img:https://drive.google.com/file/d/1nHwyG28koaBco8PB-oIw3k5rfyEclNGS/view?usp=drive_link]	1	A	B	C	D	A
+47	math	DSAT_Geometry_3	47	mcq	[img:https://drive.google.com/file/d/1k-yQ6sV1_03IqPGrRjp9b2YOXchhcVRF/view?usp=drive_link]	2	A	B	C	D	B
+48	math	DSAT_Geometry_3	48	mcq	[img:https://drive.google.com/file/d/1NnkHrpUA-j4mr-fBIHQct-GXLUw0ZpuH/view?usp=drive_link]	3	A	B	C	D	B
+49	math	DSAT_Geometry_3	49	mcq	[img:https://drive.google.com/file/d/1NAAuvXQ-DmA-UXh6Nxpq2-srYIPiygJt/view?usp=drive_link]	4	A	B	C	D	B
+50	math	DSAT_Geometry_3	50	mcq	[img:https://drive.google.com/file/d/1ws3yme5k2F3hob0BrEHTp4w_rvM9HZN3/view?usp=drive_link]	5	A	B	C	D	C
+51	math	DSAT_Geometry_3	51	mcq	[img:https://drive.google.com/file/d/1ZhEZuD4uNjrnrppOBg2mPIjeqU1LWfRt/view?usp=drive_link]	6	A	B	C	D	C
+52	math	DSAT_Geometry_3	52	mcq	[img:https://drive.google.com/file/d/1KsxzoimXJLeft5jlkpARXGa1qoP_ymr2/view?usp=drive_link]	7	A	B	C	D	D
+53	math	DSAT_Geometry_3	53	short	[img:https://drive.google.com/file/d/1leg2yKs1DyWu31Hk6cMwb25MudGTZLh9/view?usp=drive_link]	8					39
+54	math	DSAT_Geometry_3	54	mcq	[img:https://drive.google.com/file/d/1AXfvgGsCd4Pa8YV5-Du6JF6m2Zyc_dX4/view?usp=drive_link]	9	A	B	C	D	B
+55	math	DSAT_Geometry_3	55	short	[img: https://drive.google.com/file/d/1JgQ0JIulbpnDlfzVFHrkYdIcwmUBlVxg/view?usp=drive_link]	10					-1534
+56	math	DSAT_Geometry_3	56	short	[img: https://drive.google.com/file/d/1gcxKcpst9muKzBgnElpfl_e8zhFUw98l/view?usp=drive_link]	11					9600
+57	math	DSAT_Geometry_3	57	mcq	[img: https://drive.google.com/file/d/1tskRNvGEK4oZBFVMt0XkHfldmbp7qM3n/view?usp=drive_link]	12	A	B	C	D	D
+58	math	DSAT_Geometry_3	58	short	[img:https://drive.google.com/file/d/1WHy50-iDnr0sN4LzOGEe5sHUhazS_KDO/view?usp=drive_link]	13					9216
+59	math	DSAT_Geometry_3	59	mcq	[img:https://drive.google.com/file/d/1Fl5hCEDFVxAkCMAQlHQmJgPiDLvIfNB9/view?usp=drive_link]	14	A	B	C	D	A
+60	math	DSAT_Geometry_3	60	mcq	[img:https://drive.google.com/file/d/1uQ6xocu42650zYCKwjEqm-k9WWhkdMa-/view?usp=drive_link]	15	A	B	C	D	B
+61	math	DSAT_Geometry_3	61	short	[img:https://drive.google.com/file/d/11HYITSTeT6kRse2TYYx8kdlUIWj8ZfWV/view?usp=drive_link]	16					100
+62	math	DSAT_Geometry_3	62	mcq	[img:https://drive.google.com/file/d/1wwXvRasQy3--tCzHdaR2nGlSY18yQccI/view?usp=drive_link]	17	A	B	C	D	B
+63	math	DSAT_Geometry_3	63	mcq	[img: https://drive.google.com/file/d/19bah81hPwJB3e1D7qdlwYXT5Jc33FRwq/view?usp=drive_link]	18	A	B	C	D	C
+64	math	DSAT_Geometry_3	64	mcq	[img:https://drive.google.com/file/d/13JQ0VyaD13t0vY_GaGL9zO7-CCOQCV0D/view?usp=drive_link]	19	A	B	C	D	B
+65	math	DSAT_Geometry_3	65	mcq	[img:https://drive.google.com/file/d/1HI96M9gXt9u2Yb8s3KGcesPahLxOJFgs/view?usp=sharing]	20	A	B	C	D	D
+66	math	DSAT_Geometry_3	66	short	[img:https://drive.google.com/file/d/1CEAubpJGWPxGLvvQnHz5ntvvuXql2iVI/view?usp=drive_link]	21					990
+67	math	DSAT_Geometry_3	67	mcq	[img:https://drive.google.com/file/d/19-fuTCfgGgtSsBwLz6oGnWSFmPKXCZbz/view?usp=drive_link]	22	A	B	C	D	B
 
 `;
 
@@ -528,6 +453,9 @@ function renderPassageWithMedia(passageText, containerEl, skill) {
     containerEl.appendChild(passageDiv);
   }
 }
+  
+// Các skill dùng layout 2 cột (trái: đề/ảnh, phải: câu hỏi)
+const WIDE_LAYOUT_SKILLS = new Set(['reading', 'math']);
 
 function renderQuiz(questions) {
   const quizDiv = document.getElementById('quiz');
@@ -550,15 +478,19 @@ function renderQuiz(questions) {
     const g = groups[key];
     const pTrim = (g.passage || '').trim();
 
-    // READING: 2 cột
-    if (g.skill === 'reading') {
+
+    // READING / MATH: 2 cột (cùng định dạng)
+if (WIDE_LAYOUT_SKILLS.has(g.skill)) {
+
       const layout = document.createElement('div');
       layout.className = 'reading-layout';
 
       const left = document.createElement('div');
       left.className = 'reading-left group-block';
       const title = document.createElement('h2');
-      title.textContent = 'Reading ' + key;
+  
+     title.textContent = (g.skill === 'math' ? 'Math ' : 'Reading ') + key;
+
       left.appendChild(title);
       if (pTrim) renderPassageWithMedia(pTrim, left, g.skill);
 
