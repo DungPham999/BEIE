@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IELTS Listening & Reading – Practice Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 15px;
+      line-height: 1.5;
+      background-color: #fff7e6;
+      font-size: 16px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+    .btn {
+      padding: 8px 14px;
+      margin-right: 8px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .btn:hover {
+      background-color: #e0e0e0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 0;
+      color: #444;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+    .reading-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .group-container {
+      display: none; /* Tất cả nhóm câu hỏi ẩn trừ nhóm đầu tiên */
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="pageTitle">Đang tải tiêu đề...</h1>
+  <div class="info">
+    <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
+    <p><strong>Tiến độ:</strong> <span id="progressText">0/0 câu (còn 0)</span></p>
+    <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A">
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: 8A, TOEIC-Reading 1">
+      </label>
+    </p>
+    <p style="text-align:center; margin-top:10px;">
+      <button class="btn" id="startBtn">Bắt đầu làm bài</button>
+    </p>
+  </div>
+
+  <div id="quiz" style="display:none;"></div>
+
+  <div class="btn-row" id="navRow" style="display:none;">
+    <button class="btn" id="prevPartBtn">Phần trước</button>
+    <button class="btn" id="nextPartBtn" disabled>Phần tiếp theo</button>
+    <button class="btn" id="submitBtn" style="display:none;">Nộp bài & xem kết quả</button>
+    <button class="btn" id="retryBtn" style="display:none;">Làm lại từ đầu</button>
+  </div>
+
+  <div class="result" id="resultBox" style="display:none;"></div>
+
+<script>
+  const DURATION_MINUTES = 15;
+
+  const META_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
+
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+
+  const RAW_DATA = `
+1	Listening	YBM 2026 T5	1.1	mcq	https://drive.google.com/file/d/14CRb3n1eUPZTPKc0-SoOBTB9Lvv0rCPf/view?usp=drive_link // [img: https://drive.google.com/file/d/1q4ziBki7h8qi1NB1L4euJKHbGuVkwuID/view?usp=drive_link}	1. Choose the best description.	A	B	C	D	a
+2	Listening	YBM 2026 T5	1.2	mcq	 https://drive.google.com/file/d/1hRz5170lJ0Brj4_wPFjPmWVX7fEO3p2q/view?usp=drive_link // [img: https://drive.google.com/file/d/1q4ziBki7h8qi1NB1L4euJKHbGuVkwuID/view?usp=drive_link]	1. Choose the best description.	A	B	C	D	b
+3	Listening	YBM 2026 T5	1.3	mcq	https://drive.google.com/file/d/1hv1qCKaNZgSKqyMgy_2CuERToa-qAAJ1/view?usp=drive_link		A	B	C		A
+4	Listening	YBM 2026 T5	1.4	mcq	https://drive.google.com/file/d/1XM47uOcDne2cHlLW-cZLll9jpwzDBm8i/view?usp=drive_link		A	B	C		C
+
+
+
+
+
+
+`; // Nhớ dán dữ liệu của bạn vào đây
+
+  // ===== Phần điều khiển audio =====
+  let currentGroupIndex = 0;
+  let isAudioPlaying = false;
+  let timerInterval = null;
+  let timeLeft = 0;
+
+  // Bắt đầu làm bài
+  document.getElementById('startBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('studentName');
+    const classInput = document.getElementById('studentClass');
+    const name = (nameInput.value || '').trim();
+    const cls = (classInput.value || '').trim();
+
+    if (!name || !cls) {
+      alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi bắt đầu làm bài.');
+      if (!name) nameInput.focus();
+      else if (!cls) classInput.focus();
+      return;
+    }
+
+    // Khóa thông tin thí sinh để khỏi đổi giữa chừng
+    nameInput.disabled = true;
+    classInput.disabled = true;
+    document.getElementById('startBtn').style.display = 'none';
+
+    // Hiện quiz + thanh điều hướng, hiển thị Part 1
+    document.getElementById('quiz').style.display = 'block';
+    document.getElementById('navRow').style.display = 'flex';
+    showGroup(0); // Bắt đầu phần đầu tiên
+
+    // Phát audio tự động khi bắt đầu làm bài
+    const audio = document.querySelector('.audio-frame'); // Lấy iframe chứa audio
+    if (audio) {
+      audio.style.display = 'none'; // Ẩn audio khỏi màn hình
+      const audioElement = audio.contentWindow.document.querySelector('audio');
+      audioElement.play(); // Phát audio
+
+      // Sau khi audio kết thúc, chuyển sang nhóm câu hỏi tiếp theo
+      audioElement.onended = () => {
+        showGroup(currentGroupIndex + 1);
+        isAudioPlaying = false; // Kết thúc phát audio
+        document.getElementById('nextPartBtn').disabled = false; // Kích hoạt nút "Next"
+      };
+    }
+
+    // Bắt đầu đếm giờ
+    startTimer(DURATION_MINUTES * 60);
+  });
+
+  // Hàm hiển thị nhóm câu hỏi
+  function showGroup(index) {
+    const groupContainers = document.querySelectorAll('.group-container');
+    groupContainers.forEach((container, i) => {
+      container.style.display = (i === index) ? 'block' : 'none';
+    });
+
+    currentGroupIndex = index;
+
+    // Đổi nút điều hướng
+    updateNavButtons();
+  }
+
+  // Cập nhật nút điều hướng
+  function updateNavButtons() {
+    const prevBtn = document.getElementById('prevPartBtn');
+    const nextBtn = document.getElementById('nextPartBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const lastIndex = document.querySelectorAll('.group-container').length - 1;
+
+    // Prev
+    prevBtn.style.display = (currentGroupIndex > 0) ? 'inline-block' : 'none';
+
+    // Nếu đang chưa đến phần cuối: hiện Next, ẩn Submit
+    if (currentGroupIndex < lastIndex) {
+      nextBtn.style.display = 'inline-block';
+      submitBtn.style.display = 'none';
+    } else {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'inline-block';
+    }
+  }
+
+  // Hàm bắt đầu đếm giờ
+  function startTimer(totalSeconds) {
+    timeLeft = totalSeconds;
+    const timerEl = document.getElementById('timer');
+    if (timerInterval) clearInterval(timerInterval);
+
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerEl.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+
+    updateDisplay();
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timeLeft = 0;
+        updateDisplay();
+        alert('Hết thời gian! Hệ thống sẽ tự chấm điểm.');
+        gradeQuiz(); // Chấm và khóa bài
+      } else {
+        updateDisplay();
+      }
+    }, 1000);
+  }
+
+  // Chấm bài và hiển thị kết quả
+  function gradeQuiz() {
+    const quizDiv = document.getElementById('quiz');
+    const questionDivs = quizDiv.querySelectorAll('.question');
+    let correct = 0;
+    const total = questionDivs.length;
+
+    questionDivs.forEach(div => {
+      const type = div.dataset.type || 'short';
+      const answerRawDisplay = (div.dataset.answer || '').trim();
+      const answerList = answerRawDisplay.split('|').map(s => s.trim()).filter(s => s);
+
+      let userAnswer = '';
+      if (type === 'mcq') {
+        const checked = div.querySelector('input[type="radio"]:checked');
+        if (checked) userAnswer = normalizeText(checked.value);
+      } else {
+        const input = div.querySelector('input[type="text"]');
+        if (input) userAnswer = normalizeText(input.value);
+      }
+
+      if (answerList.includes(userAnswer)) {
+        correct++;
+      }
+    });
+
+    const percent = Math.round(correct * 100 / Math.max(total, 1));
+    alert(`Đúng ${correct}/${total} câu!`);
+  }
+
+  // Normalize text
+  function normalizeText(str) {
+    return (str || '')
+      .toLowerCase()
+      .replace(/[\u2018\u2019]/g, "'")          // ‘ ’ -> '
+      .replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ') // Xoá khoảng trắng & ký tự ẩn
+      .replace(/\s+/g, ' ')                    // Gộp nhiều khoảng trắng
+      .trim();
+  }
+</script>
+
+</body>
+</html>
