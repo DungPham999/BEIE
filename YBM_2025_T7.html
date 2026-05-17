@@ -248,16 +248,16 @@
 
   <!-- HÀNG NÚT ĐIỀU HƯỚNG THEO PHẦN -->
   <div class="btn-row" id="navRow" style="display:none;">
-    <button class="btn" id="prevPartBtn">Phần trước</button>
-    <button class="btn" id="nextPartBtn">Phần tiếp theo</button>
-    <button class="btn" id="submitBtn" style="display:none;">Nộp bài & xem kết quả</button>
-     <button class="btn" id="retryBtn" style="display:none;">Làm lại từ đầu</button>
+    <button class="btn" id="prevPartBtn">Back</button>
+    <button class="btn" id="nextPartBtn">Next</button>
+    <button class="btn" id="submitBtn" style="display:none;">Submit</button>
+     <button class="btn" id="retryBtn" style="display:none;">Redo</button>
   </div>
 
   <div class="result" id="resultBox" style="display:none;"></div>
 
 <script>
-  const DURATION_MINUTES = 15;
+  const DURATION_MINUTES = 75;
 	
 // Lấy TEST_ID từ tên file hiện tại, ví dụ "BEIE_HW_U6.html"
 const fileSegment = location.pathname.split('/').pop() || '';
