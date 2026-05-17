@@ -138,7 +138,34 @@
       font-size: 14px;
       opacity: 0.85;
     }
+		
+.palette-btn {
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  line-height: 36px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #fff;
+  font-weight: bold;
+}
 
+.palette-btn.done {
+  background-color: #000;
+  color: #fff;
+}
+
+.palette-btn.correct {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.palette-btn.incorrect {
+  background-color: #f44336;
+  color: #fff;
+}
+		
     /* Layout hai cột cho Reading */
     .reading-layout {
       display: flex;
@@ -242,6 +269,9 @@
   </div>
 
   <div id="quiz" style="display:none;"></div>
+
+<div id="paletteContainer" style="margin:10px 0; display:flex; flex-wrap:wrap; gap:5px;"></div>
+	
 
   <!-- HÀNG NÚT ĐIỀU HƯỚNG THEO PHẦN -->
   <div class="btn-row" id="navRow" style="display:none;">
@@ -709,8 +739,67 @@ inputs.forEach(inp => {
 // Khởi tạo hiển thị tiến độ = 0/x
 updateProgress();
 
+function renderPalette(totalQuestions) {
+  const container = document.getElementById('paletteContainer');
+  container.innerHTML = ''; // Xóa cũ nếu render lại
+  for (let i=1; i<=totalQuestions; i++) {
+    const btn = document.createElement('div');
+    btn.className = 'palette-btn';
+    btn.textContent = i;
+    btn.dataset.qIndex = i-1;
+
+    // Click để nhảy tới câu
+    btn.addEventListener('click', () => {
+      showQuestion(i-1);
+    });
+
+    container.appendChild(btn);
+  }
+}
+	  
   }
 
+function markQuestionDone(qIndex) {
+  const btn = document.querySelector(`.palette-btn[data-q-index="${qIndex}"]`);
+  if (btn) btn.classList.add('done'); // đánh dấu đã làm
+}
+	function showQuestion(qIndex) {
+  const questionDivs = document.querySelectorAll('.question');
+  if (qIndex >=0 && qIndex < questionDivs.length) {
+    questionDivs[qIndex].scrollIntoView({behavior: "smooth", block: "center"});
+  }
+}
+	function updatePaletteAfterGrading() {
+  const questionDivs = document.querySelectorAll('.question');
+  questionDivs.forEach((div, i) => {
+    const btn = document.querySelector(`.palette-btn[data-q-index="${i}"]`);
+    if (!btn) return;
+
+    const type = div.dataset.type || 'short';
+    const answerRawDisplay = (div.dataset.answer || '').trim();
+    const answerList = answerRawDisplay.split('|').map(s => s.trim()).filter(s => s);
+
+    let userAnswer = '';
+    if (type === 'mcq') {
+      const checked = div.querySelector('input[type="radio"]:checked');
+      if (checked) userAnswer = normalizeText(checked.value);
+    } else {
+      const input = div.querySelector('input[type="text"]');
+      if (input) userAnswer = normalizeText(input.value);
+    }
+
+    if (!userAnswer) return;
+
+    if (answerList.includes(userAnswer)) {
+      btn.classList.remove('done');
+      btn.classList.add('correct');
+    } else {
+      btn.classList.remove('done');
+      btn.classList.add('incorrect');
+    }
+  });
+}
+	
   function normalizeText(str) {
   return (str || '')
     .toLowerCase()
@@ -1039,6 +1128,9 @@ function updateProgress() {
       return;
     }
     renderQuiz(qs);
+	  renderPalette(totalQuestions); // totalQuestions = tổng số câu trong RAW_DATA
+	  markQuestionDone(questionIndex); // questionIndex = index của câu vừa làm
+	  updatePaletteAfterGrading();
   })();
 
   loadTestTitle();
