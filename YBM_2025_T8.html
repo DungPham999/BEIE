@@ -1,0 +1,242 @@
+<script>
+// Cấu hình
+const DURATION_MINUTES = 75;
+let totalQuestions = 0;
+let timerInterval = null;
+let groupContainers = [];
+let currentGroupIndex = 0;
+let isFinalized = false;
+
+// Dữ liệu câu hỏi (RAW_DATA)
+const RAW_DATA = `
+
+101	reading	YBM2025-T6	5	mcq		101. Testers report that the video game’s final level is somewhat -------.	frustrate	frustrating	frustration	frustrated	b
+102	reading	YBM2025-T6	5	mcq		102. Marcus Siegler is attempting to develop a new ------- for predicting solar activity.	recognition	direction	method	opinion	c
+103	reading	YBM2025-T6	5	mcq		103. The university’s largest dormitory, Lugo Residence Hall, accommodates ------- 600 students.	enough	nearly	totally	more	b
+104	reading	YBM2025-T6	5	mcq		104. Ms. Chaney says her upcoming cookbook will feature only dishes made with ------- obtainable ingredients.	easily	easy	ease	easier	a
+105	reading	YBM2025-T6	5	mcq		105. Emi Tanaka is supposed to start work on Monday, ------- Human Resources has not finished drafting her contract.	once	with	still	but	d
+106	reading	YBM2025-T6	5	mcq		106. ------- the maintenance department immediately of any spills in the laboratory.	Notify	Notified	Notifying	Notification	a
+107	reading	YBM2025-T6	5	mcq		107. The interior designer used certain colors ------- to create a warm atmosphere in the café’s seating area.	strategy	strategic	strategically	more strategic	c
+108	reading	YBM2025-T6	5	mcq		108. ------- can be done to recover your files, since they were deleted over one year ago.	Either	Nothing	Nobody	Another	b
+109	reading	YBM2025-T6	5	mcq		109. Your meals with clients will be reimbursed by the company ------- you submit the original receipts.	as long as	whether	afterward	in case	a
+110	reading	YBM2025-T6	5	mcq		110. After some -------, the board of directors decided to declare a dividend.	deliberates	deliberated	deliberately	deliberation	d
+111	reading	YBM2025-T6	5	mcq		111. Although the workshop’s participants were ------- from Busan, there were a few people from other areas as well.	entirely	repeatedly	primarily	overly	c
+112	reading	YBM2025-T6	5	mcq		112. Weller Tower is a popular destination for tourists, mainly ------- the stunning view from its observation deck.	now that	just as	together with	because of	d
+113	reading	YBM2025-T6	5	mcq		113. Renting construction machinery from a local supplier would be more ------- than having ours shipped to and from the site.	efficiencies	efficiency	efficient	efficiently	c
+114	reading	YBM2025-T6	5	mcq		114. To preserve the artwork, museums often keep pieces from their permanent collections in storage ------- putting them on display.	aside from	rather than	even if	not only	b
+115	reading	YBM2025-T6	5	mcq		115. According to the Cordell Pottery Exhibition’s Web site, the entry fee will be ------- for Cordell residents.	waives	waiving	waived	waivers	c
+116	reading	YBM2025-T6	5	mcq		116. Government ------- in science and technology research have been important drivers of innovation in recent decades.	invests	investments	investor	invested	b
+117	reading	YBM2025-T6	5	mcq		117. Proceeds from the fund-raiser will go ------- resurfacing the running track in Brant Park.	toward	through	about	over	a
+118	reading	YBM2025-T6	5	mcq		118. While it was -------, many fans were still saddened by Liam Kuhn’s announcement of his retirement from professional tennis.	allowed	expected	reduced	answered	b
+119	reading	YBM2025-T6	5	mcq		119. Due to unusually low attendance at the festival, the organizers were left with an ------- of 200 promotional T-shirts.	excessive	exceeding	excess	exceeds	c
+120	reading	YBM2025-T6	5	mcq		120. Under the new time-off policy, employees may ------- to receive pay in exchange for their unused vacation days.	opt	promise	afford	bother	a
+121	reading	YBM2025-T6	5	mcq		121. Wipeout, a new comedy series, will be released on the network’s streaming platform 24 hours ------- its broadcast TV premiere.	in front	by then	close to	ahead of	d
+122	reading	YBM2025-T6	5	mcq		122. The hiring committee believes that Ms. Ahmed’s skills would nicely complement ------- of the existing members of the team.	those	theirs	them	which	a
+123	reading	YBM2025-T6	5	mcq		123. With each purchase, our customers earn points that can be used to receive discounts on ------- orders.	approximate	subsequent	inevitable	gradual	b
+124	reading	YBM2025-T6	5	mcq		124. Among the strawberries available at the farmer’s market, the ones sold by Calkin Farms are the -------.	flavors	flavorful	most flavorful	most flavorfully	c
+125	reading	YBM2025-T6	5	mcq		125. After paying the licensing fee, you will be ------- the right to use this image for commercial purposes.	enforced	advised	renewed	granted	d
+126	reading	YBM2025-T6	5	mcq		126. Mr. Song ------- the market research study even before sales of our products began their recent decline.	was commissioned	is commissioning	to be commissioning	had commissioned	d
+127	reading	YBM2025-T6	5	mcq		127. Kenyon XN-30 sport sunglasses come with four ------- sets of lenses to suit a variety of lighting conditions.	instant	interchangeable	concentrated	relative	b
+128	reading	YBM2025-T6	5	mcq		128. With proper care, the shrubs planted along your walkway will ------- reach a height of three feet.	patiently	considerably	exactly	eventually	d
+129	reading	YBM2025-T6	5	mcq		129. Although there is no maximum word limit for articles in our journal, we recommend that authors keep their manuscripts as ------- as possible.	accurate	orderly	distinctive	succinct	d
+130	reading	YBM2025-T6	5	mcq		130. The ability to pay close attention to detail is an important ------- that all medical translators must have.	trait	outcome	record	practice	a
+131	reading	YBM2025-T6	6.1	mcq	[img:https://drive.google.com/file/d/17n0lZkfAJSbozFOnrDX-DjMsnbHDYFj6/view?usp=drive_link]	131. 	there	like	just	right	d
+132	reading	YBM2025-T6	6.1	mcq		132. 	All that each camper needs to bring is a sleeping bag and toiletries.	It also holds many daytime events for families at its parks.	Camping is a great way to foster a lifelong love of nature in children.	See the calendar below for the dates of all upcoming campouts.	a
+133	reading	YBM2025-T6	6.1	mcq		133. 	facility	leader	program	equipment	c
+134	reading	YBM2025-T6	6.1	mcq		134. 	Interested	Interesting	Interestingly	To interest	a
+135	reading	YBM2025-T6	6.2	mcq	[img:https://drive.google.com/file/d/1gQ03dxXnjAFc-bNX0kPkQzE1RfoiLDFd/view?usp=drive_link]	135. 	includes	will include	would have included	would include	c
+136	reading	YBM2025-T6	6.2	mcq		136. 	difficulty	opposition	disapproval	obstruction	b
+137	reading	YBM2025-T6	6.2	mcq		137. 	The location is the former home of Ellis Department Store.	Others objected to the city’s planned financial role in the project.	To accommodate it, Worth Street will be widened to six lanes.	TCN has opened major complexes in two other cities in recent years.	b
+138	reading	YBM2025-T6	6.2	mcq		138. 	However	Similarly	In fact	Instead	a
+139	reading	YBM2025-T6	6.3	mcq	[img:https://drive.google.com/file/d/1FP6ID85j2QBvbCG5t6jX9gtxMt9WKal4/view?usp=drive_link]	139. 	support	teach	explain	introduce	b
+140	reading	YBM2025-T6	6.3	mcq		140. 	Fortunately, the system is largely similar to our current one.	Likewise, the servers must learn to input orders on tablets.	They will update the relevant sections of our handbook as well.	Everyone has been scheduled for a special shift at 8 a.m.	d
+141	reading	YBM2025-T6	6.3	mcq		141. 	begins	to begin	beginning	that begins	a
+142	reading	YBM2025-T6	6.3	mcq		142. 	regular	internal	additional	advanced	c
+143	reading	YBM2025-T6	6.4	mcq	[img:https://drive.google.com/file/d/1jeH5srUqW45CT9F8DcGn2lvkWiwJFOrL/view?usp=drive_link]	143. 	We put a lot of care into crafting the contents.	Our readership ranges from teenagers to retirees.	Each issue will be sent via e-mail to this address.	Previous issues are available on our Web site.	c
+144	reading	YBM2025-T6	6.4	mcq		144. 	me	him	one	them	d
+145	reading	YBM2025-T6	6.4	mcq		145. 	recommends	recommended	recommendation	recommendations	d
+146	reading	YBM2025-T6	6.4	mcq		146. 	donate	subscribe	volunteer	enter	b
+147	reading	YBM2025-T6	7.1	mcq	[img:https://drive.google.com/file/d/1_59lFEI_lQQ8xdVfLTWfxFij024aE4iD/view?usp=drive_link]	147. Where would the information most likely be found?	In a print advertisement	In an online customer review	In a notice on a company’s Web site	On a page of a product manual	d
+148	reading	YBM2025-T6	7.1	mcq		148. What is indicated about the auto-cleaning process?	It takes approximately two minutes.	It involves a particular cleaning fluid.	It requires the use of an electrical outlet.	The iron should not be touched while it is taking place.	c
+149	reading	YBM2025-T6	7.2	mcq	[img:https://drive.google.com/file/d/1q9reh2IElYLsTuJXfQ48urHabs8YZmIZ/view?usp=drive_link]	149. What information is included in the announcement?	What benefits Hall of Fame members receive	What the purpose of the Hall of Fame is	Where nominations should be submitted	Who is allowed to submit a nomination	b
+150	reading	YBM2025-T6	7.2	mcq		150. What can be concluded about Ms. Kabera?	She was a CEO for at least three years.	She graduated from Rondebosch University.	She will attend a special event in June.	She is a past employee of the RUCI.	a
+151	reading	YBM2025-T6	7.2	mcq		151. What is most likely NOT an accomplishment that would qualify a nominee for consideration?	Creating a large number of new jobs	Increasing a company’s net profits	Achieving high rates of customer satisfaction	Developing an original type of product	c
+152	reading	YBM2025-T6	7.3	mcq	[img:https://drive.google.com/file/d/1wOV4l_0VxCU_gCjSn2evfU65loOdgRSN/view?usp=drive_link]	152. According to the coupon, what is a benefit of Titanium Gym membership? 	 A yearly health evaluation 	 Access to special fitness equipment 	 The ability to take a variety of classes 	 Unlimited personal training sessions	c
+153	reading	YBM2025-T6	7.3	mcq		153. What is true about the coupon? 	 Its user will be required to pay a sign-up fee. 	 It is targeted toward people whose membership ends in April. 	 It is valid for three months from the date of issue. 	 Its user will receive a discount of $135.	a
+154	reading	YBM2025-T6	7.4	mcq	[img:https://drive.google.com/file/d/16bHWbr3ZzoeSx0u-Rw9UxrOAyF33mh9L/view?usp=drive_link]	154. What kind of business do the writers most likely work for? 	 A tour operator 	 A car rental agency 	 A food delivery business 	 An auto repair shop	a
+155	reading	YBM2025-T6	7.4	mcq		155. At 11:36 A.M., what does Mr. Dawson most likely mean when he writes, "we're right near Kloss Shopping Center"? 	 It will not be difficult to find parking for a van. 	 There are many dining options nearby. 	 Ms. Endo is not far from his location. 	 He is only slightly behind schedule.	b
+156	reading	YBM2025-T6	7.5	mcq	[img:https://drive.google.com/file/d/1ugsqvb2r_oLU6PYN1yMBgOGCQDskKhQz/view?usp=drive_link]	156. What is most likely true about participants in the workshop? 	 They will give editorial advice on each other's papers. 	 They hope to have their writing published in Nature Monthly. 	 They submitted information on their backgrounds beforehand. 	 They are currently attending university to study science.	b
+157	reading	YBM2025-T6	7.5	mcq		157. When would participants most likely learn how to design a chart? 	 Between 9:30 A.M. and 10:15 A.M. 	 Between 10:30 A.M. and 11:30 A.M. 	 Between 11:30 A.M. and 12:30 P.M. 	 Between 1:30 P.M. and 2:30 P.M.	d
+158	reading	YBM2025-T6	7.6	mcq	[img:https://drive.google.com/file/d/1BzfLmXLuLG1cvVSUdhHbRhEWCqWOz65S/view?usp=drive_link]	158. For whom is the information most likely intended? 	 Property owners 	 Drone operators 	 Aspiring photographers 	 Real estate agents	d
+159	reading	YBM2025-T6	7.6	mcq		159. According to the Web page, what are customers charged more for? 	 Having photographs taken via drone 	 Canceling a photo shoot on short notice 	 Holding a photo shoot in the evening 	 Requesting additional photographs	d
+160	reading	YBM2025-T6	7.6	mcq		160. In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? "In addition, photographs taken from a hundred feet directly overhead can be used to show a property's full layout." 	 [1] 	 [2] 	 [3] 	 [4]	b
+161	reading	YBM2025-T6	7.7	mcq	[img:https://drive.google.com/file/d/1aMQXRlxIQHLt6VAn3saJMEwQELFOfREO/view?usp=drive_link]	161. What most likely caused Ms. Chilton to send the e-mail? 	 Preparations for an event have fallen behind schedule. 	 There has been a change in laws regarding compensation. 	 Employees have been working overtime without permission. 	 Some staff members missed an information session.	c
+162	reading	YBM2025-T6	7.7	mcq		162. What is indicated about the Proactive Network for Women in Engineering? 	 It has a limited budget for payroll. 	 It organizes an annual symposium. 	 Its workers regularly receive pay raises. 	 Its legal department is very busy.	a
+163	reading	YBM2025-T6	7.7	mcq		163. According to the e-mail, what consequence will staff face for breaking a rule? 	 Losing the perk of flexible working hours 	 Becoming ineligible for promotion to supervisor 	 Receiving assignments that are less desirable 	 Earning a worse performance review	d
+164	reading	YBM2025-T6	7.8	mcq	[img:https://drive.google.com/file/d/1wYl0PE8xEpIagZMkDwSij7Vl0JgZXhyg/view?usp=drive_link]	164. What is one purpose of the letter? 	 To describe a new benefit of membership 	 To announce a change to a start date 	 To seek volunteers for an event 	 To welcome a returning member	d
+165	reading	YBM2025-T6	7.8	mcq		165. According to the letter, what will an online system be used for? 	 Reporting news about the garden 	 Keeping track of some tools 	 Redistributing some pieces of land 	 Recording some work hours	d
+166	reading	YBM2025-T6	7.8	mcq		166. What is implied about Polwarth Community Garden? 	 It does not have enough plots to meet demand 	 There is a diagram of its plots on display in a storage shed 	 Its plots must be assigned to a different household each year 	 The borders of its plots will be redrawn next year	a
+167	reading	YBM2025-T6	7.8	mcq		167. In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? “Typical tasks include weed removal and cleaning the tool shed.” 	 [1] 	 [2] 	 [3] 	 [4]	b
+168	reading	YBM2025-T6	7.9	mcq	[img:https://drive.google.com/file/d/1YyDr1P1etf0HDYOJqALVZinay51-MjX3/view?usp=drive_link]	168. What is HRTA preparing to do? 	 Introduce a new type of train 	 Expand nighttime service 	 Connect two railway lines 	 Increase the accessibility of its stations	a
+169	reading	YBM2025-T6	7.9	mcq		169. According to the article, what will continue to happen until summer begins? 	 Some trains will be tested 	 Some staff will receive training 	 Transport users will be surveyed 	 Construction will be carried out	a
+170	reading	YBM2025-T6	7.9	mcq		170. What is suggested about trains with stickers on them? 	 They only stop at two stations 	 They do not carry passengers yet 	 They have completed an inspection 	 They will be taken out of service soon	b
+171	reading	YBM2025-T6	7.9	mcq		171. Why does the writer mention Fonseca? 	 HRTA staff visited it for research 	 It is the site of a production plant 	 It was the first place to adopt a technology 	 The size of its population is similar to Hitchert’s	c
+172	reading	YBM2025-T6	7.10	mcq	[img:https://drive.google.com/file/d/1OzYYk6T9t-ls4NTmw4ERguTfDiXH-KMl/view?usp=drive_link]	172. In what field do the writers most likely work? 	 Insurance sales 	 Staff recruitment 	 Wealth management 	 Healthcare research	c
+173	reading	YBM2025-T6	7.10	mcq		173. What is NOT mentioned as a topic covered in the survey given to the interns? 	 The internship application process 	 The tasks they were assigned 	 The mentorship provided by the writers 	 Their opportunities to make professional connections	a
+174	reading	YBM2025-T6	7.10	mcq		174. At 10:11 a.m., what does Ms. Garnier most likely mean when she writes, “we'll have a review meeting in a few days”? 	 Mr. Perkins will be introduced to some staff members 	 There is no need for Mr. Perkins to bring a document to her 	 Mr. Perkins should wait to learn some information 	 Mr. Perkins will have time to prepare for a discussion	c
+175	reading	YBM2025-T6	7.10	mcq		175. What most likely is Ms. Osborne’s concern about the information requested by Human Resources? 	 It will take considerable effort to gather 	 It is not detailed enough to be useful 	 It should not be accessible to other employees 	 It may no longer be accurate in the future	b
+176	reading	YBM2025-T6	7.11	mcq	[img:https://drive.google.com/file/d/1jmHoHAGmYJZsSwTU4tUw29aXEAY0AzK9/view?usp=drive_link] // [img:https://drive.google.com/file/d/1zeGYOKFbKIE_ahKVE30iEYg6yQ6Hj5Uk/view?usp=drive_link]	176. What is suggested about Eason Technologies? 	 It sells its products to other businesses 	 It designs technology that produces renewable energy 	 It recently created a new sales district 	 It is headquartered in Barrow	a
+177	reading	YBM2025-T6	7.11	mcq		177. What is one responsibility of the position? 	 Monitoring competitors’ pricing 	 Cooperating with marketing staff 	 Correctly predicting sales revenues 	 Proposing potential new products	c
+178	reading	YBM2025-T6	7.11	mcq		178. What does Ms. Na explain in the e-mail? 	 How long she has known Mr. Malone 	 Where she saw the job advertisement 	 How she became acquainted with Mr. Malone 	 Why Mr. Malone might be interested in changing jobs	c
+179	reading	YBM2025-T6	7.11	mcq		179. From Ms. Na’s description, what position requirement might Mr. Malone NOT possess? 	 A degree in a suitable field 	 The necessary work experience 	 Excellent public speaking ability 	 A tolerance for frequent travel	b
+180	reading	YBM2025-T6	7.11	mcq		180. In the e-mail, the word “sharing” in paragraph 1, line 6, is closest in meaning to 	 dividing 	 informing 	 expressing 	 delivering	d
+181	reading	YBM2025-T6	7.12	mcq	[img:https://drive.google.com/file/d/1puDFmb7cppAXMGkQd-5GaiLGSpeZhBz2/view?usp=drive_link] // [img:https://drive.google.com/file/d/1AU4z4ESJQ5PHNCJRLS9yEi0XC-zkbQvP/view?usp=drive_link]	181. What is mentioned about commercial food waste? 	 It is growing in volume each year 	 It can be harmful to the environment 	 It is generated mostly by restaurants 	 It was the subject of a recent regulation	d
+182	reading	YBM2025-T6	7.12	mcq		182. What does the advertisement suggest about Scrap Saver? 	 It operates waste processing facilities 	 It plans to expand the variety of materials it transports 	 It gives clients advice on reducing waste 	 Its delivery trucks run on alternative fuels	a
+183	reading	YBM2025-T6	7.12	mcq		183. In the e-mail, the word “given” in paragraph 2, line 2, is closest in meaning to 	 regarding 	 considering 	 specified 	 assigned	b
+184	reading	YBM2025-T6	7.12	mcq		184. According to the e-mail, what does Scrap Saver most likely do once per month? 	 Adjust a service rate 	 Replace a storage container 	 Calculate a total number of liters 	 Confirm the desired pickup frequency	c
+185	reading	YBM2025-T6	7.12	mcq		185. What can be concluded about Babybud Food Corporation? 	 It has more than one manufacturing location 	 It does not plan to send packaged food to Scrap Saver 	 It produces multiple tons of food waste per week 	 It has not used a food waste disposal service previously	b
+186	reading	YBM2025-T6	7.13	mcq	[img:https://drive.google.com/file/d/1s7pSA_9mDOn6HvtJQ4gbKz8_ySilgE6n/view?usp=drive_link] // [img:https://drive.google.com/file/d/1YFZJpVsG5qk2ZwDlP6NInoSdR9TWPLje/view?usp=drive_link] // [img:https://drive.google.com/file/d/1SSaExUAupDihLwXbIgwMl9ld8FPqE33t/view?usp=drive_link]	186. What does the Web page indicate about the store’s Web site? 	 It lists the major brands that the store carries. 	 It displays images of works created by customers. 	 It provides instructions for independent craft projects. 	 It includes profiles of some staff members.	b
+187	reading	YBM2025-T6	7.13	mcq		187. What does the notice suggest about Creative Kate’s? 	 It will begin selling a new type of product. 	 It has automated part of the shopping process. 	 It is seeking replacement instructors for some classes. 	 It no longer allows customers to pay with cash.	b
+188	reading	YBM2025-T6	7.13	mcq		188. Which area of Creative Kate’s will be reduced in size? 	 Section A 	 Section B 	 Section C 	 Section D	a
+189	reading	YBM2025-T6	7.13	mcq		189. What most likely is Mr. Chiba’s job? 	 Hotel manager 	 Art instructor 	 Interior designer 	 Event planner	d
+190	reading	YBM2025-T6	7.13	mcq		190. What is implied about Mr. Chiba? 	 He watched a demonstration led by an employee. 	 He took advantage of a seasonal discount offer. 	 He purchased goods from an aisle in Section D. 	 He first visited the store to attend a celebration.	c
+191	reading	YBM2025-T6	7.14	mcq	[img:https://drive.google.com/file/d/1ugWsNsFM09hGmplFqoBq4lekMsHDb49e/view?usp=drive_link] // [img:https://drive.google.com/file/d/1f3Ulm7wTZQ23tcOYheRx4oZIajEWdPg2/view?usp=drive_link] // [img:https://drive.google.com/file/d/1ZS9Rs5i1HeMj_HBfc1Rli6596y6OMdtE/view?usp=drive_link]	191. What is indicated about Hardeston Regional Airport? 	 It is not the only airport near the city. 	 It has a reputation for punctual departures. 	 It is currently undergoing renovations. 	 It is not served frequently by Rubin Air.	a
+192	reading	YBM2025-T6	7.14	mcq		192. What is suggested about Mr. Foster? 	 He was recently promoted to a managerial position. 	 He visited Hardeston in July. 	 He has taken a trip planned by Ms. Avila before. 	 He stated a preference for a certain hotel.	c
+193	reading	YBM2025-T6	7.14	mcq		193. Where most likely does Mr. Foster work? 	 At an automobile manufacturer 	 At an appliance company 	 At an aircraft design firm 	 At a home furnishings business	b
+194	reading	YBM2025-T6	7.14	mcq		194. What did Mr. Foster most likely do in response to advice? 	 He chose different lodgings. 	 He joined an airline loyalty program. 	 He downloaded a mobile app. 	 He requested a rental vehicle.	d
+195	reading	YBM2025-T6	7.14	mcq		195. Based on the form, what can be concluded about Mr. Foster? 	 He will be picked up at a transportation hub. 	 He asked a coworker to accompany him. 	 He decided to extend the length of his stay. 	 He will pay an expense with his personal credit card.	b
+196	reading	YBM2025-T6	7.15	mcq	[img:https://drive.google.com/file/d/1Y1APraVKZC4QlyeKQQI4DtW-lpWpM-6_/view?usp=drive_link] // [img:https://drive.google.com/file/d/1utOH6iqbXjYtUlcg4hdnvnVWkrUm9mZy/view?usp=drive_link] // [img:https://drive.google.com/file/d/1DDsjUpBtpzXtUEZrhJaSyPIxFTSz3MLE/view?usp=drive_link]	196. What is indicated about Kolkata XYZ? 	 It also sells children’s toys. 	 It imports bamboo from abroad. 	 Its primary customers are frequent travelers. 	 Its tableware can be used in kitchen appliances.	d
+197	reading	YBM2025-T6	7.15	mcq		197. What is the purpose of the first e-mail? 	 To revise an order 	 To solicit a corporate donor 	 To request information 	 To make a complaint	c
+198	reading	YBM2025-T6	7.15	mcq		198. Which characteristic of bamboo tableware had the most influence on Ms. Lahiri? 	 Characteristic 1 	 Characteristic 2 	 Characteristic 3 	 Characteristic 4	a
+199	reading	YBM2025-T6	7.15	mcq		199. According to the second e-mail, what is available for all of the carrying cases? 	 Customization service 	 A discount on a bulk purchase 	 Care instructions 	 A free product sample	a
+200	reading	YBM2025-T6	7.15	mcq		200. What carrying case will Gir Society donors most likely receive? 	 The hard plastic case 	 The cotton pouch 	 The nylon zippered case 	 The canvas roll-up bag	b
+
+`; // Dán dữ liệu của bạn vào đây
+
+// ----------------- HÀM HỖ TRỢ -----------------
+function escapeHtml(str){ return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function normalizeText(str){ return (str||'').toLowerCase().trim(); }
+function renderImgToken(url){ return `<img class="img-frame" src="${url}">`; }
+
+// ----------------- TIMER -----------------
+function startTimer(sec){
+  let timeLeft = sec;
+  const timerEl = document.getElementById('timer');
+  timerInterval = setInterval(()=>{
+    const m=Math.floor(timeLeft/60), s=timeLeft%60;
+    timerEl.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    timeLeft--;
+    if(timeLeft<0){ clearInterval(timerInterval); alert("Hết giờ!"); gradeQuiz(); }
+  },1000);
+}
+
+// ----------------- RENDER QUIZ -----------------
+function parseSheet(rawText){
+  if(!rawText.trim()) return [];
+  const lines = rawText.trim().split('\n');
+  const questions=[];
+  lines.forEach((line,index)=>{
+    const cols=line.split('\t');
+    questions.push({
+      id: cols[0]||index+1,
+      skill:(cols[1]||'').toLowerCase(),
+      group: cols[3]||('G'+(index+1)),
+      type:(cols[4]||'mcq').toLowerCase(),
+      passage: cols[5]||'',
+      question: cols[6]||'',
+      options:[cols[7]||'',cols[8]||'',cols[9]||'',cols[10]||''],
+      answer:(cols[11]||'').trim()
+    });
+  });
+  return questions;
+}
+
+function renderQuiz(questions){
+  const quizDiv = document.getElementById('quiz'); quizDiv.innerHTML='';
+  const groups={}; const groupOrder=[];
+  questions.forEach((q)=>{ const key=q.group; if(!groups[key]){ groups[key]={skill:q.skill,passage:q.passage,questions:[]}; groupOrder.push(key);} groups[key].questions.push(q); });
+
+  groupOrder.forEach(key=>{
+    const g=groups[key]; const pTrim=g.passage||'';
+    if(g.skill==='reading'){
+      const layout=document.createElement('div'); layout.className='reading-layout group-container';
+      const left=document.createElement('div'); left.className='reading-left group-block';
+      const title=document.createElement('h2'); title.textContent='Reading '+key; left.appendChild(title);
+      if(pTrim){ const pd=document.createElement('div'); pd.className='passage'; pd.innerHTML=pTrim.replace(/\[IMG:([^\]]+)\]/gi,(m,u)=>renderImgToken(u)); left.appendChild(pd); }
+      const right=document.createElement('div'); right.className='reading-right';
+      g.questions.forEach(q=>{
+        const qDiv=document.createElement('div'); qDiv.className='question'; qDiv.dataset.answer=q.answer||''; qDiv.dataset.type=q.type||'short';
+        const p=document.createElement('p'); p.innerHTML=`<span class="question-number">${q.id}.</span> ${escapeHtml(q.question)}`; qDiv.appendChild(p);
+        if(q.type==='mcq'){ ['A','B','C','D'].forEach((lbl,i)=>{ if(!q.options[i]) return; const l=document.createElement('label'); const r=document.createElement('input'); r.type='radio'; r.name='q'+q.id; r.value=lbl; l.appendChild(r); l.appendChild(document.createTextNode(` ${lbl}. ${q.options[i]}`)); qDiv.appendChild(l); qDiv.appendChild(document.createElement('br')); }); }
+        else { const input=document.createElement('input'); input.type='text'; input.name='q'+q.id; input.className='short-answer-input'; qDiv.appendChild(input); }
+        right.appendChild(qDiv);
+      });
+      layout.appendChild(left); layout.appendChild(right); quizDiv.appendChild(layout);
+    }
+  });
+
+  // Thu thập các container phần
+  groupContainers=Array.from(document.querySelectorAll('.group-container'));
+  groupContainers.forEach(c=>c.style.display='none');
+  if(groupContainers.length) groupContainers[0].style.display='';
+  totalQuestions=quizDiv.querySelectorAll('.question').length;
+}
+
+// ----------------- HIỂN THỊ VÀ CHẤM -----------------
+function gradeQuiz() {
+  if(isFinalized) return;
+  isFinalized=true;
+  if(timerInterval){ clearInterval(timerInterval); timerInterval=null; }
+
+  const quizDiv = document.getElementById('quiz');
+  const questionDivs = quizDiv.querySelectorAll('.question');
+  let correct=0;
+  const total=questionDivs.length;
+
+  questionDivs.forEach(div=>{
+    const type=div.dataset.type||'short';
+    const answerList=(div.dataset.answer||'').split('|').map(s=>s.trim()).filter(s=>s);
+    let user='';
+    if(type==='mcq'){ const c=div.querySelector('input[type="radio"]:checked'); if(c) user=normalizeText(c.value);}
+    else { const input=div.querySelector('input[type="text"]'); if(input) user=normalizeText(input.value);}
+
+    const isCorrect=answerList.includes(user);
+    if(isCorrect) correct++;
+
+    if(isCorrect) div.classList.add('correct'); else div.classList.add('incorrect');
+
+    // Hiện đáp án
+    if(answerList.length){ let caDiv=div.querySelector('.correct-answer-text'); if(!caDiv){ caDiv=document.createElement('div'); caDiv.className='correct-answer-text'; div.appendChild(caDiv); } caDiv.textContent='Đáp án: '+answerList.join(' | ');}
+    // Khóa input
+    div.querySelectorAll('input[type="radio"],input[type="text"]').forEach(i=>i.disabled=true);
+  });
+
+  const box=document.getElementById('resultBox'); box.style.display='block';
+  box.innerHTML=`<div><strong>Bài test:</strong> Practice Test</div>
+                 <div><strong>Kết quả:</strong> ${correct}/${total} câu</div>
+                 <div style="font-size:28px; font-weight:bold; color:#007acc;">${Math.round(correct*100/total)}%</div>`;
+}
+
+// ----------------- NAV & START -----------------
+function showGroup(index){ if(!groupContainers.length) return; groupContainers.forEach((c,i)=>c.style.display=(i===index)?'':'none'); currentGroupIndex=index; }
+document.getElementById('startBtn').addEventListener('click',()=>{
+  const n=document.getElementById('studentName').value.trim();
+  const c=document.getElementById('studentClass').value.trim();
+  if(!n||!c){ alert('Nhập đủ Họ tên và Lớp/Nhóm'); return; }
+  document.getElementById('startBtn').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  document.getElementById('navRow').style.display='flex';
+  if(groupContainers.length) groupContainers[0].style.display='';
+  startTimer(DURATION_MINUTES*60);
+});
+
+// Nút Submit luôn hiển thị
+document.getElementById('submitBtn').style.display='inline-block';
+document.getElementById('submitBtn').addEventListener('click',()=>{ gradeQuiz(); });
+
+document.getElementById('retryBtn').addEventListener('click',()=>{ location.reload(); });
+
+// ----------------- KHỞI TẠO -----------------
+(function initExam(){ const qs=parseSheet(RAW_DATA); if(!qs.length){ document.getElementById('quiz').innerHTML='<p style="color:red;">RAW_DATA trống</p>'; return;} renderQuiz(qs); })();
+
+</script>
