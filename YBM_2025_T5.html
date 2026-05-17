@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Test – Complete</title>
+<style>
+body { font-family: Arial,sans-serif; max-width:1400px; margin:20px auto; padding:0 15px; line-height:1.5; background:#fff7e6; font-size:16px;}
+h1 { text-align:center; margin-bottom:10px; font-size:28px;}
+h2 { margin:10px 0 8px; font-size:18px; border-bottom:1px solid #ccc; padding-bottom:4px;}
+.info { border:1px solid #ddd; border-radius:6px; padding:10px 12px; margin-bottom:12px; background:#fafafa; font-size:15px;}
+.info input { padding:6px 8px; font-size:15px;}
+.reading-layout { display:flex; gap:20px; align-items:flex-start; margin-bottom:15px;}
+.reading-left { flex:2; min-width:0;}
+.reading-right { flex:1; min-width:0;}
+.img-frame { width:auto; max-width:100%; height:auto; display:block; margin:6px 0;}
+.passage { margin:8px 0; padding:8px 10px; border-left:3px solid #007acc; background:#fff;}
+.question { margin-bottom:12px; padding:8px; border-bottom:1px dashed #ddd; background:#fff; font-size:15px;}
+.question-number { font-weight:bold; }
+.short-answer-input { width:80%; max-width:400px; padding:6px 8px;}
+.btn { padding:8px 14px; border-radius:4px; border:1px solid #888; background:#f5f5f5; cursor:pointer; font-size:15px;}
+.btn:hover { background:#e0e0e0;}
+#timer { font-weight:bold; color:#d9534f;}
+.result { border:1px solid #ddd; border-radius:6px; padding:10px; margin-top:12px; background:#fff;}
+#paletteContainer { display:flex; flex-wrap:wrap; margin:10px 0; gap:4px;}
+.palette-btn { width:36px; height:36px; text-align:center; line-height:36px; border:1px solid #000; border-radius:4px; cursor:pointer; background:#fff; font-weight:bold;}
+.palette-btn.done { background:#000; color:#fff;}
+.palette-btn.correct { background:#4CAF50; color:#fff;}
+.palette-btn.incorrect { background:#f44336; color:#fff;}
+@media(max-width:768px){ .reading-layout{flex-direction:column;} .reading-left,.reading-right{width:100%;} .img-frame{width:100%;height:auto;} .btn-row .btn{width:100%;} }
+</style>
+</head>
+<body>
+
+<h1 id="pageTitle">Practice Test</h1>
+<div class="info">
+<p><strong>Thời gian còn lại:</strong> <span id="timer">--:--</span></p>
+<p><strong>Tiến độ:</strong> <span id="progressText">0/0</span></p>
+<p><label>Họ tên: <input type="text" id="studentName" placeholder="Nguyễn Văn A"></label>
+<label>Lớp/Nhóm: <input type="text" id="studentClass" placeholder="8A"></label></p>
+<p style="text-align:center;"><button class="btn" id="startBtn">Start</button></p>
+</div>
+
+<div id="paletteContainer"></div>
+<div id="quiz" style="display:none;"></div>
+
+<div class="btn-row">
+<button class="btn" id="submitBtn" style="display:none;">Submit</button>
+<button class="btn" id="retryBtn" style="display:none;">Redo</button>
+</div>
+
+<div class="result" id="resultBox" style="display:none;"></div>
+
+<script>
+// Cấu hình
+const DURATION_MINUTES = 120;
+let totalQuestions = 0;
+let timerInterval = null;
+let groupContainers = [];
+let currentGroupIndex = 0;
+let isFinalized = false;
+
+// Dữ liệu mẫu, bạn thay bằng RAW_DATA thật
+const RAW_DATA = `...`;
+
+// ----------------- HÀM HỖ TRỢ -----------------
+function escapeHtml(str){ return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function normalizeText(str){ return (str||'').toLowerCase().trim(); }
+function renderImgToken(url){ return `<img class="img-frame" src="${url}">`; }
+
+// ----------------- TIMER -----------------
+function startTimer(sec){
+  let timeLeft = sec;
+  const timerEl = document.getElementById('timer');
+  timerInterval = setInterval(()=>{
+    const m=Math.floor(timeLeft/60), s=timeLeft%60;
+    timerEl.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    timeLeft--;
+    if(timeLeft<0){ clearInterval(timerInterval); alert("Hết giờ!"); gradeQuiz(); }
+  },1000);
+}
+
+// ----------------- RENDER QUIZ -----------------
+function parseSheet(rawText){
+  if(!rawText.trim()) return [];
+  const lines = rawText.trim().split('\n');
+  const questions=[];
+  lines.forEach((line,index)=>{
+    const cols=line.split('\t');
+    questions.push({
+      id: cols[0]||index+1,
+      skill:(cols[1]||'').toLowerCase(),
+      group: cols[3]||('G'+(index+1)),
+      type:(cols[4]||'mcq').toLowerCase(),
+      passage: cols[5]||'',
+      question: cols[6]||'',
+      options:[cols[7]||'',cols[8]||'',cols[9]||'',cols[10]||''],
+      answer:(cols[11]||'').trim()
+    });
+  });
+  return questions;
+}
+
+function renderQuiz(questions){
+  const quizDiv = document.getElementById('quiz'); quizDiv.innerHTML='';
+  const groups={}; const groupOrder=[];
+  questions.forEach((q)=>{ const key=q.group; if(!groups[key]){ groups[key]={skill:q.skill,passage:q.passage,questions:[]}; groupOrder.push(key);} groups[key].questions.push(q); });
+
+  let qCounter=0;
+  groupOrder.forEach(key=>{
+    const g=groups[key]; const pTrim=g.passage||'';
+    if(g.skill==='reading'){
+      const layout=document.createElement('div'); layout.className='reading-layout group-container';
+      const left=document.createElement('div'); left.className='reading-left group-block';
+      const title=document.createElement('h2'); title.textContent='Reading '+key; left.appendChild(title);
+      if(pTrim){ const pd=document.createElement('div'); pd.className='passage'; pd.innerHTML=pTrim.replace(/\[IMG:([^\]]+)\]/gi,(m,u)=>renderImgToken(u)); left.appendChild(pd); }
+      const right=document.createElement('div'); right.className='reading-right';
+      g.questions.forEach(q=>{
+        qCounter++; const qDiv=document.createElement('div'); qDiv.className='question'; qDiv.dataset.answer=q.answer||''; qDiv.dataset.type=q.type||'short';
+        const p=document.createElement('p'); p.innerHTML=`<span class="question-number">${qCounter}.</span> ${escapeHtml(q.question)}`; qDiv.appendChild(p);
+        if(q.type==='mcq'){ ['A','B','C','D'].forEach((lbl,i)=>{ if(!q.options[i]) return; const l=document.createElement('label'); const r=document.createElement('input'); r.type='radio'; r.name='q'+qCounter; r.value=lbl; l.appendChild(r); l.appendChild(document.createTextNode(` ${lbl}. ${q.options[i]}`)); qDiv.appendChild(l); qDiv.appendChild(document.createElement('br')); }); }
+        else { const input=document.createElement('input'); input.type='text'; input.name='q'+qCounter; input.className='short-answer-input'; qDiv.appendChild(input); }
+        right.appendChild(qDiv);
+      });
+      layout.appendChild(left); layout.appendChild(right); quizDiv.appendChild(layout);
+    }
+  });
+
+  groupContainers=Array.from(document.querySelectorAll('.group-container'));
+  groupContainers.forEach(c=>c.style.display='none');
+  groupContainers[0].style.display='';
+  totalQuestions=quizDiv.querySelectorAll('.question').length;
+  renderPalette(totalQuestions);
+}
+
+// ----------------- PALETTE -----------------
+function renderPalette(total){
+  const container=document.getElementById('paletteContainer'); container.innerHTML='';
+  for(let i=1;i<=total;i++){
+    const btn=document.createElement('div'); btn.className='palette-btn'; btn.textContent=i; btn.dataset.qIndex=i-1;
+    btn.addEventListener('click',()=>{ showQuestion(i-1); });
+    container.appendChild(btn);
+  }
+}
+function markQuestionDone(i){ const btn=document.querySelector(`.palette-btn[data-q-index="${i}"]`); if(btn) btn.classList.add('done'); }
+function showQuestion(i){ const divs=document.querySelectorAll('.question'); if(i>=0&&i<divs.length) divs[i].scrollIntoView({behavior:'smooth',block:'center'}); }
+function updatePaletteAfterGrading(){ const divs=document.querySelectorAll('.question'); divs.forEach((div,i)=>{ const btn=document.querySelector(`.palette-btn[data-q-index="${i}"]`); if(!btn) return; let user=''; const answerList=(div.dataset.answer||'').split('|').map(s=>s.trim()).filter(s=>s); const type=div.dataset.type||'short'; if(type==='mcq'){ const c=div.querySelector('input[type="radio"]:checked'); if(c) user=normalizeText(c.value);} else { const input=div.querySelector('input[type="text"]'); if(input) user=normalizeText(input.value);} if(!user) return; btn.classList.remove('done'); btn.classList.add(answerList.includes(user)?'correct':'incorrect'); }); }
+
+// ----------------- START -----------------
+document.getElementById('startBtn').addEventListener('click',()=>{
+  const n=document.getElementById('studentName').value.trim();
+  const c=document.getElementById('studentClass').value.trim();
+  if(!n||!c){ alert('Nhập đủ Họ tên và Lớp/Nhóm'); return; }
+  document.getElementById('startBtn').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  document.getElementById('navRow').style.display='flex';
+  groupContainers[0].style.display='';
+  startTimer(DURATION_MINUTES*60);
+});
+
+// ----------------- SUBMIT -----------------
+document.getElementById('submitBtn').addEventListener('click',()=>{ gradeQuiz(); });
+
+// ----------------- INIT -----------------
+(function initExam(){ const qs=parseSheet(RAW_DATA); if(!qs.length){ document.getElementById('quiz').innerHTML='<p style="color:red;">RAW_DATA trống</p>'; return; } renderQuiz(qs); })();
+</script>
+</body>
+</html>
