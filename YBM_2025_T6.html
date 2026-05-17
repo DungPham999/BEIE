@@ -1,63 +1,277 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Practice Test</title>
-<style>
-body { font-family: Arial,sans-serif; max-width:1200px; margin:20px auto; padding:0 15px; line-height:1.5; background:#fff7e6; font-size:16px; }
-h1 { text-align:center; font-size:26px; margin-bottom:10px; }
-h2 { margin-top:10px; margin-bottom:8px; font-size:18px; border-bottom:1px solid #ccc; padding-bottom:4px; }
-.info { border:1px solid #ddd; border-radius:6px; padding:10px 12px; margin-bottom:12px; background:#fafafa; font-size:15px; }
-.info input { padding:6px 8px; font-size:15px; }
-.group-block { border:1px solid #eee; border-radius:6px; padding:10px 12px; margin-bottom:15px; background:#fafafa; }
-.passage { margin:8px 0 12px 0; padding:8px 10px; border-left:3px solid #007acc; background:#fff; font-size:14px; }
-.question { margin-bottom:12px; padding:8px; border-bottom:1px dashed #ddd; background:#fff; font-size:15px; }
-.question-number { font-weight:bold; }
-.btn { padding:8px 14px; margin-right:8px; border-radius:4px; border:1px solid #888; background:#f5f5f5; cursor:pointer; font-size:15px; }
-.btn:hover { background:#e0e0e0; }
-#timer { font-weight:bold; color:red; }
-.result { border:1px solid #ddd; border-radius:6px; padding:10px 12px; margin-top:12px; background:#fff; font-size:15px; }
-.short-answer-input { width:80%; max-width:400px; padding:6px 8px; font-size:15px; }
-.img-frame { width:auto; max-width:100%; height:auto; display:block; margin:6px 0; }
-.reading-layout { display:flex; gap:20px; align-items:flex-start; margin-bottom:15px; }
-.reading-left { flex:1.8; min-width:0; }
-.reading-right { flex:1; }
-.palette-btn { width:36px; height:36px; text-align:center; line-height:36px; border:1px solid #000; border-radius:4px; cursor:pointer; background:#fff; font-weight:bold; margin:2px; }
-.palette-btn.done { background:#000; color:#fff; }
-.palette-btn.correct { background:#4CAF50; color:#fff; }
-.palette-btn.incorrect { background:#f44336; color:#fff; }
-#paletteContainer { display:flex; flex-wrap:wrap; margin:10px 0; }
-@media (max-width:768px){ .reading-layout{flex-direction:column;} .reading-left,.reading-right{width:100%;} .img-frame{width:100%; height:auto;} }
-</style>
+  <meta charset="UTF-8">
+  <!-- THÊM VIEWPORT ĐỂ HIỂN THỊ ĐẸP TRÊN ĐIỆN THOẠI -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IELTS Listening & Reading – Practice Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 15px;
+      line-height: 1.5;
+      background-color: #fff7e6;
+      font-size: 16px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+    h2 {
+      margin-top: 10px;
+      margin-bottom: 8px;
+      font-size: 18px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    .info {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      background-color: #fafafa;
+      font-size: 15px;
+    }
+    .info input {
+      padding: 6px 8px;
+      font-size: 15px;
+    }
+    .group-block {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      background-color: #fafafa;
+    }
+    .passage {
+      margin: 8px 0 12px 0;
+      padding: 8px 10px;
+      border-left: 3px solid #007acc;
+      background-color: #ffffff;
+      font-size: 14px;
+    }
+    .question {
+      margin-bottom: 12px;
+      padding: 8px 8px 10px 8px;
+      border-bottom: 1px dashed #ddd;
+      background-color: #ffffff;
+      font-size: 15px;
+    }
+    .question.correct {
+      background-color: #e6ffe6;
+    }
+    .question.incorrect {
+      background-color: #ffe6e6;
+    }
+    .question-number {
+      font-weight: bold;
+    }
+    .btn {
+      padding: 8px 14px;
+      margin-right: 8px;
+      border-radius: 4px;
+      border: 1px solid #888;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .btn:hover {
+      background-color: #e0e0e0;
+    }
+    #timer {
+      font-weight: bold;
+      color: #d9534f;
+    }
+    .result {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 12px;
+      background-color: #fff;
+      font-size: 15px;
+    }
+    .short-answer-input {
+      width: 80%;
+      max-width: 400px;
+      padding: 6px 8px;
+      font-size: 15px;
+    }
+    audio {
+      width: 100%;
+      margin: 8px 0 10px 0;
+    }
+    iframe.audio-frame {
+      width: 100%;
+      height: 80px;
+      border: 0;
+      margin: 8px 0 10px 0;
+    }
+    img.q-img {
+      max-width: 100%;
+      height: auto;
+      margin: 6px 0;
+      display: block;
+    }
+    .img-frame {
+      width: 100%;
+      max-width: 100%;
+      height: 260px;
+      border: 0;
+      margin: 6px 0;
+      display: block;
+    }
+    .btn-row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 0;
+      color: #444;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    /* Layout hai cột cho Reading */
+    .reading-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .reading-left {
+      flex: 1.4;
+    }
+    .reading-right {
+      flex: 1;
+    }
+
+    .correct-answer-text {
+      margin-top: 4px;
+      font-size: 13px;
+      font-style: italic;
+      color: #555;
+    }
+
+    /* ========= TỐI ƯU CHO ĐIỆN THOẠI ========= */
+    @media (max-width: 768px) {
+      body {
+        max-width: 100%;
+        margin: 0;
+        padding: 10px 8px 30px 8px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: 22px;
+        margin-top: 10px;
+      }
+      .info {
+        padding: 10px;
+      }
+      .info label {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .info input {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 4px;
+      }
+      .reading-layout {
+        flex-direction: column;       /* passage trên, câu hỏi dưới */
+      }
+      .reading-left,
+      .reading-right {
+        width: 100%;
+      }
+      .group-block {
+        padding: 10px 10px;
+      }
+      .passage {
+        font-size: 15px;
+      }
+      .question {
+        font-size: 15px;
+      }
+      .short-answer-input {
+        width: 100%;
+        max-width: 100%;
+      }
+      .btn-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .btn-row .btn {
+        width: 100%;                 /* nút rộng cả dòng cho dễ bấm */
+        font-size: 16px;
+        padding: 10px 0;
+      }
+    }
+  </style>
 </head>
 <body>
+  <h1 id="pageTitle">Đang tải tiêu đề...</h1>
 
-<h1 id="pageTitle">Practice Test</h1>
+  <div class="info">
+    <p><strong>Thời gian làm bài còn lại:</strong> <span id="timer">--:--</span></p>
+	  <!-- THÊM DÒNG NÀY -->
+  <p><strong>Tiến độ:</strong> <span id="progressText">0/0 câu (còn 0)</span></p>
+  <!-- HẾT DÒNG MỚI -->
+    <p>Làm xong từng phần hãy bấm <strong>Phần tiếp theo</strong>. Khi hoàn thành hết các phần, bấm <strong>Nộp bài</strong> để xem điểm.</p>
+    <p>
+      <label>Họ tên học viên:
+        <input type="text" id="studentName" placeholder="Nguyễn Văn A">
+      </label>
+    </p>
+    <p>
+      <label>Lớp / Nhóm:
+        <input type="text" id="studentClass" placeholder="VD: 8A, TOEIC-Reading 1">
+      </label>
+    </p>
+    <p style="text-align:center; margin-top:10px;">
+      <button class="btn" id="startBtn">Bắt đầu làm bài</button>
+    </p>
+  </div>
 
-<div class="info">
-<p><strong>Thời gian còn lại:</strong> <span id="timer">120:00</span></p>
-<p>
-<label>Họ tên: <input type="text" id="studentName" placeholder="Nguyễn Văn A"></label>
-<label>Lớp/Nhóm: <input type="text" id="studentClass" placeholder="VD: 8A"></label>
-</p>
-<p style="text-align:center;"><button class="btn" id="startBtn">Start</button></p>
-</div>
+  <div id="quiz" style="display:none;"></div>
 
-<div id="paletteContainer"></div>
-<div id="quiz"></div>
+  <!-- HÀNG NÚT ĐIỀU HƯỚNG THEO PHẦN -->
+  <div class="btn-row" id="navRow" style="display:none;">
+    <button class="btn" id="prevPartBtn">Back</button>
+    <button class="btn" id="nextPartBtn">Next</button>
+    <button class="btn" id="submitBtn" style="display:none;">Submit</button>
+     <button class="btn" id="retryBtn" style="display:none;">Redo</button>
+  </div>
 
-<div class="btn-row">
-<button class="btn" id="submitBtn" style="display:none;">Nộp bài & xem kết quả</button>
-<button class="btn" id="retryBtn" style="display:none;">Làm lại</button>
-</div>
-
-<div class="result" id="resultBox" style="display:none;"></div>
+  <div class="result" id="resultBox" style="display:none;"></div>
 
 <script>
-// ------------------ CONFIG ------------------
-const DURATION_MINUTES = 75;
-const RAW_DATA = `
+  const DURATION_MINUTES = 75;
+	
+// Lấy TEST_ID từ tên file hiện tại, ví dụ "BEIE_HW_U6.html"
+const fileSegment = location.pathname.split('/').pop() || '';
+const TEST_ID = decodeURIComponent(
+  fileSegment.replace(/\.[^/.]+$/, '')
+) || 'PracticeTest';
+
+	
+  const META_CSV_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vSwmXatD1TfDmC8mB6GBhN_KLZ4mh8NKV_QtuDNVf3dDYNwA2gLvtSVKzb-VRUaP9ILG_vKThvALITu/pub?output=csv";
+
+  const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
+
+  const RAW_DATA = `
 
 101	reading	YBM2025-T6	5	mcq		101. Testers report that the video game’s final level is somewhat -------.	frustrate	frustrating	frustration	frustrated	b
 102	reading	YBM2025-T6	5	mcq		102. Marcus Siegler is attempting to develop a new ------- for predicting solar activity.	recognition	direction	method	opinion	c
@@ -109,102 +323,737 @@ const RAW_DATA = `
 148	reading	YBM2025-T6	7.1	mcq		148. What is indicated about the auto-cleaning process?	It takes approximately two minutes.	It involves a particular cleaning fluid.	It requires the use of an electrical outlet.	The iron should not be touched while it is taking place.	c
 149	reading	YBM2025-T6	7.2	mcq	[img:https://drive.google.com/file/d/1q9reh2IElYLsTuJXfQ48urHabs8YZmIZ/view?usp=drive_link]	149. What information is included in the announcement?	What benefits Hall of Fame members receive	What the purpose of the Hall of Fame is	Where nominations should be submitted	Who is allowed to submit a nomination	b
 150	reading	YBM2025-T6	7.2	mcq		150. What can be concluded about Ms. Kabera?	She was a CEO for at least three years.	She graduated from Rondebosch University.	She will attend a special event in June.	She is a past employee of the RUCI.	a
-151	reading	YBM2025-T6	7.3	mcq		151. What is most likely NOT an accomplishment that would qualify a nominee for consideration?	Creating a large number of new jobs	Increasing a company’s net profits	Achieving high rates of customer satisfaction	Developing an original type of product	c
+151	reading	YBM2025-T6	7.2	mcq		151. What is most likely NOT an accomplishment that would qualify a nominee for consideration?	Creating a large number of new jobs	Increasing a company’s net profits	Achieving high rates of customer satisfaction	Developing an original type of product	c
 152	reading	YBM2025-T6	7.3	mcq	[img:https://drive.google.com/file/d/1wOV4l_0VxCU_gCjSn2evfU65loOdgRSN/view?usp=drive_link]	152. According to the coupon, what is a benefit of Titanium Gym membership? 	 A yearly health evaluation 	 Access to special fitness equipment 	 The ability to take a variety of classes 	 Unlimited personal training sessions	c
-153	reading	YBM2025-T6	7.4	mcq		153. What is true about the coupon? 	 Its user will be required to pay a sign-up fee. 	 It is targeted toward people whose membership ends in April. 	 It is valid for three months from the date of issue. 	 Its user will receive a discount of $135.	a
+153	reading	YBM2025-T6	7.3	mcq		153. What is true about the coupon? 	 Its user will be required to pay a sign-up fee. 	 It is targeted toward people whose membership ends in April. 	 It is valid for three months from the date of issue. 	 Its user will receive a discount of $135.	a
 154	reading	YBM2025-T6	7.4	mcq	[img:https://drive.google.com/file/d/16bHWbr3ZzoeSx0u-Rw9UxrOAyF33mh9L/view?usp=drive_link]	154. What kind of business do the writers most likely work for? 	 A tour operator 	 A car rental agency 	 A food delivery business 	 An auto repair shop	a
-155	reading	YBM2025-T6	7.5	mcq		155. At 11:36 A.M., what does Mr. Dawson most likely mean when he writes, "we're right near Kloss Shopping Center"? 	 It will not be difficult to find parking for a van. 	 There are many dining options nearby. 	 Ms. Endo is not far from his location. 	 He is only slightly behind schedule.	b
+155	reading	YBM2025-T6	7.4	mcq		155. At 11:36 A.M., what does Mr. Dawson most likely mean when he writes, "we're right near Kloss Shopping Center"? 	 It will not be difficult to find parking for a van. 	 There are many dining options nearby. 	 Ms. Endo is not far from his location. 	 He is only slightly behind schedule.	b
 156	reading	YBM2025-T6	7.5	mcq	[img:https://drive.google.com/file/d/1ugsqvb2r_oLU6PYN1yMBgOGCQDskKhQz/view?usp=drive_link]	156. What is most likely true about participants in the workshop? 	 They will give editorial advice on each other's papers. 	 They hope to have their writing published in Nature Monthly. 	 They submitted information on their backgrounds beforehand. 	 They are currently attending university to study science.	b
 157	reading	YBM2025-T6	7.5	mcq		157. When would participants most likely learn how to design a chart? 	 Between 9:30 A.M. and 10:15 A.M. 	 Between 10:30 A.M. and 11:30 A.M. 	 Between 11:30 A.M. and 12:30 P.M. 	 Between 1:30 P.M. and 2:30 P.M.	d
 158	reading	YBM2025-T6	7.6	mcq	[img:https://drive.google.com/file/d/1BzfLmXLuLG1cvVSUdhHbRhEWCqWOz65S/view?usp=drive_link]	158. For whom is the information most likely intended? 	 Property owners 	 Drone operators 	 Aspiring photographers 	 Real estate agents	d
 159	reading	YBM2025-T6	7.6	mcq		159. According to the Web page, what are customers charged more for? 	 Having photographs taken via drone 	 Canceling a photo shoot on short notice 	 Holding a photo shoot in the evening 	 Requesting additional photographs	d
 160	reading	YBM2025-T6	7.6	mcq		160. In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? "In addition, photographs taken from a hundred feet directly overhead can be used to show a property's full layout." 	 [1] 	 [2] 	 [3] 	 [4]	b
+161	reading	YBM2025-T6	7.7	mcq	[img:https://drive.google.com/file/d/1aMQXRlxIQHLt6VAn3saJMEwQELFOfREO/view?usp=drive_link]	161. What most likely caused Ms. Chilton to send the e-mail? 	 Preparations for an event have fallen behind schedule. 	 There has been a change in laws regarding compensation. 	 Employees have been working overtime without permission. 	 Some staff members missed an information session.	c
+162	reading	YBM2025-T6	7.7	mcq		162. What is indicated about the Proactive Network for Women in Engineering? 	 It has a limited budget for payroll. 	 It organizes an annual symposium. 	 Its workers regularly receive pay raises. 	 Its legal department is very busy.	a
+163	reading	YBM2025-T6	7.7	mcq		163. According to the e-mail, what consequence will staff face for breaking a rule? 	 Losing the perk of flexible working hours 	 Becoming ineligible for promotion to supervisor 	 Receiving assignments that are less desirable 	 Earning a worse performance review	d
+164	reading	YBM2025-T6	7.8	mcq	[img:https://drive.google.com/file/d/1wYl0PE8xEpIagZMkDwSij7Vl0JgZXhyg/view?usp=drive_link]	164. What is one purpose of the letter? 	 To describe a new benefit of membership 	 To announce a change to a start date 	 To seek volunteers for an event 	 To welcome a returning member	d
+165	reading	YBM2025-T6	7.8	mcq		165. According to the letter, what will an online system be used for? 	 Reporting news about the garden 	 Keeping track of some tools 	 Redistributing some pieces of land 	 Recording some work hours	d
+166	reading	YBM2025-T6	7.8	mcq		166. What is implied about Polwarth Community Garden? 	 It does not have enough plots to meet demand 	 There is a diagram of its plots on display in a storage shed 	 Its plots must be assigned to a different household each year 	 The borders of its plots will be redrawn next year	a
+167	reading	YBM2025-T6	7.8	mcq		167. In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? “Typical tasks include weed removal and cleaning the tool shed.” 	 [1] 	 [2] 	 [3] 	 [4]	b
+168	reading	YBM2025-T6	7.9	mcq	[img:https://drive.google.com/file/d/1YyDr1P1etf0HDYOJqALVZinay51-MjX3/view?usp=drive_link]	168. What is HRTA preparing to do? 	 Introduce a new type of train 	 Expand nighttime service 	 Connect two railway lines 	 Increase the accessibility of its stations	a
+169	reading	YBM2025-T6	7.9	mcq		169. According to the article, what will continue to happen until summer begins? 	 Some trains will be tested 	 Some staff will receive training 	 Transport users will be surveyed 	 Construction will be carried out	a
+170	reading	YBM2025-T6	7.9	mcq		170. What is suggested about trains with stickers on them? 	 They only stop at two stations 	 They do not carry passengers yet 	 They have completed an inspection 	 They will be taken out of service soon	b
+171	reading	YBM2025-T6	7.9	mcq		171. Why does the writer mention Fonseca? 	 HRTA staff visited it for research 	 It is the site of a production plant 	 It was the first place to adopt a technology 	 The size of its population is similar to Hitchert’s	c
+172	reading	YBM2025-T6	7.10	mcq	[img:https://drive.google.com/file/d/1OzYYk6T9t-ls4NTmw4ERguTfDiXH-KMl/view?usp=drive_link]	172. In what field do the writers most likely work? 	 Insurance sales 	 Staff recruitment 	 Wealth management 	 Healthcare research	c
+173	reading	YBM2025-T6	7.10	mcq		173. What is NOT mentioned as a topic covered in the survey given to the interns? 	 The internship application process 	 The tasks they were assigned 	 The mentorship provided by the writers 	 Their opportunities to make professional connections	a
+174	reading	YBM2025-T6	7.10	mcq		174. At 10:11 a.m., what does Ms. Garnier most likely mean when she writes, “we'll have a review meeting in a few days”? 	 Mr. Perkins will be introduced to some staff members 	 There is no need for Mr. Perkins to bring a document to her 	 Mr. Perkins should wait to learn some information 	 Mr. Perkins will have time to prepare for a discussion	c
+175	reading	YBM2025-T6	7.10	mcq		175. What most likely is Ms. Osborne’s concern about the information requested by Human Resources? 	 It will take considerable effort to gather 	 It is not detailed enough to be useful 	 It should not be accessible to other employees 	 It may no longer be accurate in the future	b
+176	reading	YBM2025-T6	7.11	mcq	[img:https://drive.google.com/file/d/1jmHoHAGmYJZsSwTU4tUw29aXEAY0AzK9/view?usp=drive_link] // [img:https://drive.google.com/file/d/1zeGYOKFbKIE_ahKVE30iEYg6yQ6Hj5Uk/view?usp=drive_link]	176. What is suggested about Eason Technologies? 	 It sells its products to other businesses 	 It designs technology that produces renewable energy 	 It recently created a new sales district 	 It is headquartered in Barrow	a
+177	reading	YBM2025-T6	7.11	mcq		177. What is one responsibility of the position? 	 Monitoring competitors’ pricing 	 Cooperating with marketing staff 	 Correctly predicting sales revenues 	 Proposing potential new products	c
+178	reading	YBM2025-T6	7.11	mcq		178. What does Ms. Na explain in the e-mail? 	 How long she has known Mr. Malone 	 Where she saw the job advertisement 	 How she became acquainted with Mr. Malone 	 Why Mr. Malone might be interested in changing jobs	c
+179	reading	YBM2025-T6	7.11	mcq		179. From Ms. Na’s description, what position requirement might Mr. Malone NOT possess? 	 A degree in a suitable field 	 The necessary work experience 	 Excellent public speaking ability 	 A tolerance for frequent travel	b
+180	reading	YBM2025-T6	7.11	mcq		180. In the e-mail, the word “sharing” in paragraph 1, line 6, is closest in meaning to 	 dividing 	 informing 	 expressing 	 delivering	d
+181	reading	YBM2025-T6	7.12	mcq	[img:https://drive.google.com/file/d/1puDFmb7cppAXMGkQd-5GaiLGSpeZhBz2/view?usp=drive_link] // [img:https://drive.google.com/file/d/1AU4z4ESJQ5PHNCJRLS9yEi0XC-zkbQvP/view?usp=drive_link]	181. What is mentioned about commercial food waste? 	 It is growing in volume each year 	 It can be harmful to the environment 	 It is generated mostly by restaurants 	 It was the subject of a recent regulation	d
+182	reading	YBM2025-T6	7.12	mcq		182. What does the advertisement suggest about Scrap Saver? 	 It operates waste processing facilities 	 It plans to expand the variety of materials it transports 	 It gives clients advice on reducing waste 	 Its delivery trucks run on alternative fuels	a
+183	reading	YBM2025-T6	7.12	mcq		183. In the e-mail, the word “given” in paragraph 2, line 2, is closest in meaning to 	 regarding 	 considering 	 specified 	 assigned	b
+184	reading	YBM2025-T6	7.12	mcq		184. According to the e-mail, what does Scrap Saver most likely do once per month? 	 Adjust a service rate 	 Replace a storage container 	 Calculate a total number of liters 	 Confirm the desired pickup frequency	c
+185	reading	YBM2025-T6	7.12	mcq		185. What can be concluded about Babybud Food Corporation? 	 It has more than one manufacturing location 	 It does not plan to send packaged food to Scrap Saver 	 It produces multiple tons of food waste per week 	 It has not used a food waste disposal service previously	b
+186	reading	YBM2025-T6	7.13	mcq	[img:https://drive.google.com/file/d/1s7pSA_9mDOn6HvtJQ4gbKz8_ySilgE6n/view?usp=drive_link] // [img:https://drive.google.com/file/d/1YFZJpVsG5qk2ZwDlP6NInoSdR9TWPLje/view?usp=drive_link] // [img:https://drive.google.com/file/d/1SSaExUAupDihLwXbIgwMl9ld8FPqE33t/view?usp=drive_link]	186. What does the Web page indicate about the store’s Web site? 	 It lists the major brands that the store carries. 	 It displays images of works created by customers. 	 It provides instructions for independent craft projects. 	 It includes profiles of some staff members.	b
+187	reading	YBM2025-T6	7.13	mcq		187. What does the notice suggest about Creative Kate’s? 	 It will begin selling a new type of product. 	 It has automated part of the shopping process. 	 It is seeking replacement instructors for some classes. 	 It no longer allows customers to pay with cash.	b
+188	reading	YBM2025-T6	7.13	mcq		188. Which area of Creative Kate’s will be reduced in size? 	 Section A 	 Section B 	 Section C 	 Section D	a
+189	reading	YBM2025-T6	7.13	mcq		189. What most likely is Mr. Chiba’s job? 	 Hotel manager 	 Art instructor 	 Interior designer 	 Event planner	d
+190	reading	YBM2025-T6	7.13	mcq		190. What is implied about Mr. Chiba? 	 He watched a demonstration led by an employee. 	 He took advantage of a seasonal discount offer. 	 He purchased goods from an aisle in Section D. 	 He first visited the store to attend a celebration.	c
+191	reading	YBM2025-T6	7.14	mcq	[img:https://drive.google.com/file/d/1ugWsNsFM09hGmplFqoBq4lekMsHDb49e/view?usp=drive_link] // [img:https://drive.google.com/file/d/1f3Ulm7wTZQ23tcOYheRx4oZIajEWdPg2/view?usp=drive_link] // [img:https://drive.google.com/file/d/1ZS9Rs5i1HeMj_HBfc1Rli6596y6OMdtE/view?usp=drive_link]	191. What is indicated about Hardeston Regional Airport? 	 It is not the only airport near the city. 	 It has a reputation for punctual departures. 	 It is currently undergoing renovations. 	 It is not served frequently by Rubin Air.	a
+192	reading	YBM2025-T6	7.14	mcq		192. What is suggested about Mr. Foster? 	 He was recently promoted to a managerial position. 	 He visited Hardeston in July. 	 He has taken a trip planned by Ms. Avila before. 	 He stated a preference for a certain hotel.	c
+193	reading	YBM2025-T6	7.14	mcq		193. Where most likely does Mr. Foster work? 	 At an automobile manufacturer 	 At an appliance company 	 At an aircraft design firm 	 At a home furnishings business	b
+194	reading	YBM2025-T6	7.14	mcq		194. What did Mr. Foster most likely do in response to advice? 	 He chose different lodgings. 	 He joined an airline loyalty program. 	 He downloaded a mobile app. 	 He requested a rental vehicle.	d
+195	reading	YBM2025-T6	7.14	mcq		195. Based on the form, what can be concluded about Mr. Foster? 	 He will be picked up at a transportation hub. 	 He asked a coworker to accompany him. 	 He decided to extend the length of his stay. 	 He will pay an expense with his personal credit card.	b
+196	reading	YBM2025-T6	7.15	mcq	[img:https://drive.google.com/file/d/1Y1APraVKZC4QlyeKQQI4DtW-lpWpM-6_/view?usp=drive_link] // [img:https://drive.google.com/file/d/1utOH6iqbXjYtUlcg4hdnvnVWkrUm9mZy/view?usp=drive_link] // [img:https://drive.google.com/file/d/1DDsjUpBtpzXtUEZrhJaSyPIxFTSz3MLE/view?usp=drive_link]	196. What is indicated about Kolkata XYZ? 	 It also sells children’s toys. 	 It imports bamboo from abroad. 	 Its primary customers are frequent travelers. 	 Its tableware can be used in kitchen appliances.	d
+197	reading	YBM2025-T6	7.15	mcq		197. What is the purpose of the first e-mail? 	 To revise an order 	 To solicit a corporate donor 	 To request information 	 To make a complaint	c
+198	reading	YBM2025-T6	7.15	mcq		198. Which characteristic of bamboo tableware had the most influence on Ms. Lahiri? 	 Characteristic 1 	 Characteristic 2 	 Characteristic 3 	 Characteristic 4	a
+199	reading	YBM2025-T6	7.15	mcq		199. According to the second e-mail, what is available for all of the carrying cases? 	 Customization service 	 A discount on a bulk purchase 	 Care instructions 	 A free product sample	a
+200	reading	YBM2025-T6	7.15	mcq		200. What carrying case will Gir Society donors most likely receive? 	 The hard plastic case 	 The cotton pouch 	 The nylon zippered case 	 The canvas roll-up bag	b
 
-`; // dán dữ liệu câu hỏi vào đây
+`; // HẾT RAW_DATA
 
-// ------------------ INIT ------------------
-let currentGroupIndex = 0;
-let timerInterval = null;
-let timeLeft = DURATION_MINUTES*60;
+  // ===== BIẾN TRẠNG THÁI TOÀN BÀI =====
+  let timerInterval = null;
+  let timeLeft = 0;
+  let groupContainers = [];
+  let currentGroupIndex = 0;
+  let isFinalized = false;
 
-// ------------------ TIMER ------------------
-function startTimer(){
-  const timerEl = document.getElementById('timer');
-  timerInterval = setInterval(()=>{
-    let m=Math.floor(timeLeft/60), s=timeLeft%60;
-    timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    timeLeft--; if(timeLeft<0){ clearInterval(timerInterval); alert("Hết giờ!"); }
-  },1000);
+  // ===== PARSE META CSV =====
+  function parseMetaCSV(text) {
+    const lines = text.trim().split("\n");
+    if (lines.length < 2) return [];
+    const header = lines[0].split(",").map(h => h.trim());
+    const rows = lines.slice(1);
+    return rows.map(row => {
+      const cols = row.split(",");
+      const obj = {};
+      header.forEach((h, i) => { obj[h] = (cols[i] || "").trim(); });
+      return obj;
+    });
+  }
+
+  async function loadTestTitle() {
+    try {
+      const resp = await fetch(META_CSV_URL);
+      const text = await resp.text();
+      const data = parseMetaCSV(text);
+      const currentFile = location.pathname.split("/").pop();
+      const meta = data.find(r =>
+        (r.File || "").toLowerCase() === (currentFile || "").toLowerCase()
+      );
+      const h1 = document.getElementById("pageTitle");
+      if (meta && meta.Title) {
+        document.title = meta.Title;
+        if (h1) h1.textContent = meta.Title;
+      } else if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+        h1.textContent = "Practice Test";
+      }
+    } catch (err) {
+      console.error("Không đọc được meta CSV:", err);
+      const h1 = document.getElementById("pageTitle");
+      if (h1 && h1.textContent === "Đang tải tiêu đề...") {
+        h1.textContent = "Practice Test";
+      }
+    }
+  }
+
+  // ===== TIMER =====
+  function startTimer(totalSeconds) {
+    timeLeft = totalSeconds;
+    const timerEl = document.getElementById('timer');
+    if (timerInterval) clearInterval(timerInterval);
+
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerEl.textContent =
+        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+    updateDisplay();
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timeLeft = 0;
+        updateDisplay();
+        alert('Hết thời gian! Hệ thống sẽ tự chấm điểm.');
+        gradeQuiz(); // chấm và khóa bài
+      } else {
+        updateDisplay();
+      }
+    }, 1000);
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function renderImgToken(urlRaw) {
+    const url = urlRaw.trim();
+    if (/drive\.google\.com/i.test(url)) {
+      let id = '';
+      const m1 = url.match(/\/d\/([^\/]+)/);
+      const m2 = url.match(/[?&]id=([^&]+)/);
+      if (m1 && m1[1]) id = m1[1];
+      else if (m2 && m2[1]) id = m2[1];
+      if (id) {
+        const preview = 'https://drive.google.com/file/d/' + id + '/preview';
+        return '<br><iframe class="img-frame" src="' + preview + '" allow="autoplay"></iframe>';
+      }
+    }
+    return '<br><img class="q-img" src="' + url + '" alt="image">';
+  }
+
+  function parseSheet(rawText) {
+    if (!rawText.trim()) return [];
+    const lines = rawText.trim().split('\n').filter(l => l.trim() !== '');
+    const questions = [];
+    lines.forEach((line, index) => {
+      const cols = line.split('\t');
+      const q = {
+        id: cols[0] || String(index + 1),
+        skill: (cols[1] || '').toLowerCase(),
+        part: cols[2] || '',
+        group: cols[3] || ('G' + (index + 1)),
+        type: (cols[4] || 'mcq').toLowerCase(),
+        passage: cols[5] || '',
+        question: cols[6] || '',
+        options: [cols[7] || '', cols[8] || '', cols[9] || '', cols[10] || ''],
+        answer: (cols[11] || '').trim()
+      };
+      questions.push(q);
+    });
+    return questions;
+  }
+
+  function renderQuiz(questions) {
+    const quizDiv = document.getElementById('quiz');
+    quizDiv.innerHTML = '';
+    const groups = {};
+    const groupOrder = [];
+
+    questions.forEach((q, idx) => {
+      const key = (q.group && q.group.trim()) ? q.group.trim() : ('G' + q.id);
+      if (!groups[key]) {
+        groups[key] = { skill: q.skill, passage: q.passage, questions: [] };
+        groupOrder.push(key);
+      }
+      groups[key].questions.push(q);
+    });
+
+    let questionCounter = 0;
+
+    groupOrder.forEach(key => {
+      const g = groups[key];
+      const pTrim = (g.passage || '').trim();
+
+      if (g.skill === 'reading') {
+        const layout = document.createElement('div');
+        layout.className = 'reading-layout group-container';
+        layout.dataset.groupKey = key;
+
+        const left = document.createElement('div');
+        left.className = 'reading-left group-block';
+        const title = document.createElement('h2');
+        title.textContent = 'Reading ' + key;
+        left.appendChild(title);
+
+        if (pTrim) {
+          const passageDiv = document.createElement('div');
+          passageDiv.className = 'passage';
+          let html = escapeHtml(pTrim);
+          html = html.replace(/\/\/\s*/g, '<br><br>');
+          html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+          passageDiv.innerHTML = html;
+          left.appendChild(passageDiv);
+        }
+
+        const right = document.createElement('div');
+        right.className = 'reading-right';
+
+        g.questions.forEach(q => {
+          questionCounter++;
+          const qDiv = document.createElement('div');
+          qDiv.className = 'question';
+          qDiv.dataset.answer = (q.answer || '').trim();
+          qDiv.dataset.type = q.type || 'short';
+
+          const titleP = document.createElement('p');
+          let qHtml = escapeHtml(q.question || '');
+          qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+          qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+          qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          titleP.innerHTML =
+            '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+          qDiv.appendChild(titleP);
+
+          if (q.type === 'mcq') {
+            ['A','B','C','D'].forEach((labelOpt, i) => {
+              if (!q.options[i]) return;
+              const optLabel = document.createElement('label');
+              const radio = document.createElement('input');
+              radio.type = 'radio';
+              radio.name = 'q' + questionCounter;
+              radio.value = labelOpt;
+              optLabel.appendChild(radio);
+              optLabel.appendChild(
+                document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+              );
+              qDiv.appendChild(optLabel);
+              qDiv.appendChild(document.createElement('br'));
+            });
+          } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'q' + questionCounter;
+            input.className = 'short-answer-input';
+            qDiv.appendChild(input);
+          }
+
+          right.appendChild(qDiv);
+        });
+
+        layout.appendChild(left);
+        layout.appendChild(right);
+        quizDiv.appendChild(layout);
+      } else {
+        // LISTENING / khác: layout dọc
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'group-block group-container';
+        groupDiv.dataset.groupKey = key;
+
+        const title = document.createElement('h2');
+        title.textContent = (g.skill === 'listening' ? 'Listening ' : 'Section ') + key;
+        groupDiv.appendChild(title);
+
+        if (pTrim) {
+          const segments = pTrim
+            .split(' // ')
+            .map(s => s.trim())
+            .filter(s => s);
+
+          const textSegments = [];
+          segments.forEach(seg => {
+            if (/^\[IMG:/i.test(seg)) {
+              textSegments.push(seg);
+              return;
+            }
+            const isHttp = /^https?:\/\//i.test(seg);
+            const hasAudioExt = /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(seg);
+            const isDriveLink = /drive\.google\.com/i.test(seg);
+            const isAudioUrl = isHttp && hasAudioExt;
+
+            if (g.skill === 'listening' && (isDriveLink || isAudioUrl)) {
+              if (isDriveLink) {
+                let fileId = '';
+                const m1 = seg.match(/\/d\/([^\/]+)/);
+                const m2 = seg.match(/[?&]id=([^&]+)/);
+                if (m1 && m1[1]) fileId = m1[1];
+                else if (m2 && m2[1]) fileId = m2[1];
+                if (fileId) {
+                  const iframe = document.createElement('iframe');
+                  iframe.className = 'audio-frame';
+                  iframe.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+                  iframe.allow = 'autoplay';
+                  groupDiv.appendChild(iframe);
+                }
+              } else if (isAudioUrl) {
+                const audio = document.createElement('audio');
+                audio.controls = true;
+                audio.src = seg;
+                groupDiv.appendChild(audio);
+              }
+            } else {
+              textSegments.push(seg);
+            }
+          });
+
+          if (textSegments.length) {
+            const passageDiv = document.createElement('div');
+            passageDiv.className = 'passage';
+            let html = escapeHtml(textSegments.join(' '));
+            html = html.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+            passageDiv.innerHTML = html;
+            groupDiv.appendChild(passageDiv);
+          }
+        }
+
+        g.questions.forEach(q => {
+          questionCounter++;
+          const qDiv = document.createElement('div');
+          qDiv.className = 'question';
+          qDiv.dataset.answer = (q.answer || '').trim();
+          qDiv.dataset.type = q.type || 'short';
+
+          const titleP = document.createElement('p');
+          let qHtml = escapeHtml(q.question || '');
+          qHtml = qHtml.replace(/\/\/\s*/g, '<br>');
+          qHtml = qHtml.replace(/\[IMG:([^\]]+)\]/gi, (m, url) => renderImgToken(url));
+          qHtml = qHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          titleP.innerHTML =
+            '<span class="question-number">' + questionCounter + '.</span> ' + qHtml;
+          qDiv.appendChild(titleP);
+
+          if (q.type === 'mcq') {
+            ['A','B','C','D'].forEach((labelOpt, i) => {
+              if (!q.options[i]) return;
+              const optLabel = document.createElement('label');
+              const radio = document.createElement('input');
+              radio.type = 'radio';
+              radio.name = 'q' + questionCounter;
+              radio.value = labelOpt;
+              optLabel.appendChild(radio);
+              optLabel.appendChild(
+                document.createTextNode(' ' + labelOpt + '. ' + q.options[i])
+              );
+              qDiv.appendChild(optLabel);
+              qDiv.appendChild(document.createElement('br'));
+            });
+          } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'q' + questionCounter;
+            input.className = 'short-answer-input';
+            qDiv.appendChild(input);
+          }
+
+          groupDiv.appendChild(qDiv);
+        });
+
+        quizDiv.appendChild(groupDiv);
+      }
+    });
+
+    // Sau khi render xong, thu thập các container phần
+    groupContainers = Array.from(document.querySelectorAll('.group-container'));
+    groupContainers.forEach(c => {
+      c.style.display = 'none';
+    });
+	 
+	  // TÍNH TỔNG SỐ CÂU VÀ GẮN LISTENER ĐỂ CẬP NHẬT TIẾN ĐỘ
+
+totalQuestions = quizDiv.querySelectorAll('.question').length;
+
+const inputs = quizDiv.querySelectorAll('input[type="text"], input[type="radio"]');
+inputs.forEach(inp => {
+  const evt = (inp.type === 'text') ? 'input' : 'change';
+  inp.addEventListener(evt, updateProgress);
+});
+
+// Khởi tạo hiển thị tiến độ = 0/x
+updateProgress();
+
+  }
+
+  function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")          // ‘ ’ -> '
+    .replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ') // xoá khoảng trắng & ký tự ẩn
+    .replace(/\s+/g, ' ')                    // gộp nhiều khoảng trắng
+    .trim();
 }
 
-// ------------------ HELPER ------------------
-function escapeHtml(str){ return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function normalizeText(str){ return (str||'').toLowerCase().replace(/[\u2018\u2019]/g,"'").replace(/\s+/g,' ').trim(); }
+let totalQuestions = 0;
 
-// ------------------ RENDER QUIZ ------------------
-function renderQuiz(questions){
-  const quizDiv = document.getElementById('quiz'); quizDiv.innerHTML='';
-  const groups = {}; const groupOrder=[];
-  questions.forEach((q,i)=>{
-    const key = q.group||('G'+q.id);
-    if(!groups[key]){ groups[key]={skill:q.skill, passage:q.passage, questions:[]}; groupOrder.push(key);}
-    groups[key].questions.push(q);
-  });
+function updateProgress() {
+  const quizDiv = document.getElementById('quiz');
+  if (!quizDiv) return;
 
-  let questionCounter=0;
-  groupOrder.forEach(key=>{
-    const g=groups[key], pTrim=(g.passage||'').trim();
-    if(g.skill==='reading'){
-      const layout=document.createElement('div'); layout.className='reading-layout group-container';
-      const left=document.createElement('div'); left.className='reading-left group-block';
-      const title=document.createElement('h2'); title.textContent='Reading '+key; left.appendChild(title);
-      if(pTrim){ const passageDiv=document.createElement('div'); passageDiv.className='passage';
-        passageDiv.innerHTML=pTrim.replace(/\[IMG:([^\]]+)\]/gi,(m,url)=>`<img class="img-frame" src="${url}">`);
-        left.appendChild(passageDiv);
-      }
-      const right=document.createElement('div'); right.className='reading-right';
-      g.questions.forEach(q=>{
-        questionCounter++; const qDiv=document.createElement('div'); qDiv.className='question'; qDiv.dataset.answer=q.answer||''; qDiv.dataset.type=q.type||'short';
-        const titleP=document.createElement('p'); titleP.innerHTML=`<span class="question-number">${questionCounter}.</span> ${escapeHtml(q.question)}`;
-        qDiv.appendChild(titleP);
-        if(q.type==='mcq'){ ['A','B','C','D'].forEach((lbl,i)=>{ if(!q.options[i]) return; const l=document.createElement('label'); const r=document.createElement('input'); r.type='radio'; r.name='q'+questionCounter; r.value=lbl; l.appendChild(r); l.appendChild(document.createTextNode(` ${lbl}. ${q.options[i]}`)); qDiv.appendChild(l); qDiv.appendChild(document.createElement('br')); }); }
-        else { const input=document.createElement('input'); input.type='text'; input.name='q'+questionCounter; input.className='short-answer-input'; qDiv.appendChild(input); }
-        right.appendChild(qDiv);
-      });
-      layout.appendChild(left); layout.appendChild(right); quizDiv.appendChild(layout);
+  const questionDivs = quizDiv.querySelectorAll('.question');
+  if (!totalQuestions) totalQuestions = questionDivs.length;
+
+  let answered = 0;
+
+  questionDivs.forEach(div => {
+    const type = div.dataset.type || 'short';
+    if (type === 'mcq') {
+      const checked = div.querySelector('input[type="radio"]:checked');
+      if (checked) answered++;
+    } else {
+      const input = div.querySelector('input[type="text"]');
+      if (input && input.value.trim() !== '') answered++;
     }
   });
 
-  // Render palette
-  renderPalette(questionCounter);
-}
-
-// ------------------ PALETTE ------------------
-function renderPalette(total){
-  const container=document.getElementById('paletteContainer'); container.innerHTML='';
-  for(let i=1;i<=total;i++){
-    const btn=document.createElement('div'); btn.className='palette-btn'; btn.textContent=i; btn.dataset.qIndex=i-1;
-    btn.addEventListener('click',()=>{ showQuestion(i-1); });
-    container.appendChild(btn);
+  const remaining = Math.max(totalQuestions - answered, 0);
+  const progressEl = document.getElementById('progressText');
+  if (progressEl) {
+    progressEl.textContent = `${answered}/${totalQuestions} câu (còn ${remaining})`;
   }
 }
-function markQuestionDone(i){ const btn=document.querySelector(`.palette-btn[data-q-index="${i}"]`); if(btn) btn.classList.add('done'); }
-function showQuestion(i){ const divs=document.querySelectorAll('.question'); if(i>=0&&i<divs.length){ divs[i].scrollIntoView({behavior:'smooth',block:'center'}); } }
-function updatePaletteAfterGrading(){ const divs=document.querySelectorAll('.question'); divs.forEach((div,i)=>{ const btn=document.querySelector(`.palette-btn[data-q-index="${i}"]`); if(!btn) return; let user=''; const answerList=(div.dataset.answer||'').split('|').map(s=>s.trim()).filter(s=>s); const type=div.dataset.type||'short'; if(type==='mcq'){ const c=div.querySelector('input[type="radio"]:checked'); if(c) user=normalizeText(c.value);} else { const input=div.querySelector('input[type="text"]'); if(input) user=normalizeText(input.value);} if(!user) return; btn.classList.remove('done'); btn.classList.add(answerList.includes(user)?'correct':'incorrect'); }); }
 
-// ------------------ START BUTTON ------------------
-document.getElementById('startBtn').addEventListener('click',()=>{
-  const n=document.getElementById('studentName').value.trim();
-  const c=document.getElementById('studentClass').value.trim();
-  if(!n||!c){ alert('Nhập đủ Họ tên và Lớp/Nhóm'); return; }
-  document.getElementById('startBtn').style.display='none';
-  startTimer();
-  // Nếu có audio
-  const audio=document.querySelector('.audio-frame'); if(audio){ audio.style.display='none'; const a=audio.contentWindow.document.querySelector('audio'); a.play(); a.onended=()=>{ showGroup(currentGroupIndex+1); }; }
-});
+	
+  // TÍNH ĐIỂM NHƯNG KHÔNG ĐỔI GIAO DIỆN – dùng cho log khi bấm Next
+  function computeScore() {
+    const quizDiv = document.getElementById('quiz');
+    const questionDivs = quizDiv.querySelectorAll('.question');
+    let correct = 0;
+    const total = questionDivs.length;
 
-// ------------------ INIT ------------------
-(function initExam(){ const qs=parseSheet(RAW_DATA); if(!qs.length){ document.getElementById('quiz').innerHTML='<p style="color:red;">RAW_DATA trống</p>'; return; } renderQuiz(qs); })();
+    questionDivs.forEach(div => {
+      const type = div.dataset.type || 'short';
+      const answerRawDisplay = (div.dataset.answer || '').trim();
+      const answerList = answerRawDisplay
+        .split('|')
+        .map(normalizeText)
+        .filter(s => s);
+
+      let userAnswer = '';
+      if (type === 'mcq') {
+        const checked = div.querySelector('input[type="radio"]:checked');
+        if (checked) userAnswer = normalizeText(checked.value);
+      } else {
+        const input = div.querySelector('input[type="text"]');
+        if (input) userAnswer = normalizeText(input.value);
+      }
+
+      if (answerList.length && userAnswer && answerList.includes(userAnswer)) {
+        correct++;
+      }
+    });
+
+    const percent = Math.round(correct * 100 / Math.max(total, 1));
+    return { correct, total, percent };
+  }
+
+  // GỬI LOG MỖI KHI BẤM NEXT / FINAL
+  function logCurrentProgress(stageLabel) {
+    if (!LOG_ENDPOINT) return;
+    const score = computeScore();
+
+    const nameEl = document.getElementById('studentName');
+    const classEl = document.getElementById('studentClass');
+    const name = (nameEl.value || '').trim() || 'NoName';
+    const cls  = (classEl.value || '').trim();
+
+    const now  = new Date();
+    const timestamp = now.toLocaleString();
+
+    const logLine =
+      name + '\t' + cls + '\t' + TEST_ID + '\t' +
+      timestamp + '\t' + score.correct + '\t' + score.total + '\t' + score.percent +
+      '\t' + (stageLabel || '');
+
+    const payload = {
+      testId: TEST_ID,
+      name: name,
+      className: cls,
+      correct: score.correct,
+      total: score.total,
+      percent: score.percent,
+      stage: stageLabel || '',
+      rawLog: logLine
+    };
+
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.error('Error sending result:', err));
+  }
+
+  // CHẤM VÀ KHÓA BÀI, HIỆN ĐÁP ÁN – chỉ gọi khi nộp bài / hết giờ
+  function gradeQuiz() {
+    if (isFinalized) return; // tránh chấm lại nhiều lần
+    isFinalized = true;
+
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    const quizDiv = document.getElementById('quiz');
+    const questionDivs = quizDiv.querySelectorAll('.question');
+    let correct = 0;
+    const total = questionDivs.length;
+
+    questionDivs.forEach(div => {
+      const type = div.dataset.type || 'short';
+      const answerRawDisplay = (div.dataset.answer || '').trim();
+      const answerListRaw = answerRawDisplay
+        .split('|')
+        .map(s => s.trim())
+        .filter(s => s);
+      const answerListNorm = answerListRaw.map(normalizeText);
+
+      let userAnswerRaw = '';
+      let userAnswerNorm = '';
+
+      if (type === 'mcq') {
+        const checked = div.querySelector('input[type="radio"]:checked');
+        if (checked) {
+          userAnswerRaw = checked.value;
+          userAnswerNorm = normalizeText(checked.value);
+        }
+      } else {
+        const input = div.querySelector('input[type="text"]');
+        if (input) {
+          userAnswerRaw = input.value;
+          userAnswerNorm = normalizeText(input.value);
+        }
+      }
+
+      let isCorrect = false;
+      if (answerListNorm.length && userAnswerNorm) {
+        if (answerListNorm.includes(userAnswerNorm)) {
+          isCorrect = true;
+        }
+      }
+
+      if (isCorrect) {
+        div.classList.add('correct');
+        div.classList.remove('incorrect');
+        correct++;
+      } else {
+        div.classList.add('incorrect');
+        div.classList.remove('correct');
+      }
+
+      // Hiện đáp án đúng (tất cả phương án được chấp nhận)
+      if (answerListRaw.length) {
+        let caDiv = div.querySelector('.correct-answer-text');
+        if (!caDiv) {
+          caDiv = document.createElement('div');
+          caDiv.className = 'correct-answer-text';
+          div.appendChild(caDiv);
+        }
+        caDiv.textContent = 'Đáp án đúng: ' + answerListRaw.join(' | ');
+      }
+    });
+
+    const percent = Math.round(correct * 100 / Math.max(total, 1));
+
+    // Khóa tất cả input sau khi chấm
+    const allInputs = quizDiv.querySelectorAll('input[type="text"], input[type="radio"]');
+    allInputs.forEach(inp => {
+      inp.disabled = true;
+    });
+
+    // Gửi log cuối cùng
+    logCurrentProgress('FINAL_SUBMIT');
+
+	  // CHO HIỆN NÚT LÀM LẠI
+  const retryBtn = document.getElementById('retryBtn');
+  if (retryBtn) retryBtn.style.display = 'inline-block';
+
+    const box = document.getElementById('resultBox');
+    box.style.display = 'block';
+    box.innerHTML = `
+       <div style="font-size:16px; margin-bottom:4px;">
+         <strong>Bài test:</strong> ${TEST_ID}
+       </div>
+       <div style="font-size:18px; margin-bottom:8px;">
+         <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+       </div>
+       <div style="
+         font-size:28px;
+         font-weight:bold;
+         color:#007acc;
+         padding:10px 0;
+       ">
+         ${percent}%
+       </div>
+       <div style="margin-top:6px; font-size:14px;">
+         Bài đã nộp, bạn không thể sửa đáp án nữa. Các đáp án đúng đã được hiển thị bên dưới mỗi câu.
+       </div>
+    `;
+  }
+
+  function showGroup(index) {
+    if (!groupContainers.length) return;
+    groupContainers.forEach((c, i) => {
+      c.style.display = (i === index) ? '' : 'none';
+    });
+    currentGroupIndex = index;
+    updateNavButtons();
+	    updateProgress(); // THÊM DÒNG NÀY (để refresh progress text)
+  }
+
+  function updateNavButtons() {
+    const prevBtn = document.getElementById('prevPartBtn');
+    const nextBtn = document.getElementById('nextPartBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!prevBtn || !nextBtn || !submitBtn) return;
+
+    const lastIndex = groupContainers.length - 1;
+
+    // Prev
+    prevBtn.style.display = (currentGroupIndex > 0) ? 'inline-block' : 'none';
+
+    // Nếu đang chưa đến phần cuối: hiện Next, ẩn Submit
+    if (currentGroupIndex < lastIndex) {
+      nextBtn.style.display = 'inline-block';
+      submitBtn.style.display = 'none';
+    } else {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'inline-block';
+    }
+  }
+
+  // BẮT ĐẦU LÀM BÀI: NHẬP TÊN + LỚP XONG MỚI CHO HIỆN PART 1
+  document.getElementById('startBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('studentName');
+    const classInput = document.getElementById('studentClass');
+    const name = (nameInput.value || '').trim();
+    const cls  = (classInput.value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi bắt đầu làm bài.');
+      if (!name) nameInput.focus();
+      else if (!cls) classInput.focus();
+      return;
+    }
+
+    // Khóa thông tin thí sinh để khỏi đổi giữa chừng
+    nameInput.disabled = true;
+    classInput.disabled = true;
+    document.getElementById('startBtn').style.display = 'none';
+
+    // Hiện quiz + thanh điều hướng, hiển thị Part 1
+    document.getElementById('quiz').style.display = 'block';
+    document.getElementById('navRow').style.display = 'flex';
+    showGroup(0);
+
+    // Bắt đầu đếm giờ
+    startTimer(DURATION_MINUTES * 60);
+  });
+
+  // NÚT NEXT – ghi log (silent) rồi sang phần tiếp theo
+  document.getElementById('nextPartBtn').addEventListener('click', () => {
+    if (isFinalized) {
+      // Sau khi nộp bài, cho phép xem lại các phần nhưng không log nữa
+      const lastIndex = groupContainers.length - 1;
+      if (currentGroupIndex < lastIndex) {
+        showGroup(currentGroupIndex + 1);
+      }
+      return;
+    }
+    // Log tiến độ trước khi sang phần tiếp theo
+    logCurrentProgress('NEXT_PART_' + (currentGroupIndex + 1));
+
+    const lastIndex = groupContainers.length - 1;
+    if (currentGroupIndex < lastIndex) {
+      showGroup(currentGroupIndex + 1);
+    }
+  });
+
+  // NÚT PREV – cho phép quay lại phần trước để sửa khi chưa nộp
+  document.getElementById('prevPartBtn').addEventListener('click', () => {
+    if (currentGroupIndex > 0) {
+      showGroup(currentGroupIndex - 1);
+    }
+  });
+
+  // NÚT NỘP BÀI – chấm, log, khóa bài
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    if (isFinalized) return;
+    const nameInput = document.getElementById('studentName');
+    const classInput = document.getElementById('studentClass');
+    const name = (nameInput.value || '').trim();
+    const cls  = (classInput.value || '').trim();
+    if (!name || !cls) {
+      alert('Vui lòng nhập đầy đủ HỌ TÊN và LỚP / NHÓM trước khi nộp bài.');
+      return;
+    }
+    gradeQuiz();
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', () => {
+    location.reload();
+  });
+
+  // KHỞI TẠO ĐỀ: chỉ render, chưa cho hiện – chờ bấm Bắt đầu
+  (function initExam() {
+    const qs = parseSheet(RAW_DATA);
+    if (!qs.length) {
+      document.getElementById('quiz').innerHTML =
+        '<p style="color:red;">Giáo viên chưa dán dữ liệu đề vào biến RAW_DATA.</p>';
+      return;
+    }
+    renderQuiz(qs);
+  })();
+
+  loadTestTitle();
 </script>
+
+<footer class="footer">
+  <p>© <span id="year"></span> Online Practice by Dung Phạm. All rights reserved.</p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
 </body>
 </html>
