@@ -272,6 +272,7 @@ const TEST_ID = decodeURIComponent(
   const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwv8q--sVh5XrXUS7ZIHCK-VLltJesaT5NmV1cCw1tliN938Rm5iHgWAR_4MeJUmKMh/exec';
 
   const RAW_DATA = `
+
 1	reading	YBM2025-T7	5	mcq	PART 5	101. Since the weather has been unusually cold, expect ------- heating system to be used more often.	us	our	ours	ourselves	b
 2	reading	YBM2025-T7	5	mcq		102. Austin Inc. strictly prohibits the sharing of ------- memos and other company correspondence.	internalization	internalize	internally	internal	d
 3	reading	YBM2025-T7	5	mcq		103. Segal Bay visitors enjoy using the path ------- the coast to take in the sea air.	regarding	along	except	under	b
@@ -282,7 +283,7 @@ const TEST_ID = decodeURIComponent(
 8	reading	YBM2025-T7	5	mcq		108. Any international bank transfers requested ------- 3 p.m. will be made before closing time.	just	later	by	than	c
 9	reading	YBM2025-T7	5	mcq		109. When working on a crucial assignment, it may be better to ------- the deadline rather than rush the work.	approve	expire	adjust	observe	c
 10	reading	YBM2025-T7	5	mcq		110. Any apparel that includes custom images provided by the customer cannot be returned ------- it has been printed.	although	after	as a result	despite	b
-11	reading	YBM2025-T7	5	mcq		111. Thanks to sales ------- in our newest region, we have surpassed targets by fifty percent.	had gained	are gained	to gain	gains	a
+11	reading	YBM2025-T7	5	mcq		111. Thanks to sales ------- in our newest region, we have surpassed targets by fifty percent.	had gained	are gained	to gain	gains	d
 12	reading	YBM2025-T7	5	mcq		112. The highly encrypted storage system at Grendale Inc. is ideal for a ------- document or file.	sensitive	sensation	sense	sensitivity	a
 13	reading	YBM2025-T7	5	mcq		113. There was severe weather over the weekend, ------- attendance at the conference was still high.	nor	so	but	for	c
 14	reading	YBM2025-T7	5	mcq		114. The posters in the movie theater’s display windows are ------- changed.	regular	regularly	regularizing	more regular	b
@@ -291,37 +292,87 @@ const TEST_ID = decodeURIComponent(
 17	reading	YBM2025-T7	5	mcq		117. Applicants for the position will not proceed in the screening process ------- their credentials have been confirmed.	also	even	besides	until	d
 18	reading	YBM2025-T7	5	mcq		118. Due to an unexpected malfunction with the aircraft’s warning lights, passengers were not able to ------- until 8 p.m.	accommodate	appear	facilitate	board	d
 19	reading	YBM2025-T7	5	mcq		119. The Wilson Technical Institute is recruiting faculty members who feel ------- about their subjects.	careful	passionate	responsible	welcome	b
-20	reading	YBM2025-T7	5	mcq		120. Mr. Santiago will ------- the various options for updating the layout of the office.	be assessing	assessed	assessment	to assess	d
-21	reading	YBM2025-T7	5	mcq		121. The noise levels inside the office complex are surprisingly low for being located on ------- a busy road.	still	such	soon	nearby	d
+20	reading	YBM2025-T7	5	mcq		120. Mr. Santiago will ------- the various options for updating the layout of the office.	be assessing	assessed	assessment	to assess	a
+21	reading	YBM2025-T7	5	mcq		121. The noise levels inside the office complex are surprisingly low for being located on ------- a busy road.	still	such	soon	nearby	b
 22	reading	YBM2025-T7	5	mcq		122. Mechanics at the Harper Garage must ------- operate the necessary equipment without assistance.	influentially	significantly	enormously	proficiently	d
 23	reading	YBM2025-T7	5	mcq		123. On account of the installation of advanced laser equipment, the plant has tripled in ------- for its output.	quantity	economy	portion	permission	a
 24	reading	YBM2025-T7	5	mcq		124. Mr. Huntley explained that it is difficult to ------- cohesive teams in today’s job climate owing to labor shortages.	assemble	surpass	distribute	succeed	a
 25	reading	YBM2025-T7	5	mcq		125. Flint Vehicle Rentals charges an additional fee for insurance ------- drivers are fully covered by their own policy.	rather	if	unless	yet	c
-26	reading	YBM2025-T7	5	mcq		126. The state’s legislation does not allow businesses to make cash ------- to candidates.	contribute	contributions	contributes	contributed	c
+26	reading	YBM2025-T7	5	mcq		126. The state’s legislation does not allow businesses to make cash ------- to candidates.	contribute	contributions	contributes	contributed	b
 27	reading	YBM2025-T7	5	mcq		127. Even though Lakeland Bank’s branches have expanded across the country, most of ------- administrative offices are in the northwest.	this	whose	her	its	d
-28	reading	YBM2025-T7	5	mcq		128. ------- temporarily closing the highway for repairs, planners decided to use partial closures and work in phases.	Wherever	Instead of	Promptly	Now that	d
+28	reading	YBM2025-T7	5	mcq		128. ------- temporarily closing the highway for repairs, planners decided to use partial closures and work in phases.	Wherever	Instead of	Promptly	Now that	b
 29	reading	YBM2025-T7	5	mcq		129. Ivy Restaurant has special ingredients to replace meat ------- dairy products in its dishes to make them vegan-friendly.	in addition	yet	when	as well as	d
 30	reading	YBM2025-T7	5	mcq		130. Ms. Baek has focused ------- on digital art for commercial campaigns for multinational corporations.	surprisingly	frankly	presently	primarily	d
-31	reading	YBM2025-T7	6.1	mcq	[img:https://drive.google.com/file/d/1RU5dFySFGAyLVru35ODlTC79gRdoJCLM/view?usp=drive_link] // [img:https://drive.google.com/file/d/1nF_BRS0CxM6SC_I0SZ1KszEtKiKwfu_v/view?usp=drive_link]	131.	The ticket is valid only for the date specified.	In the event of a cancellation, we will send your items back.	We cannot change this due to food regulations.	Each one is led by a knowledgeable member of staff.	a
+31	reading	YBM2025-T7	6.1	mcq	[img:https://drive.google.com/file/d/1RU5dFySFGAyLVru35ODlTC79gRdoJCLM/view?usp=drive_link]	131.	The ticket is valid only for the date specified.	In the event of a cancellation, we will send your items back.	We cannot change this due to food regulations.	Each one is led by a knowledgeable member of staff.	c
 32	reading	YBM2025-T7	6.1	mcq		132. 	eager	artistic	informative	abundant	c
-33	reading	YBM2025-T7	6.1	mcq		133. 	treatment	provision	trip	viewing	c
-34	reading	YBM2025-T7	6.1	mcq		134. 	each	him	they	us	a
+33	reading	YBM2025-T7	6.1	mcq		133. 	treatment	provision	trip	viewing	d
+34	reading	YBM2025-T7	6.1	mcq		134. 	each	him	they	us	d
 35	reading	YBM2025-T7	6.2	mcq	[img:https://drive.google.com/file/d/1nF_BRS0CxM6SC_I0SZ1KszEtKiKwfu_v/view?usp=drive_link]	135. 	responded	responder	response	respond	c
-36	reading	YBM2025-T7	6.2	mcq		136. 	Whereas	However	During	While	b
+36	reading	YBM2025-T7	6.2	mcq		136. 	Whereas	However	During	While	d
 37	reading	YBM2025-T7	6.2	mcq		137. 	tolerate	apologize	regret	encounter	c
-38	reading	YBM2025-T7	6.2	mcq		138. 	Please show your ID or apartment key at the door.	If you are interested in viewing a two-bedroom unit, call us anytime.	We are confident that the finished result will be worth the hassle.	Thank you for dealing with this problem promptly.	a
-39	reading	YBM2025-T7	6.3	mcq		139. 	delightful	delighted	delightfully	delights	b
+38	reading	YBM2025-T7	6.2	mcq		138. 	Please show your ID or apartment key at the door.	If you are interested in viewing a two-bedroom unit, call us anytime.	We are confident that the finished result will be worth the hassle.	Thank you for dealing with this problem promptly.	c
+39	reading	YBM2025-T7	6.3	mcq	[img:https://drive.google.com/file/d/1El-dEaJkJCvtyLztOMwyaSUXnBzJiIYD/view?usp=drive_link]	139. 	delightful	delighted	delightfully	delights	b
 40	reading	YBM2025-T7	6.3	mcq		140. 	Many of them have symptoms that may be uncomfortable.	These include collecting unwanted medication for safe disposal.	We can hold it for you for up to ten business days.	The renovations will make the counter more accessible.	b
-41	reading	YBM2025-T7	6.3	mcq		141. 	to collect	being collected	collected	collecting	c
+41	reading	YBM2025-T7	6.3	mcq		141. 	to collect	being collected	collected	collecting	a
 42	reading	YBM2025-T7	6.3	mcq		142. 	supervisor	patient	colleague	physician	d
-43	reading	YBM2025-T7	6.4	mcq		143. 	closest	closely	closer	closeness	a
+43	reading	YBM2025-T7	6.4	mcq	[img:https://drive.google.com/file/d/1z7mh3iBXhoLNcudb_wAGVA5etZcuBDSQ/view?usp=drive_link]	143. 	closest	closely	closer	closeness	b
 44	reading	YBM2025-T7	6.4	mcq		144. 	not only	such as	so that	even though	d
-45	reading	YBM2025-T7	6.4	mcq		145. 	At least the delivery times are reliable.	I am an amateur photographer myself.	She used to own a gallery.	The frame’s quality is amazing too.	a
+45	reading	YBM2025-T7	6.4	mcq		145. 	At least the delivery times are reliable.	I am an amateur photographer myself.	She used to own a gallery.	The frame’s quality is amazing too.	d
 46	reading	YBM2025-T7	6.4	mcq		146. 	talented	best	fortunate	voluntary	a
-47	reading	YBM2025-T7	7.1	mcq		147. What requirement is expected of all applicants?	A reliable method for getting online	Graduation from a four-year university	Previous experience in education	Samples of lesson plans they have developed	b
-48	reading	YBM2025-T7	7.1	mcq		148. What is true about the position?	It includes working with children and adults.	It is only suitable for multilingual people.	It allows workers to set their schedule.	It involves teaching on weekends and holidays.	d
-49	reading	YBM2025-T7		mcq		149. What is the purpose of the announcement?	To explain measures to resolve a problem	To introduce a newly opened hotel	To promote discounted rates to loyal customers	To encourage customers to use a reservation system	a
-
+47	reading	YBM2025-T7	7.1	mcq	[img:https://drive.google.com/file/d/17MSS8hQP6I-wY2hbE9vSdKtFLT-S6kXJ/view?usp=drive_link]	147. What requirement is expected of all applicants?	A reliable method for getting online	Graduation from a four-year university	Previous experience in education	Samples of lesson plans they have developed	a
+48	reading	YBM2025-T7	7.1	mcq		148. What is true about the position?	It includes working with children and adults.	It is only suitable for multilingual people.	It allows workers to set their schedule.	It involves teaching on weekends and holidays.	c
+49	reading	YBM2025-T7	7.2	mcq	[img:https://drive.google.com/file/d/1OC6O7KyoeywVXxpuzG4gaHqgxSjs3QIP/view?usp=drive_link]	149. What is the purpose of the announcement?	To explain measures to resolve a problem	To introduce a newly opened hotel	To promote discounted rates to loyal customers	To encourage customers to use a reservation system	a
+50	reading	YBM2025-T7	7.2	mcq		150. According to Ms. Willis, what has the hotel changed temporarily?	The fee for staying more than one night	The deadline for canceling at no charge	The hours of operation for a helpline	The wait time for checking in to the hotel	b
+51	reading	YBM2025-T7	7.3	mcq	[img:https://drive.google.com/file/d/1-ffYGBDcM-doWQ6VLHK55lJDnLxZFpk_/view?usp=drive_link]	151. What is true about the soil testing?	It fulfilled a requirement set by the government.	It was carried out by full-time Gould Manufacturing staff.	It mainly focused on the Canton site.	It had gaps between the collection days.	d
+52	reading	YBM2025-T7	7.3	mcq		152. What action is recommended for Gould Manufacturing?	Taking soil from a depth of more than ten centimeters	Injecting a formula into the soil at Lancaster	Ceasing micro-organism treatment at Canton	Removing plants at Brockway	d
+53	reading	YBM2025-T7	7.4	mcq	[img:https://drive.google.com/file/d/1Ape9K-8CcOXIHV1hmR3e9m4_1sBR7KAr/view?usp=drive_link]	153. At 10:30 a.m., what does Ms. Salazar most likely mean when she writes, “Sure thing”?	She is willing to contact Lyndon Enterprises’ staff members.	She can add numerical information to a presentation file.	She is happy to attend a meeting in Mr. Nguyen’s place.	She plans to stay at work later than usual today.	b
+54	reading	YBM2025-T7	7.4	mcq		154. What kind of work do the writers most likely do?	Computer programming	Safety inspections	Market analysis	Import-export services	d
+55	reading	YBM2025-T7	7.5	mcq	[img:https://drive.google.com/file/d/1vR7wGcvoZ2PeLjGppgOaLbb4_92SF2N7/view?usp=drive_link]	155. What is suggested about Mr. Taheri’s previous presentation for the conference?	It suffered from some technical malfunctions.	It was canceled by the event organizers.	It was given in Navarro Hall.	It received good reviews from participants.	b
+56	reading	YBM2025-T7	7.5	mcq		156. Approximately how many participants are expected at the event?	50	100	120	250	d
+57	reading	YBM2025-T7	7.5	mcq		157. For when has a time slot been reserved for Mr. Taheri’s talk?	Nov-05	Nov-06	Nov-07	Nov-08	b
+58	reading	YBM2025-T7	7.6	mcq	[img:https://drive.google.com/file/d/1jTDlZkB-ZRrffbJBtjpP8qQoOU4B9zfQ/view?usp=drive_link]	158. What kind of business most likely is ETB?	A financial institution	A community club	A construction company	A real estate firm	c
+59	reading	YBM2025-T7	7.6	mcq		159. What is suggested about City Hall?	Scheduled changes to it will probably be postponed.	It currently cannot accommodate large meetings.	An individual has made a financial donation to it.	It has ninety thousand square feet of space in total.	b
+60	reading	YBM2025-T7	7.6	mcq		160. In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? “Some will be used by the newly formed Consumer Affairs Division.”	[1]	[2]	[3]	[4]	d
+61	reading	YBM2025-T7	7.7	mcq	[img:https://drive.google.com/file/d/1Rg9PUXBfCoJ6LgcBNHFwrnilNRAF_LLk/view?usp=drive_link]	161. In what field does Utica Inc. operate?	Building security	Automotive manufacturing	Software distribution	Fuel production	b
+62	reading	YBM2025-T7	7.7	mcq		162. What does the new Utica Inc. smartphone application allow users to do?	Check for recalls and safety-related reports	Learn about special offers before other customers	Track product shipments in real time	Compare prices at different businesses	d
+63	reading	YBM2025-T7	7.7	mcq		163. The word “follow” in paragraph 3, line 1, is closest in meaning to	stick to	accompany	guide	replace	a
+64	reading	YBM2025-T7	7.8	mcq	[img:https://drive.google.com/file/d/1zP64i5nkoSb4D5H7H-iVmYPtPU4FZCis/view?usp=drive_link]	164. What is one purpose of the letter?	To make a request for donations	To announce a new partnership	To explain an organization’s name change	To extend an invitation to a musical performance	b
+65	reading	YBM2025-T7	7.8	mcq		165. The word “common” in paragraph 1, line 3, is closest in meaning to	mutual	popular	intended	ordinary	a
+66	reading	YBM2025-T7	7.8	mcq		166. What is suggested about Mr. Holtzmann?	He is encouraged to submit a slogan.	He has been nominated for an award.	He will be given a music store gift card.	He was a founding member of YMP.	a
+67	reading	YBM2025-T7	7.8	mcq		167. What is NOT indicated about the YMP?	It holds fundraising events four times a year.	It has experienced rapid growth.	It is the country’s largest youth organization.	It has recently changed its leadership.	c
+68	reading	YBM2025-T7	7.9	mcq	[img:https://drive.google.com/file/d/1_lUTJbQ1sacV7ffcNZ0HG_r74x3618Wu/view?usp=drive_link]	168. Where do the writers most likely work?	At an employment recruitment firm	At a children’s clothing store	At a book publisher	At a movie theater	c
+69	reading	YBM2025-T7	7.9	mcq		169. At 1:58 p.m., what does Mr. Weiler most likely mean when he writes, “Of course not”?	He is willing to provide some training.	He can accommodate an interview schedule.	He will not miss an important deadline.	He is not ready to make a decision yet.	a
+70	reading	YBM2025-T7	7.9	mcq		170. What is indicated about Ms. Fleming?	She already has her own fan base.	She currently works for a social media company.	She will cover shifts while Mr. Weiler is on leave.	She prefers to discuss matters by teleconference.	a
+71	reading	YBM2025-T7	7.9	mcq		171. According to the discussion, what does Mr. Gilliam think is critical to the open position?	The ability to deal with several assignments efficiently	A collaborative approach to work projects	Dedication to improving customer service	Experience working with many software programs	a
+72	reading	YBM2025-T7	7.10	mcq	[img:https://drive.google.com/file/d/1k85Yqy5ZUWnubzWlJrNNMm8HYgf22rpa/view?usp=drive_link]	172. What is suggested about Literary Quarterly?	Its main texts are usually produced by in-house writers.	It solely publishes work being made public for the first time.	Its management is considering publishing editions more frequently.	It only contacts writers whose submissions have been accepted.	b
+73	reading	YBM2025-T7	7.10	mcq		173. What is NOT mentioned as a requirement for making a submission?	Paying a one-time fee	Providing a short description	Subscribing to the magazine	Formatting the work in a specific way	c
+74	reading	YBM2025-T7	7.10	mcq		174. What is Ms. Grenier most likely interested in writing?	Poetry	Short stories	Essays	Book reviews	a
+75	reading	YBM2025-T7	7.10	mcq		175. In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? “Be sure to include relevant information that will be important in the initial screening process.”	[1]	[2]	[3]	[4]	b
+76	reading	YBM2025-T7	7.11	mcq	[img:https://drive.google.com/file/d/1kWjMX8s3SrIVBBrnXwAsGiMBaaH8kecm/view?usp=drive_link] // [img:https://drive.google.com/file/d/1jXQ5TkKiTuxagH7p7jjTsPcMqoG7Bl_i/view?usp=drive_link]	176. How is Tour 2 different from the rest of the tours?	Its participants can go at their own pace.	Its attractions are famous in Toronto.	It lasts for a full day.	It includes help from a tour guide.	a
+77	reading	YBM2025-T7	7.11	mcq		177. What is included in all tour packages?	Lunch on the tour day	Storage of participants’ luggage	Transportation from certain hotels	A visit to the CN Tower	c
+78	reading	YBM2025-T7	7.11	mcq		178. Which tour did Mr. Hart most likely take?	Tour 1	Tour 3	Tour 4	Tour 5	c
+79	reading	YBM2025-T7	7.11	mcq		179. What does the review suggest about Stephen?	He can speak Japanese.	He has a history degree.	He was born in Toronto.	He gave advice on souvenirs.	d
+80	reading	YBM2025-T7	7.11	mcq		180. Why was Mr. Hart dissatisfied with part of the tour?	The guide was disorganized.	A meal was small.	The area was crowded.	A schedule was not followed.	b
+81	reading	YBM2025-T7	7.12	mcq	[img:https://drive.google.com/file/d/1dPgV-hpwwEWRXONmu6uv0JtBcBw8osXE/view?usp=drive_link] // [img:https://drive.google.com/file/d/1sD5paJVKp0OgXEU9eTZF4-LhZbw3xout/view?usp=drive_link] 	181. Why does Mr. Elwood recommend placing an order on February 11?	To be sent a product catalog	To avoid long shipping times	To receive a bonus gift	To try a new bedding pattern	c
+82	reading	YBM2025-T7	7.12	mcq		182. What is suggested about Mr. Jackson?	He is a regular Moonlight Bedding customer.	He owns a king-sized bed.	He only purchases bedding in a certain color.	He will receive his goods on February 12.	a
+83	reading	YBM2025-T7	7.12	mcq		183. What is indicated about the items in Mr. Jackson’s order?	They can be exchanged for any reason.	They all have a checkered pattern.	They may arrive in separate boxes.	They follow different return policy guidelines.	d
+84	reading	YBM2025-T7	7.12	mcq		184. How could Mr. Jackson have taken advantage of a special promotion?	By writing a product review	By spending more on his order	By ordering on a different day	By trying some newly released merchandise	b
+85	reading	YBM2025-T7	7.12	mcq		185. What is NOT true about Moonlight Bedding?	It provides bedding in different sizes.	It changes its inventory regularly.	It sells curtains to match its bedding.	Its clearance sale is longer this year.	c
+86	reading	YBM2025-T7	7.13	mcq	[img:https://drive.google.com/file/d/1QTkPQHIdDLBEnUPX4YCiiTP5dUj-p8Op/view?usp=drive_link] // [img:https://drive.google.com/file/d/1MSxSRMUAeAFiOkg5q02SkHLMUHEL7Uwv/view?usp=drive_link] // [img:https://drive.google.com/file/d/1jlqTvvT_hJwda5Em-fLKV4gK7ODup_Ll/view?usp=drive_link]	186. According to the e-mail, what did Rivera Grill recently do?	It opened a second location.	It added some items to its menu.	It came under new ownership.	It expanded its dining area.	c
+87	reading	YBM2025-T7	7.13	mcq		187. What is a purpose of the e-mail?	To obtain replacement pieces of tableware	To request suggestions of similar products	To ask about repairing some damaged plates	To receive advice on choosing a shipping service	a
+88	reading	YBM2025-T7	7.13	mcq		188. In the product information, what is stated about Lund Square Dinner Plates?	They come in several colors.	They are the brand's bestselling item.	They are safe for use in microwave ovens.	They enhance the appearance of food.	d
+89	reading	YBM2025-T7	7.13	mcq		189. What is implied about Boisvert Suppliers?	It was acquired by another company.	It requires a fee of $20 for expedited shipping.	It raised the prices it charges for Lund dishware.	It returned some of Mr. Wells’s payment.	d
+90	reading	YBM2025-T7	7.13	mcq		190. What size are the plates Mr. Wells ordered from Emery Restaurant Warehouse?	9 inches	10 inches	11 inches	12 inches	b
+91	reading	YBM2025-T7	7.14	mcq	[img:https://drive.google.com/file/d/1t4IQumSKV5c_yzSUzsJb8nwAFtN2uC1Y/view?usp=drive_link] // [img:https://drive.google.com/file/d/1yY5CqY7rRtxC3s9yJ4G1rgtYZgTr00d7/view?usp=drive_link] // [img:https://drive.google.com/file/d/1BRSKyNgIcC5gS4Oz5H-l9c4T2hwmISsz/view?usp=drive_link]	191. What most likely is the workshop topic on September 3?	Graphic design	Retirement planning	Public relations	Software development	c
+92	reading	YBM2025-T7	7.14	mcq		192. What is suggested about Ms. Hale?	She noticed a problem on a Web page.	She will receive a partial refund.	She paid extra for express shipping.	She picked up her books herself.	d
+93	reading	YBM2025-T7	7.14	mcq		193. What is the purpose of the notice?	To gather feedback about a workshop	To promote the sale of Mr. Kamal’s books	To offer a solution to a problem	To explain a change in location	c
+94	reading	YBM2025-T7	7.14	mcq		194. In the second e-mail, what does Ms. Hale suggest changing?	The wording of a document	The date of a service launch	The content of an employee manual	The folder for a saved file	a
+95	reading	YBM2025-T7	7.14	mcq		195. How much was Ms. Hale charged for the book she gave to Mr. Wooster?	$12.80	$20.00	$20.80	$16.80	b
+96	reading	YBM2025-T7	7.15	mcq	[img:https://drive.google.com/file/d/1LpMJadHDAlqDLUAh-_M3DWl5S9XaV4NS/view?usp=drive_link] // [img:https://drive.google.com/file/d/19ByKlKJNG2vS3AmuX6bOIoCm_4Un82Im/view?usp=drive_link] // [img:https://drive.google.com/file/d/1FsnyqK1hIB4gE6HXMBowbTngROB55s9V/view?usp=drive_link]	196. What is the purpose of the text message?	To suggest amending a project timeline	To provide reassurance about an allocated budget	To point out a violation of a safety regulation	To arrange a meeting at a renovation site	b
+97	reading	YBM2025-T7	7.15	mcq		197. From where did Mr. Silva send the text message?	A historic house	An old school building	A consulting firm’s office	A city government agency	a
+98	reading	YBM2025-T7	7.15	mcq		198. In the article, what is suggested about Ms. Reeves?	She grew up in Norway.	She designed some landscaping.	She is the former owner of some real estate.	She is a Gladney city official.	c
+99	reading	YBM2025-T7	7.15	mcq		199. What does the article mention about the property at 560 Sherman Street?	It has been kept in good condition.	It has been sold several times.	It is located near a forest.	It has a large parking area.	a
+100	reading	YBM2025-T7	7.15	mcq		200. What can be inferred from the review?	The restaurant's menu has changed.	The restaurant's prices are reasonable.	Mr. Owens waited a long time for his food.	Mr. Owens was seated indoors at the restaurant.	d
 
 `; // HẾT RAW_DATA
 
