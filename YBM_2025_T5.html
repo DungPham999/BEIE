@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Practice Test – Complete</title>
+<title>Practice Test Complete</title>
 <style>
-body { font-family: Arial,sans-serif; max-width:1400px; margin:20px auto; padding:0 15px; line-height:1.5; background:#fff7e6; font-size:16px;}
+body { font-family: Arial,sans-serif; max-width:1400px; margin:20px auto; padding:0 15px; background:#fff7e6; font-size:16px;}
 h1 { text-align:center; margin-bottom:10px; font-size:28px;}
 h2 { margin:10px 0 8px; font-size:18px; border-bottom:1px solid #ccc; padding-bottom:4px;}
 .info { border:1px solid #ddd; border-radius:6px; padding:10px 12px; margin-bottom:12px; background:#fafafa; font-size:15px;}
@@ -18,50 +18,52 @@ h2 { margin:10px 0 8px; font-size:18px; border-bottom:1px solid #ccc; padding-bo
 .question { margin-bottom:12px; padding:8px; border-bottom:1px dashed #ddd; background:#fff; font-size:15px;}
 .question-number { font-weight:bold; }
 .short-answer-input { width:80%; max-width:400px; padding:6px 8px;}
-.btn { padding:8px 14px; border-radius:4px; border:1px solid #888; background:#f5f5f5; cursor:pointer; font-size:15px;}
+.btn { padding:8px 14px; border-radius:4px; border:1px solid #888; background:#f5f5f5; cursor:pointer; font-size:15px; margin:4px;}
 .btn:hover { background:#e0e0e0;}
-#timer { font-weight:bold; color:#d9534f;}
+#timer { font-weight:bold; color:red;}
 .result { border:1px solid #ddd; border-radius:6px; padding:10px; margin-top:12px; background:#fff;}
 #paletteContainer { display:flex; flex-wrap:wrap; margin:10px 0; gap:4px;}
 .palette-btn { width:36px; height:36px; text-align:center; line-height:36px; border:1px solid #000; border-radius:4px; cursor:pointer; background:#fff; font-weight:bold;}
 .palette-btn.done { background:#000; color:#fff;}
 .palette-btn.correct { background:#4CAF50; color:#fff;}
 .palette-btn.incorrect { background:#f44336; color:#fff;}
+.nav-buttons { text-align:right; margin:10px 0; }
 @media(max-width:768px){ .reading-layout{flex-direction:column;} .reading-left,.reading-right{width:100%;} .img-frame{width:100%;height:auto;} .btn-row .btn{width:100%;} }
 </style>
 </head>
 <body>
 
 <h1 id="pageTitle">Practice Test</h1>
+
 <div class="info">
-<p><strong>Thời gian còn lại:</strong> <span id="timer">--:--</span></p>
-<p><strong>Tiến độ:</strong> <span id="progressText">0/0</span></p>
+<p><strong>Thời gian còn lại:</strong> <span id="timer">120:00</span></p>
 <p><label>Họ tên: <input type="text" id="studentName" placeholder="Nguyễn Văn A"></label>
 <label>Lớp/Nhóm: <input type="text" id="studentClass" placeholder="8A"></label></p>
 <p style="text-align:center;"><button class="btn" id="startBtn">Start</button></p>
 </div>
 
+<div class="nav-buttons">
+<button class="btn" id="submitBtn" style="display:none;">Submit</button>
+<button class="btn" id="prevBtn" style="display:none;">Back</button>
+<button class="btn" id="nextBtn" style="display:none;">Next</button>
+</div>
+
 <div id="paletteContainer"></div>
 <div id="quiz" style="display:none;"></div>
-
-<div class="btn-row">
-<button class="btn" id="submitBtn" style="display:none;">Submit</button>
-<button class="btn" id="retryBtn" style="display:none;">Redo</button>
-</div>
 
 <div class="result" id="resultBox" style="display:none;"></div>
 
 <script>
-// Cấu hình
-const DURATION_MINUTES = 120;
-let totalQuestions = 0;
-let timerInterval = null;
+// ---------------- CONFIG ----------------
+const DURATION_MINUTES = 75;
 let groupContainers = [];
 let currentGroupIndex = 0;
 let isFinalized = false;
+let totalQuestions = 0;
 
-// Dữ liệu mẫu, bạn thay bằng RAW_DATA thật
+// Dữ liệu câu hỏi
 const RAW_DATA = `
+
 101	reading	YBM2025-T6	5	mcq		101. Testers report that the video game’s final level is somewhat -------.	frustrate	frustrating	frustration	frustrated	b
 102	reading	YBM2025-T6	5	mcq		102. Marcus Siegler is attempting to develop a new ------- for predicting solar activity.	recognition	direction	method	opinion	c
 103	reading	YBM2025-T6	5	mcq		103. The university’s largest dormitory, Lugo Residence Hall, accommodates ------- 600 students.	enough	nearly	totally	more	b
@@ -163,7 +165,7 @@ const RAW_DATA = `
 199	reading	YBM2025-T6	7.15	mcq		199. According to the second e-mail, what is available for all of the carrying cases? 	 Customization service 	 A discount on a bulk purchase 	 Care instructions 	 A free product sample	a
 200	reading	YBM2025-T6	7.15	mcq		200. What carrying case will Gir Society donors most likely receive? 	 The hard plastic case 	 The cotton pouch 	 The nylon zippered case 	 The canvas roll-up bag	b
 
-`;
+`; // dán RAW_DATA
 
 // ----------------- HÀM HỖ TRỢ -----------------
 function escapeHtml(str){ return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -171,10 +173,11 @@ function normalizeText(str){ return (str||'').toLowerCase().trim(); }
 function renderImgToken(url){ return `<img class="img-frame" src="${url}">`; }
 
 // ----------------- TIMER -----------------
+let timerInterval=null;
 function startTimer(sec){
-  let timeLeft = sec;
-  const timerEl = document.getElementById('timer');
-  timerInterval = setInterval(()=>{
+  let timeLeft=sec;
+  const timerEl=document.getElementById('timer');
+  timerInterval=setInterval(()=>{
     const m=Math.floor(timeLeft/60), s=timeLeft%60;
     timerEl.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     timeLeft--;
@@ -185,7 +188,7 @@ function startTimer(sec){
 // ----------------- RENDER QUIZ -----------------
 function parseSheet(rawText){
   if(!rawText.trim()) return [];
-  const lines = rawText.trim().split('\n');
+  const lines=rawText.trim().split('\n');
   const questions=[];
   lines.forEach((line,index)=>{
     const cols=line.split('\t');
@@ -204,49 +207,63 @@ function parseSheet(rawText){
 }
 
 function renderQuiz(questions){
-  const quizDiv = document.getElementById('quiz'); quizDiv.innerHTML='';
+  const quizDiv=document.getElementById('quiz'); quizDiv.innerHTML='';
   const groups={}; const groupOrder=[];
-  questions.forEach((q)=>{ const key=q.group; if(!groups[key]){ groups[key]={skill:q.skill,passage:q.passage,questions:[]}; groupOrder.push(key);} groups[key].questions.push(q); });
+  questions.forEach(q=>{ const key=q.group; if(!groups[key]){ groups[key]={skill:q.skill,passage:q.passage,questions:[]}; groupOrder.push(key);} groups[key].questions.push(q); });
 
   let qCounter=0;
   groupOrder.forEach(key=>{
     const g=groups[key]; const pTrim=g.passage||'';
-    if(g.skill==='reading'){
-      const layout=document.createElement('div'); layout.className='reading-layout group-container';
-      const left=document.createElement('div'); left.className='reading-left group-block';
-      const title=document.createElement('h2'); title.textContent='Reading '+key; left.appendChild(title);
-      if(pTrim){ const pd=document.createElement('div'); pd.className='passage'; pd.innerHTML=pTrim.replace(/\[IMG:([^\]]+)\]/gi,(m,u)=>renderImgToken(u)); left.appendChild(pd); }
-      const right=document.createElement('div'); right.className='reading-right';
-      g.questions.forEach(q=>{
-        qCounter++; const qDiv=document.createElement('div'); qDiv.className='question'; qDiv.dataset.answer=q.answer||''; qDiv.dataset.type=q.type||'short';
-        const p=document.createElement('p'); p.innerHTML=`<span class="question-number">${qCounter}.</span> ${escapeHtml(q.question)}`; qDiv.appendChild(p);
-        if(q.type==='mcq'){ ['A','B','C','D'].forEach((lbl,i)=>{ if(!q.options[i]) return; const l=document.createElement('label'); const r=document.createElement('input'); r.type='radio'; r.name='q'+qCounter; r.value=lbl; l.appendChild(r); l.appendChild(document.createTextNode(` ${lbl}. ${q.options[i]}`)); qDiv.appendChild(l); qDiv.appendChild(document.createElement('br')); }); }
-        else { const input=document.createElement('input'); input.type='text'; input.name='q'+qCounter; input.className='short-answer-input'; qDiv.appendChild(input); }
-        right.appendChild(qDiv);
-      });
-      layout.appendChild(left); layout.appendChild(right); quizDiv.appendChild(layout);
-    }
+    const layout=document.createElement('div'); layout.className='reading-layout group-container';
+    const left=document.createElement('div'); left.className='reading-left group-block';
+    const title=document.createElement('h2'); title.textContent=(g.skill==='math'?'Math ':'Reading ')+key; left.appendChild(title);
+    if(pTrim){ const pd=document.createElement('div'); pd.className='passage'; pd.innerHTML=pTrim.replace(/\[IMG:([^\]]+)\]/gi,(m,u)=>renderImgToken(u)); left.appendChild(pd); }
+    const right=document.createElement('div'); right.className='reading-right';
+    g.questions.forEach(q=>{
+      qCounter++; const qDiv=document.createElement('div'); qDiv.className='question'; qDiv.dataset.answer=q.answer||''; qDiv.dataset.type=q.type||'short';
+      const p=document.createElement('p'); p.innerHTML=`<span class="question-number">${q.id}.</span> ${escapeHtml(q.question)}`; qDiv.appendChild(p);
+      if(q.type==='mcq'){ ['A','B','C','D'].forEach((lbl,i)=>{ if(!q.options[i]) return; const l=document.createElement('label'); const r=document.createElement('input'); r.type='radio'; r.name='q'+q.id; r.value=lbl; l.appendChild(r); l.appendChild(document.createTextNode(` ${lbl}. ${q.options[i]}`)); qDiv.appendChild(l); qDiv.appendChild(document.createElement('br')); }); }
+      else{ const input=document.createElement('input'); input.type='text'; input.name='q'+q.id; input.className='short-answer-input'; qDiv.appendChild(input); }
+      right.appendChild(qDiv);
+    });
+    layout.appendChild(left); layout.appendChild(right); quizDiv.appendChild(layout);
   });
 
   groupContainers=Array.from(document.querySelectorAll('.group-container'));
   groupContainers.forEach(c=>c.style.display='none');
-  groupContainers[0].style.display='';
+  if(groupContainers.length) groupContainers[0].style.display='';
   totalQuestions=quizDiv.querySelectorAll('.question').length;
-  renderPalette(totalQuestions);
 }
 
-// ----------------- PALETTE -----------------
-function renderPalette(total){
-  const container=document.getElementById('paletteContainer'); container.innerHTML='';
-  for(let i=1;i<=total;i++){
-    const btn=document.createElement('div'); btn.className='palette-btn'; btn.textContent=i; btn.dataset.qIndex=i-1;
-    btn.addEventListener('click',()=>{ showQuestion(i-1); });
-    container.appendChild(btn);
-  }
+// ----------------- NAV BUTTONS -----------------
+function showGroup(index){ if(!groupContainers.length) return; groupContainers.forEach((c,i)=>c.style.display=(i===index)?'':'none'); currentGroupIndex=index; }
+document.getElementById('nextBtn').addEventListener('click',()=>{ showGroup(currentGroupIndex+1); });
+document.getElementById('prevBtn').addEventListener('click',()=>{ showGroup(currentGroupIndex-1); });
+
+// ----------------- GRADE -----------------
+function gradeQuiz(){
+  if(isFinalized) return; isFinalized=true;
+  if(timerInterval){ clearInterval(timerInterval); timerInterval=null; }
+  const quizDiv=document.getElementById('quiz');
+  const questionDivs=quizDiv.querySelectorAll('.question');
+  let correct=0;
+  const total=questionDivs.length;
+  questionDivs.forEach(div=>{
+    const type=div.dataset.type||'short';
+    const answerList=(div.dataset.answer||'').split('|').map(s=>s.trim()).filter(s=>s);
+    let user='';
+    if(type==='mcq'){ const c=div.querySelector('input[type="radio"]:checked'); if(c) user=normalizeText(c.value);}
+    else{ const input=div.querySelector('input[type="text"]'); if(input) user=normalizeText(input.value);}
+    const isCorrect=answerList.includes(user); if(isCorrect) correct++;
+    div.querySelectorAll('input[type="radio"],input[type="text"]').forEach(i=>i.disabled=true);
+    if(answerList.length){ let caDiv=div.querySelector('.correct-answer-text'); if(!caDiv){ caDiv=document.createElement('div'); caDiv.className='correct-answer-text'; div.appendChild(caDiv); } caDiv.textContent='Đáp án: '+answerList.join(' | ');}
+    if(isCorrect) div.classList.add('correct'); else div.classList.add('incorrect');
+  });
+  const box=document.getElementById('resultBox'); box.style.display='block';
+  box.innerHTML=`<div><strong>Bài test:</strong> Practice Test</div>
+                 <div><strong>Kết quả:</strong> ${correct}/${total} câu</div>
+                 <div style="font-size:28px; font-weight:bold; color:#007acc;">${Math.round(correct*100/total)}%</div>`;
 }
-function markQuestionDone(i){ const btn=document.querySelector(`.palette-btn[data-q-index="${i}"]`); if(btn) btn.classList.add('done'); }
-function showQuestion(i){ const divs=document.querySelectorAll('.question'); if(i>=0&&i<divs.length) divs[i].scrollIntoView({behavior:'smooth',block:'center'}); }
-function updatePaletteAfterGrading(){ const divs=document.querySelectorAll('.question'); divs.forEach((div,i)=>{ const btn=document.querySelector(`.palette-btn[data-q-index="${i}"]`); if(!btn) return; let user=''; const answerList=(div.dataset.answer||'').split('|').map(s=>s.trim()).filter(s=>s); const type=div.dataset.type||'short'; if(type==='mcq'){ const c=div.querySelector('input[type="radio"]:checked'); if(c) user=normalizeText(c.value);} else { const input=div.querySelector('input[type="text"]'); if(input) user=normalizeText(input.value);} if(!user) return; btn.classList.remove('done'); btn.classList.add(answerList.includes(user)?'correct':'incorrect'); }); }
 
 // ----------------- START -----------------
 document.getElementById('startBtn').addEventListener('click',()=>{
@@ -255,16 +272,13 @@ document.getElementById('startBtn').addEventListener('click',()=>{
   if(!n||!c){ alert('Nhập đủ Họ tên và Lớp/Nhóm'); return; }
   document.getElementById('startBtn').style.display='none';
   document.getElementById('quiz').style.display='block';
-  document.getElementById('navRow').style.display='flex';
-  groupContainers[0].style.display='';
+  document.getElementById('submitBtn').style.display='inline-block';
+  document.getElementById('prevBtn').style.display='inline-block';
+  document.getElementById('nextBtn').style.display='inline-block';
+  if(groupContainers.length) groupContainers[0].style.display='';
   startTimer(DURATION_MINUTES*60);
 });
 
-// ----------------- SUBMIT -----------------
-document.getElementById('submitBtn').addEventListener('click',()=>{ gradeQuiz(); });
-
-// ----------------- INIT -----------------
-(function initExam(){ const qs=parseSheet(RAW_DATA); if(!qs.length){ document.getElementById('quiz').innerHTML='<p style="color:red;">RAW_DATA trống</p>'; return; } renderQuiz(qs); })();
+// ----------------- KHỞI TẠO -----------------
+(function initExam(){ const qs=parseSheet(RAW_DATA); if(!qs.length){ document.getElementById('quiz').innerHTML='<p style="color:red;">RAW_DATA trống</p>'; return;} renderQuiz(qs); })();
 </script>
-</body>
-</html>
