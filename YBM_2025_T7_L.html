@@ -850,8 +850,9 @@ function updateProgress() {
 
     const lastIndex = groupContainers.length - 1;
 
-    // Prev
-    prevBtn.style.display = (currentGroupIndex > 0) ? 'inline-block' : 'none';
+   // Prev: chỉ hiển thị khi đã nộp bài
+    prevBtn.style.display = isFinalized ? (currentGroupIndex > 0 ? 'inline-block' : 'none') : 'none';
+
 
     // Nếu đang chưa đến phần cuối: hiện Next, ẩn Submit
     if (currentGroupIndex < lastIndex) {
@@ -892,7 +893,14 @@ function updateProgress() {
 
   // NÚT NEXT – ghi log (silent) rồi sang phần tiếp theo
   document.getElementById('nextPartBtn').addEventListener('click', () => {
-    if (isFinalized) {
+
+	   const audios = document.querySelectorAll('audio');
+    audios.forEach(a => { a.pause(); a.currentTime = 0; });
+
+    const iframes = document.querySelectorAll('iframe.audio-frame');
+    iframes.forEach(f => f.src = f.src); // reload iframe để dừng phát
+	  
+	  if (isFinalized) {
       // Sau khi nộp bài, cho phép xem lại các phần nhưng không log nữa
       const lastIndex = groupContainers.length - 1;
       if (currentGroupIndex < lastIndex) {
@@ -909,12 +917,6 @@ function updateProgress() {
     }
   });
 
-  // NÚT PREV – cho phép quay lại phần trước để sửa khi chưa nộp
-  document.getElementById('prevPartBtn').addEventListener('click', () => {
-    if (currentGroupIndex > 0) {
-      showGroup(currentGroupIndex - 1);
-    }
-  });
 
   // NÚT NỘP BÀI – chấm, log, khóa bài
   document.getElementById('submitBtn').addEventListener('click', () => {
