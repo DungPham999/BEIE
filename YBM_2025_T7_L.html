@@ -838,15 +838,47 @@ function updateProgress() {
     let correct = 0; wrongList=[];
     const total = questionDivs.length;
     
-      questionDivs.forEach((div,i)=>{
-    const type=div.dataset.type||'short';
-    const answerList=(div.dataset.answer||'').split('|').map(s=>s.trim()).filter(s=>s);
-    let user='';
-    if(type==='mcq'){ const c=div.querySelector('input[type="radio"]:checked'); if(c) user=normalizeText(c.value);}
-    else{ const input=div.querySelector('input[type="text"]'); if(input) user=normalizeText(input.value);}
-    if(answerList.includes(user)) correct++; else wrongList.push(i+1);
-    div.querySelectorAll('input[type="radio"],input[type="text"]').forEach(i=>i.disabled=true);
-  });
+     // Lặp qua câu hỏi để tính điểm và tạo danh sách câu sai
+questionDivs.forEach((div, i) => {
+  const type = div.dataset.type || 'short';
+  const answerRaw = div.dataset.answer || '';
+  const answerList = answerRaw.split('|').map(s=>s.trim()).filter(s=>s);
+  let user = '';
+
+  if(type === 'mcq'){
+    const checked = div.querySelector('input[type="radio"]:checked');
+    if(checked) user = normalizeText(checked.value);
+  } else {
+    const input = div.querySelector('input[type="text"]');
+    if(input) user = normalizeText(input.value);
+  }
+
+  // Nếu đúng
+  if(answerList.includes(user)){
+    correct++;
+  } else {
+    // Thêm số câu sai vào danh sách
+    wrongList.push(i+1); // i+1 là số thứ tự câu
+  }
+
+  // Khóa input
+  div.querySelectorAll('input[type="radio"],input[type="text"]').forEach(i=>i.disabled=true);
+});
+
+// Hiển thị kết quả + danh sách câu sai
+const box = document.getElementById('resultBox');
+box.style.display = 'block';
+box.innerHTML = `
+  <div style="font-size:16px; margin-bottom:4px;">
+    <strong>Bài test:</strong> ${TEST_ID}
+  </div>
+  <div style="font-size:18px; margin-bottom:8px;">
+    <strong>Kết quả:</strong> đúng ${correct}/${total} câu
+  </div>
+  <div style="font-size:16px; margin-top:4px;">
+    <strong>Các câu sai:</strong> ${wrongList.join(', ')}
+  </div>
+`;
 
     questionDivs.forEach(div => {
       const type = div.dataset.type || 'short';
@@ -1006,8 +1038,10 @@ function updateProgress() {
     const audios = document.querySelectorAll('audio');
     audios.forEach(a => { a.pause(); a.currentTime = 0; });
 
-    const iframes = document.querySelectorAll('iframe.audio-frame');
-    iframes.forEach(f => f.src = f.src); // reload iframe để dừng phát
+const iframes = document.querySelectorAll('iframe.audio-frame');
+iframes.forEach(f => {
+  f.src = f.src; // reload iframe → dừng phát audio
+});
     
     if (isFinalized) {
       // Sau khi nộp bài, cho phép xem lại các phần nhưng không log nữa
