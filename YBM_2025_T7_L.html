@@ -257,7 +257,7 @@
   <div class="result" id="resultBox" style="display:none;"></div>
 
 <script>
-  const DURATION_MINUTES = 50;
+  const DURATION_MINUTES = 60;
 	
 // Lấy TEST_ID từ tên file hiện tại, ví dụ "BEIE_HW_U6.html"
 const fileSegment = location.pathname.split('/').pop() || '';
@@ -985,7 +985,12 @@ function updateProgress() {
       showGroup(currentGroupIndex + 1);
     }
   });
-
+  // NÚT PREV – cho phép quay lại phần trước để sửa khi chưa nộp
+  document.getElementById('prevPartBtn').addEventListener('click', () => {
+    if (currentGroupIndex > 0) {
+      showGroup(currentGroupIndex - 1);
+    }
+  });
 
   // NÚT NỘP BÀI – chấm, log, khóa bài
   document.getElementById('submitBtn').addEventListener('click', () => {
